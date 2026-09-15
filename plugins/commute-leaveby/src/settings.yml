@@ -67,7 +67,7 @@ custom_fields:
   field_type: author_bio
   category: productivity,travel
   description: Leave-by commute times via <a href="https://developer.tomtom.com/">TomTom Routing</a>, by Diogo Loureiro. Set origin/destination as <code>lat,lng</code> and the time you need to arrive. Shows when to leave, trip duration, traffic, and alternatives.
-  github_url: https://github.com/dfloureiro
+  github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/commute-leaveby
   learn_more_url: https://developer.tomtom.com/routing-api/documentation/tomtom-maps/v1/calculate-route
 name: Commute - Leave By
 description: When to leave to arrive on time
