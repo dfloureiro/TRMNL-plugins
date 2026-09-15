@@ -1,109 +1,55 @@
-{% case today.classWindSpeed %}
-  {% when 0 %}
-    {% if lang == "pt" %}{% assign wind_speed = "Calmo" %}{% else %}{% assign wind_speed = "Calm" %}{% endif %}
-  {% when 1 %}
-    {% if lang == "pt" %}{% assign wind_speed = "Fraco" %}{% else %}{% assign wind_speed = "Light" %}{% endif %}
-  {% when 2 %}
-    {% if lang == "pt" %}{% assign wind_speed = "Moderado" %}{% else %}{% assign wind_speed = "Moderate" %}{% endif %}
-  {% when 3 %}
-    {% if lang == "pt" %}{% assign wind_speed = "Forte" %}{% else %}{% assign wind_speed = "Strong" %}{% endif %}
-  {% when 4 %}
-    {% if lang == "pt" %}{% assign wind_speed = "Muito forte" %}{% else %}{% assign wind_speed = "Very strong" %}{% endif %}
-  {% when 5 %}
-    {% if lang == "pt" %}{% assign wind_speed = "Excecional" %}{% else %}{% assign wind_speed = "Exceptional" %}{% endif %}
-  {% else %}
-    {% assign wind_speed = "" %}
-{% endcase %}
-
-<div class="layout layout--col layout--center gap--large">
-  <div class="row row--center gap--medium">
+<div class="layout layout--col layout--center gap--medium lg:gap--large">
+  <div class="flex flex--row flex--center gap--medium lg:gap--large">
     <img
-      class="image image-dither image--adaptive w--[20cqw] h--auto lg:w--[24cqw] lg:h--[24cqw]"
+      class="image image--adaptive w--[16cqw] h--[16cqw] lg:w--[22cqw] lg:h--[22cqw]"
       src="{{ icon_url }}"
       alt="{{ weather }}"
     >
 
-    <div class="col text--center">
-      <span class="label label--large" style="display: block; width: 100%; text-align: center;">{{ display_name }}</span>
-      <span class="value value--xxxlarge lg:value--giga value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
-      <span class="label label--large" style="display: block; width: 100%; text-align: center;">{{ weather }}</span>
+    <div class="flex flex--col flex--center">
+      <span class="label label--small lg:label--large text--center">{{ display_name }}</span>
+      <span class="value value--xxlarge lg:value--giga value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
+      <span class="label label--small lg:label--large text--center">{{ weather }}</span>
     </div>
   </div>
 
-  <div class="grid grid--cols-3 gap--large" style="grid-template-columns: 1fr 1fr 1fr;">
-    <div class="col col--center text--center" style="width: 100%;">
-      <span class="label" style="display: block; width: 100%; text-align: center;">{{ label_min }}</span>
-      <span class="value value--small value--tnums">{{ today.tMin | round }}°</span>
+  <div class="grid grid--cols-3 gap--small lg:gap--large w--full">
+    <div class="flex flex--col flex--center gap--xsmall">
+      <span class="label label--small">{{ label_min }}</span>
+      <span class="value value--xsmall lg:value--small value--tnums">{{ today.tMin | round }}°</span>
     </div>
-    <div class="col col--center text--center" style="width: 100%;">
-      <span class="label" style="display: block; width: 100%; text-align: center;">{{ label_rain }}</span>
-      <span class="value value--small value--tnums">{{ today.precipitaProb | round }}%</span>
+    <div class="flex flex--col flex--center gap--xsmall">
+      <span class="label label--small">{{ label_rain }}</span>
+      <span class="value value--xsmall lg:value--small value--tnums">{{ today.precipitaProb | round }}%</span>
     </div>
-    <div class="col col--center text--center" style="width: 100%;">
-      <span class="label" style="display: block; width: 100%; text-align: center;">{{ label_wind }}</span>
-      <span class="value value--small value--tnums" style="white-space: nowrap;">{{ today.predWindDir }} · {{ wind_speed }}</span>
+    <div class="flex flex--col flex--center gap--xsmall">
+      <span class="label label--small">{{ label_wind }}</span>
+      <span class="label label--small value--tnums text--center">{{ today.predWindDir }} · {{ wind_speed }}</span>
     </div>
   </div>
 
-  <div class="w--full border--top"></div>
+  <div class="divider w--full"></div>
 
-  <div class="grid grid--cols-4 portrait:grid--cols-2 lg:grid--cols-4 gap--medium">
+  <div class="grid grid--cols-4 portrait:grid--cols-2 gap--small lg:gap--medium w--full">
     {% for day in data offset:1 limit:4 %}
-      {% case day.idWeatherType %}
-        {% when 1 %}{% assign day_icon = "wi-day-sunny" %}
-        {% when 2 %}{% assign day_icon = "wi-day-cloudy" %}
-        {% when 3 %}{% assign day_icon = "wi-day-sunny-overcast" %}
-        {% when 4 %}{% assign day_icon = "wi-cloudy" %}
-        {% when 5 %}{% assign day_icon = "wi-day-cloudy-high" %}
-        {% when 6 %}{% assign day_icon = "wi-day-showers" %}
-        {% when 7 %}{% assign day_icon = "wi-day-sprinkle" %}
-        {% when 8 %}{% assign day_icon = "wi-day-storm-showers" %}
-        {% when 9 %}{% assign day_icon = "wi-day-rain" %}
-        {% when 10 %}{% assign day_icon = "wi-day-sprinkle" %}
-        {% when 11 %}{% assign day_icon = "wi-rain" %}
-        {% when 12 %}{% assign day_icon = "wi-day-rain" %}
-        {% when 13 %}{% assign day_icon = "wi-day-sprinkle" %}
-        {% when 14 %}{% assign day_icon = "wi-day-rain" %}
-        {% when 15 %}{% assign day_icon = "wi-sprinkle" %}
-        {% when 16 %}{% assign day_icon = "wi-fog" %}
-        {% when 17 %}{% assign day_icon = "wi-fog" %}
-        {% when 18 %}{% assign day_icon = "wi-snow" %}
-        {% when 19 %}{% assign day_icon = "wi-thunderstorm" %}
-        {% when 20 %}{% assign day_icon = "wi-day-storm-showers" %}
-        {% when 21 %}{% assign day_icon = "wi-hail" %}
-        {% when 22 %}{% assign day_icon = "wi-day-haze" %}
-        {% when 23 %}{% assign day_icon = "wi-thunderstorm" %}
-        {% when 24 %}{% assign day_icon = "wi-cloudy-gusts" %}
-        {% when 25 %}{% assign day_icon = "wi-cloudy" %}
-        {% when 26 %}{% assign day_icon = "wi-fog" %}
-        {% when 27 %}{% assign day_icon = "wi-cloudy" %}
-        {% when 28 %}{% assign day_icon = "wi-snow" %}
-        {% when 29 %}{% assign day_icon = "wi-rain-mix" %}
-        {% when 30 %}{% assign day_icon = "wi-rain-mix" %}
-        {% else %}{% assign day_icon = "wi-na" %}
-      {% endcase %}
-      <div class="col text--center gap--xsmall" {% unless forloop.last %}style="border-right: 1px dotted var(--color, black); padding-right: 16px;"{% endunless %}>
-        <span class="label" style="display: block; width: 100%; text-align: center;">{{ day.forecastDate | date: "%a" | capitalize }}</span>
+      <div class="flex flex--col flex--center gap--xsmall {% unless forloop.last %}lg:border--v{% endunless %}">
+        <span class="label label--small">{% render "weekday", date_str: day.forecastDate, lang: lang %}</span>
 
-        <img
-          class="image image-dither image--adaptive w--[10cqw] h--auto lg:w--[12cqw] lg:h--[12cqw]"
-          src="https://trmnl.com/images/plugins/weather/{{ day_icon }}.svg"
-          alt=""
-        >
+        {% render "day_icon_img", day: day, icon_class: "w--[8cqw] h--[8cqw] lg:w--[11cqw] lg:h--[11cqw]" %}
 
-        <span class="row row--center gap--xsmall">
-          <span class="value value--small value--tnums">{{ day.tMax | round }}°</span>
-          <span class="label value--tnums">{{ day.tMin | round }}°</span>
-        </span>
+        <div class="flex flex--row flex--center gap--xsmall">
+          <span class="value value--xsmall lg:value--small value--tnums">{{ day.tMax | round }}°</span>
+          <span class="label label--small value--tnums">{{ day.tMin | round }}°</span>
+        </div>
 
-        <span class="row row--center gap--xsmall">
+        <div class="flex flex--row flex--center gap--xsmall">
           <img
-            class="image image-dither image--adaptive w--[4cqw] h--auto"
+            class="image image--adaptive w--[3cqw] h--[3cqw]"
             src="https://trmnl.com/images/plugins/weather/wi-raindrop.svg"
             alt=""
           >
           <span class="label label--small value--tnums">{{ day.precipitaProb | round }}%</span>
-        </span>
+        </div>
       </div>
     {% endfor %}
   </div>
