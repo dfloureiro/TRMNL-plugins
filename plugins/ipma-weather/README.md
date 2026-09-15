@@ -16,7 +16,9 @@ The amount of detail depends on the layout:
 | Half vertical | Today + next 3 days, stacked |
 | Quadrant | Today + tomorrow |
 
-Labels and weather descriptions are available in **English** and **Portuguese**.
+On smaller displays some secondary details are hidden, such as wind in the half horizontal layout and rain/wind in the quadrant.
+
+Labels, weekday names and weather descriptions are available in **English** and **Portuguese**.
 
 ## Configuration
 
