@@ -28,7 +28,7 @@
   <div class="divider--v"></div>
 
   <div class="flex flex--col flex--center gap--xsmall grow">
-    <span class="label label--small">{{ tomorrow.forecastDate | date: "%a" | capitalize }}</span>
+    <span class="label label--small">{% render "weekday", date_str: tomorrow.forecastDate, lang: lang %}</span>
 
     {% render "day_icon_img", day: tomorrow, icon_class: "w--[9cqw] h--[9cqw] lg:w--[12cqw] lg:h--[12cqw]" %}
 
