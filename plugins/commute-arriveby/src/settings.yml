@@ -6,7 +6,7 @@ static_data: ''
 polling_verb: get
 framework_version: 3.3.1
 serverless_language: node
-polling_url: https://httpbin.org/json
+polling_url: https://api.tomtom.com/routing/1/calculateRoute/{{ origin }}:{{ destination }}/json?key={{ tomtom_api_key }}&traffic=true&maxAlternatives=2&routeType=fastest&computeTravelTimeFor=all&sectionType=traffic&instructionsType=coded&travelMode=car&routeRepresentation=summaryOnly
 polling_headers: ''
 polling_body: ''
 id: 477902
