@@ -1,0 +1,216 @@
+{% assign lang = "" %}
+{% if language != blank %}
+  {% assign lang = language %}
+{% elsif trmnl.plugin_settings.custom_fields_values.language != blank %}
+  {% assign lang = trmnl.plugin_settings.custom_fields_values.language %}
+{% else %}
+  {% assign lang = "en" %}
+{% endif %}
+{% assign lang = lang | downcase | strip %}
+{% if lang == "pt" or lang == "portugues" or lang == "português" or lang == "portuguese" %}
+  {% assign lang = "pt" %}
+{% else %}
+  {% assign lang = "en" %}
+{% endif %}
+
+{% if route_label != blank %}
+  {% assign display_name = route_label %}
+{% elsif trmnl.plugin_settings.custom_fields_values.route_label != blank %}
+  {% assign display_name = trmnl.plugin_settings.custom_fields_values.route_label %}
+{% else %}
+  {% assign display_name = "Leave by" %}
+{% endif %}
+
+{% assign mode = "car" %}
+
+{% if lang == "pt" %}
+  {% assign label_leave_by = "Sair às" %}
+  {% assign label_arrive_by = "Chegar às" %}
+  {% assign label_travel_time = "Tempo de viagem" %}
+  {% assign label_distance = "Distância" %}
+  {% assign label_normal = "Normal" %}
+  {% assign label_traffic = "Trânsito" %}
+  {% assign label_delay = "Atraso" %}
+  {% assign label_mins = "min" %}
+  {% assign label_via = "via" %}
+  {% assign label_main_route = "Principal" %}
+  {% assign label_alt_route = "Alternativa" %}
+  {% assign label_clear = "Fluído" %}
+  {% assign label_minor = "Ligeiro" %}
+  {% assign label_moderate = "Moderado" %}
+  {% assign label_major = "Intenso" %}
+  {% assign label_closed = "Cortado" %}
+  {% assign label_error = "Não foi possível obter a rota" %}
+{% else %}
+  {% assign label_leave_by = "Leave by" %}
+  {% assign label_arrive_by = "Arrive by" %}
+  {% assign label_travel_time = "Travel time" %}
+  {% assign label_distance = "Distance" %}
+  {% assign label_normal = "Normal" %}
+  {% assign label_traffic = "Traffic" %}
+  {% assign label_delay = "Delay" %}
+  {% assign label_mins = "min" %}
+  {% assign label_via = "via" %}
+  {% assign label_main_route = "Main" %}
+  {% assign label_alt_route = "Alt" %}
+  {% assign label_clear = "Clear" %}
+  {% assign label_minor = "Minor" %}
+  {% assign label_moderate = "Moderate" %}
+  {% assign label_major = "Heavy" %}
+  {% assign label_closed = "Closed" %}
+  {% assign label_error = "Could not load route" %}
+{% endif %}
+
+{% if plugin_ok == true or plugin_ok == "true" %}
+  {% assign plugin_ok = true %}
+{% elsif has_error == true or has_error == "true" or routes == blank or routes.size == 0 %}
+  {% assign plugin_ok = false %}
+{% else %}
+  {% assign plugin_ok = true %}
+{% endif %}
+
+{% if plugin_ok %}
+  {% assign error_text = "" %}
+{% elsif error_message != blank %}
+  {% assign error_text = error_message %}
+{% else %}
+  {% assign error_text = label_error %}
+{% endif %}
+
+{% assign leave_time = "--:--" %}
+{% assign arrive_time = "--:--" %}
+{% assign travel_min = 0 %}
+{% assign delay_min = 0 %}
+{% assign normal_min = 0 %}
+{% assign distance_km = 0 %}
+{% assign traffic_text = label_clear %}
+{% assign road_numbers = "" | split: "" %}
+
+{% if arrive_by != blank %}
+  {% assign arrive_time = arrive_by %}
+{% elsif trmnl.plugin_settings.custom_fields_values.arrive_by != blank %}
+  {% assign arrive_time = trmnl.plugin_settings.custom_fields_values.arrive_by %}
+{% endif %}
+
+{% if plugin_ok %}
+  {% assign route = routes[0] %}
+  {% assign summary = route.summary %}
+  {% assign travel_min = summary.travelTimeInSeconds | plus: 0 | divided_by: 60 %}
+  {% assign delay_min = summary.trafficDelayInSeconds | plus: 0 | divided_by: 60 %}
+  {% assign normal_min = summary.historicTrafficTravelTimeInSeconds | plus: 0 | divided_by: 60 %}
+  {% assign distance_km = summary.lengthInMeters | plus: 0 | divided_by: 1000.0 | round: 1 %}
+
+  {% if summary.departureTime != blank %}
+    {% assign leave_time = summary.departureTime | date: "%H:%M" %}
+  {% endif %}
+  {% if summary.arrivalTime != blank %}
+    {% assign arrive_time = summary.arrivalTime | date: "%H:%M" %}
+  {% endif %}
+
+  {% assign max_delay = 0 %}
+  {% for section in route.sections %}
+    {% if section.sectionType == "TRAFFIC" %}
+      {% if section.magnitudeOfDelay > max_delay %}
+        {% assign max_delay = section.magnitudeOfDelay %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {% case max_delay %}
+    {% when 1 %}{% assign traffic_text = label_minor %}
+    {% when 2 %}{% assign traffic_text = label_moderate %}
+    {% when 3 %}{% assign traffic_text = label_major %}
+    {% when 4 %}{% assign traffic_text = label_closed %}
+    {% else %}{% assign traffic_text = label_clear %}
+  {% endcase %}
+
+  {% for instr in route.guidance.instructions %}
+    {% if instr.roadNumbers %}
+      {% assign road_numbers = road_numbers | concat: instr.roadNumbers %}
+    {% endif %}
+  {% endfor %}
+  {% assign road_numbers = road_numbers | uniq %}
+{% else %}
+  {% assign traffic_text = label_error %}
+{% endif %}
+
+{% template mode_icon %}
+  <svg class="image lg:hidden" viewBox="0 0 260 140" width="48" height="26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor">
+    <path d="M246,90.011V59.995c0-5.523-4.48-9.995-10-9.995h-50L156.97,6.416C155.11,3.634,152.34,2,149,2H28
+	c-5.52,0-10,4.446-10,9.969V30h-8c-4.42,0-8,3.56-8,7.983v40.022C2,82.427,5.58,86,10,86h8v20h16.458
+	c2.8-15.959,16.702-28.066,33.462-28.066c16.75,0,30.708,12.107,33.518,28.066h72.958c2.8-15.959,16.764-28.066,33.524-28.066
+	c16.75,0,30.624,12.107,33.434,28.066H250c4.42,0,8-3.563,8-7.985v-8.004H246z M86,50H30V13.97h56V50z M98,50V13.97h48L170,50H98z
+	 M68,138c-14.336,0-26.083-11.706-26.083-26.051s11.664-26.014,26-26.014s26,11.669,26,26.014S82.336,138,68,138z M67.917,99.943
+	c-6.617,0-12,5.386-12,12.006c0,6.621,5.383,12.006,12,12.006s12-5.386,12-12.006C79.917,105.329,74.534,99.943,67.917,99.943z
+	 M208,138c-14.337,0-26.083-11.706-26.083-26.051s11.663-26.014,26-26.014s26,11.669,26,26.014S222.337,138,208,138z
+	 M207.917,99.943c-6.617,0-12,5.386-12,12.006c0,6.621,5.383,12.006,12,12.006s12-5.386,12-12.006
+	C219.917,105.329,214.534,99.943,207.917,99.943z"/>
+  </svg>
+  <svg class="image hidden lg:block" viewBox="0 0 260 140" width="72" height="40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor">
+    <path d="M246,90.011V59.995c0-5.523-4.48-9.995-10-9.995h-50L156.97,6.416C155.11,3.634,152.34,2,149,2H28
+	c-5.52,0-10,4.446-10,9.969V30h-8c-4.42,0-8,3.56-8,7.983v40.022C2,82.427,5.58,86,10,86h8v20h16.458
+	c2.8-15.959,16.702-28.066,33.462-28.066c16.75,0,30.708,12.107,33.518,28.066h72.958c2.8-15.959,16.764-28.066,33.524-28.066
+	c16.75,0,30.624,12.107,33.434,28.066H250c4.42,0,8-3.563,8-7.985v-8.004H246z M86,50H30V13.97h56V50z M98,50V13.97h48L170,50H98z
+	 M68,138c-14.336,0-26.083-11.706-26.083-26.051s11.664-26.014,26-26.014s26,11.669,26,26.014S82.336,138,68,138z M67.917,99.943
+	c-6.617,0-12,5.386-12,12.006c0,6.621,5.383,12.006,12,12.006s12-5.386,12-12.006C79.917,105.329,74.534,99.943,67.917,99.943z
+	 M208,138c-14.337,0-26.083-11.706-26.083-26.051s11.663-26.014,26-26.014s26,11.669,26,26.014S222.337,138,208,138z
+	 M207.917,99.943c-6.617,0-12,5.386-12,12.006c0,6.621,5.383,12.006,12,12.006s12-5.386,12-12.006
+	C219.917,105.329,214.534,99.943,207.917,99.943z"/>
+  </svg>
+{% endtemplate %}
+
+{% template error_panel %}
+  <div class="layout layout--col flex--center gap--medium">
+    {% render "mode_icon", trmnl: trmnl %}
+    <span class="label label--large text--center">{{ display_name }}</span>
+    <span class="value value--small text--center">{{ label_error }}</span>
+    <span class="label label--small text--center">{{ error_text }}</span>
+  </div>
+{% endtemplate %}
+
+{% template routes_panel %}
+  <div class="grid grid--cols-2 lg:grid--cols-3 gap--small lg:gap--medium w--full">
+    {% for r in routes limit:3 %}
+      {% assign r_roads = "" | split: "" %}
+      {% for instr in r.guidance.instructions %}
+        {% if instr.roadNumbers %}
+          {% assign r_roads = r_roads | concat: instr.roadNumbers %}
+        {% endif %}
+      {% endfor %}
+      {% assign r_roads = r_roads | uniq %}
+      {% assign r_leave = "--:--" %}
+      {% if r.summary.departureTime != blank %}
+        {% assign r_leave = r.summary.departureTime | date: "%H:%M" %}
+      {% endif %}
+      {% assign r_min = r.summary.travelTimeInSeconds | plus: 0 | divided_by: 60 %}
+      {% assign r_km = r.summary.lengthInMeters | plus: 0 | divided_by: 1000.0 | round: 1 %}
+      {% assign r_delay = r.summary.trafficDelayInSeconds | plus: 0 | divided_by: 60 %}
+
+      <div class="flex flex--col flex--center gap--xsmall outline p--1 lg:p--2 w--full {% if forloop.index > 2 %}hidden lg:flex{% endif %}">
+        <span class="label label--underline label--small">
+          {% if forloop.first %}{{ label_main_route }}{% else %}{{ label_alt_route }} {{ forloop.index | minus: 1 }}{% endif %}
+        </span>
+        <span class="value value--xsmall lg:value--small value--tnums">{{ r_leave }}</span>
+        <span class="label label--small value--tnums">{{ r_min }} {{ label_mins }} · {{ r_km }} km</span>
+        {% if r_delay > 0 %}
+          <span class="label label--small">+{{ r_delay }} {{ label_mins }}</span>
+        {% endif %}
+        <span class="label label--small text--center hidden lg:block">
+          {% if r_roads.size > 0 %}
+            {{ label_via }} {{ r_roads | join: " · " }}
+          {% else %}
+            {{ label_via }} —
+          {% endif %}
+        </span>
+      </div>
+    {% endfor %}
+  </div>
+{% endtemplate %}
+
+{% template title_bar %}
+<div class="title_bar">
+  <img class="image image--adaptive" src="https://trmnl.com/images/plugins/weather/wi-time-4.svg" alt="Leave by">
+  <span class="title">{{ display_name }}</span>
+  <span class="instance">{{ traffic_text }}</span>
+</div>
+{% endtemplate %}
