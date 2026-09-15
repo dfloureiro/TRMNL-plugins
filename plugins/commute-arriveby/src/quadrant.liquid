@@ -1,14 +1,15 @@
-<div class="layout layout--col flex--center gap--small">
-  <span class="label">{{ display_name }}</span>
+{% if plugin_ok %}
+<div class="layout layout--col flex--center gap--xsmall lg:gap--small">
+  <span class="label label--small">{{ display_name }}</span>
 
   <div class="flex flex--row flex--center gap--xsmall">
-    <span class="value value--large lg:value--xlarge value--tnums" data-fit-value="true">{{ travel_min }}</span>
-    <span class="label">{{ label_mins }}</span>
+    <span class="value value--medium lg:value--xlarge value--tnums" data-fit-value="true">{{ travel_min }}</span>
+    <span class="label label--small">{{ label_mins }}</span>
   </div>
   <span class="label label--small">{{ arrival }} · {{ traffic_text }}</span>
 
   <div class="flex flex--col gap--xsmall w--full">
-    {% for r in routes limit:3 %}
+    {% for r in routes limit:2 %}
       {% assign r_roads = "" | split: "" %}
       {% for instr in r.guidance.instructions %}
         {% if instr.roadNumbers %}
@@ -18,16 +19,16 @@
       {% assign r_roads = r_roads | uniq %}
       {% assign r_min = r.summary.travelTimeInSeconds | plus: 0 | divided_by: 60 %}
 
-      <div class="flex flex--col gap--xsmall outline outline--2 rounded p--1 w--full">
+      <div class="flex flex--col flex--center gap--xsmall outline outline--2 rounded p--1 w--full">
         <div class="flex flex--row flex--between w--full">
           <span class="label label--small label--underline">
             {% if forloop.first %}{{ label_main_route }}{% else %}{{ label_alt_route }} {{ forloop.index | minus: 1 }}{% endif %}
           </span>
           <span class="label label--small value--tnums">{{ r_min }}'</span>
         </div>
-        <span class="label label--small">
+        <span class="label label--small text--center hidden lg:block">
           {% if r_roads.size > 0 %}
-            {{ label_via }} {{ r_roads | join: "/" }}
+            {{ label_via }} {{ r_roads | join: " · " }}
           {% else %}
             {{ label_via }} —
           {% endif %}
@@ -36,5 +37,8 @@
     {% endfor %}
   </div>
 </div>
+{% else %}
+  {% render "error_panel" %}
+{% endif %}
 
 {% render "title_bar", display_name: display_name, traffic_text: traffic_text %}
