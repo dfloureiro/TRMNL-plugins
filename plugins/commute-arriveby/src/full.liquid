@@ -1,7 +1,8 @@
+{% if plugin_ok %}
 <div class="layout layout--col gap--large">
   <div class="flex flex--row flex--center gap--large">
     <div class="flex flex--center">
-      {% render "mode_icon", mode: mode %}
+      {% render "mode_icon" %}
     </div>
 
     <div class="flex flex--col flex--center grow">
@@ -42,9 +43,11 @@
      label_main_route: label_main_route,
      label_alt_route: label_alt_route,
      label_mins: label_mins,
-     label_delay: label_delay,
      label_via: label_via
   %}
 </div>
+{% else %}
+  {% render "error_panel" %}
+{% endif %}
 
 {% render "title_bar", display_name: display_name, traffic_text: traffic_text %}
