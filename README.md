@@ -9,6 +9,7 @@ Each plugin lives in its own folder under [`plugins/`](plugins) and follows the 
 | Plugin | Description |
 | --- | --- |
 | [IPMA Weather](plugins/ipma-weather) | Daily weather forecast for locations in Portugal, using open data from IPMA (Instituto Português do Mar e da Atmosfera). Available in English and Portuguese. |
+| [Commute - Arrive By](plugins/commute-arriveby) | Live car travel time and arrival time between two points, with traffic delay and up to two alternative routes, using the TomTom Routing API. Available in English and Portuguese. |
 
 ## Repository structure
 
@@ -18,6 +19,7 @@ plugins/
     ├── .trmnlp.yml          # local preview config (custom field values, variable overrides)
     └── src/
         ├── settings.yml     # plugin settings: data strategy, polling URL, custom fields
+        ├── transform.js     # optional serverless code that fetches/reshapes data
         ├── shared.liquid    # markup/variables shared by all layouts
         ├── full.liquid      # full screen layout
         ├── half_horizontal.liquid
