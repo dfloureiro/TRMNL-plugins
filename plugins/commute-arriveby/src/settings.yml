@@ -60,7 +60,7 @@ custom_fields:
   field_type: author_bio
   category: productivity,travel
   description: Car commute times via <a href="https://developer.tomtom.com/">TomTom Routing</a>, by Diogo Loureiro. Add a free TomTom API key, origin/destination as <code>lat,lng</code>, and an optional route label. Shows travel time, traffic delay, and alternative routes with via roads.
-  github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/commute-leaveby
+  github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/commute-arriveby
   learn_more_url: https://developer.tomtom.com/routing-api/documentation/tomtom-maps/v1/calculate-route
 name: Commute - Arrive By
 description: Check the ETA for your arrival
