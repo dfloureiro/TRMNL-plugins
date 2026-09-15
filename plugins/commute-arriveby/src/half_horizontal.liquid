@@ -1,7 +1,7 @@
 {% if plugin_ok %}
 <div class="layout layout--row layout--center gap--small lg:gap--large">
   <div class="flex flex--col flex--center gap--xsmall px--2 lg:px--4">
-    {% render "mode_icon" %}
+    {% render "mode_icon", trmnl: trmnl %}
     <span class="label label--small text--center hidden lg:block">{{ display_name }}</span>
   </div>
 
@@ -53,7 +53,15 @@
   </div>
 </div>
 {% else %}
-  {% render "error_panel" %}
+  {% render "error_panel",
+     display_name: display_name,
+     label_error: label_error,
+     error_text: error_text,
+     trmnl: trmnl
+  %}
 {% endif %}
 
-{% render "title_bar", display_name: display_name, traffic_text: traffic_text %}
+{% render "title_bar",
+   display_name: display_name,
+   traffic_text: traffic_text
+%}

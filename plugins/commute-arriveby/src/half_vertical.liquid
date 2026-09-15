@@ -2,7 +2,7 @@
 <div class="layout layout--col gap--small lg:gap--space-between">
   <div class="flex flex--col flex--center gap--xsmall">
     <span class="label label--small">{{ display_name }}</span>
-    {% render "mode_icon" %}
+    {% render "mode_icon", trmnl: trmnl %}
     <div class="flex flex--row flex--center gap--xsmall">
       <span class="value value--large lg:value--xxxlarge value--tnums" data-fit-value="true">{{ travel_min }}</span>
       <span class="label label--small lg:label--large">{{ label_mins }}</span>
@@ -44,7 +44,15 @@
   </div>
 </div>
 {% else %}
-  {% render "error_panel" %}
+  {% render "error_panel",
+     display_name: display_name,
+     label_error: label_error,
+     error_text: error_text,
+     trmnl: trmnl
+  %}
 {% endif %}
 
-{% render "title_bar", display_name: display_name, traffic_text: traffic_text %}
+{% render "title_bar",
+   display_name: display_name,
+   traffic_text: traffic_text
+%}
