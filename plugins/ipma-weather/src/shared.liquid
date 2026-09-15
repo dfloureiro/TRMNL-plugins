@@ -150,6 +150,23 @@
     {% assign wind_speed = "" %}
 {% endcase %}
 
+{% template weekday %}
+  {% assign dow = date_str | date: "%w" | plus: 0 %}
+  {% if lang == "pt" %}
+    {% case dow %}
+      {% when 0 %}Dom
+      {% when 1 %}Seg
+      {% when 2 %}Ter
+      {% when 3 %}Qua
+      {% when 4 %}Qui
+      {% when 5 %}Sex
+      {% when 6 %}Sáb
+    {% endcase %}
+  {% else %}
+    {{ date_str | date: "%a" | capitalize }}
+  {% endif %}
+{% endtemplate %}
+
 {% template day_icon_img %}
   {% case day.idWeatherType %}
     {% when 1 %}{% assign day_icon = "wi-day-sunny" %}
