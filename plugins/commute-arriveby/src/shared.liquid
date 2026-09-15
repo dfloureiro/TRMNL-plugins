@@ -59,15 +59,20 @@
   {% assign label_error = "Could not load route" %}
 {% endif %}
 
-{% if has_error == true or has_error == "true" or routes == blank or routes.size == 0 %}
+{% if plugin_ok == true or plugin_ok == "true" %}
+  {% assign plugin_ok = true %}
+{% elsif has_error == true or has_error == "true" or routes == blank or routes.size == 0 %}
   {% assign plugin_ok = false %}
-  {% if error_message != blank %}
-    {% assign error_text = error_message %}
-  {% else %}
-    {% assign error_text = label_error %}
-  {% endif %}
 {% else %}
   {% assign plugin_ok = true %}
+{% endif %}
+
+{% if plugin_ok %}
+  {% assign error_text = "" %}
+{% elsif error_message != blank %}
+  {% assign error_text = error_message %}
+{% else %}
+  {% assign error_text = label_error %}
 {% endif %}
 
 {% assign travel_min = 0 %}
@@ -187,7 +192,7 @@
 
 {% template title_bar %}
 <div class="title_bar">
-  <img class="image image-dither image--adaptive" src="https://trmnl.com/images/plugins/weather/wi-time-4.svg" alt="Commute">
+  <img class="image image--adaptive" src="https://trmnl.com/images/plugins/weather/wi-time-4.svg" alt="Commute">
   <span class="title">{{ display_name }}</span>
   <span class="instance">{{ traffic_text }}</span>
 </div>
