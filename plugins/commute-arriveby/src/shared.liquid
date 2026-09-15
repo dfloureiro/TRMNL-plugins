@@ -21,6 +21,8 @@
   {% assign display_name = "Commute" %}
 {% endif %}
 
+{% assign mode = "car" %}
+
 {% if lang == "pt" %}
   {% assign label_travel_time = "Tempo de viagem" %}
   {% assign label_arrival = "Chegada" %}
@@ -37,6 +39,7 @@
   {% assign label_moderate = "Moderado" %}
   {% assign label_major = "Intenso" %}
   {% assign label_closed = "Cortado" %}
+  {% assign label_error = "Não foi possível obter a rota" %}
 {% else %}
   {% assign label_travel_time = "Travel time" %}
   {% assign label_arrival = "Arrival" %}
@@ -53,40 +56,65 @@
   {% assign label_moderate = "Moderate" %}
   {% assign label_major = "Heavy" %}
   {% assign label_closed = "Closed" %}
+  {% assign label_error = "Could not load route" %}
 {% endif %}
 
-{% assign route = routes[0] %}
-{% assign summary = route.summary %}
-{% assign travel_min = summary.travelTimeInSeconds | plus: 0 | divided_by: 60 %}
-{% assign delay_min = summary.trafficDelayInSeconds | plus: 0 | divided_by: 60 %}
-{% assign normal_min = summary.historicTrafficTravelTimeInSeconds | plus: 0 | divided_by: 60 %}
-{% assign distance_km = summary.lengthInMeters | plus: 0 | divided_by: 1000.0 | round: 1 %}
-{% assign arrival = summary.arrivalTime | date: "%H:%M" %}
-
-{% assign max_delay = 0 %}
-{% for section in route.sections %}
-  {% if section.sectionType == "TRAFFIC" %}
-    {% if section.magnitudeOfDelay > max_delay %}
-      {% assign max_delay = section.magnitudeOfDelay %}
-    {% endif %}
+{% if has_error == true or has_error == "true" or routes == blank or routes.size == 0 %}
+  {% assign plugin_ok = false %}
+  {% if error_message != blank %}
+    {% assign error_text = error_message %}
+  {% else %}
+    {% assign error_text = label_error %}
   {% endif %}
-{% endfor %}
+{% else %}
+  {% assign plugin_ok = true %}
+{% endif %}
 
-{% case max_delay %}
-  {% when 1 %}{% assign traffic_text = label_minor %}
-  {% when 2 %}{% assign traffic_text = label_moderate %}
-  {% when 3 %}{% assign traffic_text = label_major %}
-  {% when 4 %}{% assign traffic_text = label_closed %}
-  {% else %}{% assign traffic_text = label_clear %}
-{% endcase %}
-
+{% assign travel_min = 0 %}
+{% assign delay_min = 0 %}
+{% assign normal_min = 0 %}
+{% assign distance_km = 0 %}
+{% assign arrival = "--:--" %}
+{% assign traffic_text = label_clear %}
 {% assign road_numbers = "" | split: "" %}
-{% for instr in route.guidance.instructions %}
-  {% if instr.roadNumbers %}
-    {% assign road_numbers = road_numbers | concat: instr.roadNumbers %}
+
+{% if plugin_ok %}
+  {% assign route = routes[0] %}
+  {% assign summary = route.summary %}
+  {% assign travel_min = summary.travelTimeInSeconds | plus: 0 | divided_by: 60 %}
+  {% assign delay_min = summary.trafficDelayInSeconds | plus: 0 | divided_by: 60 %}
+  {% assign normal_min = summary.historicTrafficTravelTimeInSeconds | plus: 0 | divided_by: 60 %}
+  {% assign distance_km = summary.lengthInMeters | plus: 0 | divided_by: 1000.0 | round: 1 %}
+  {% if summary.arrivalTime != blank %}
+    {% assign arrival = summary.arrivalTime | date: "%H:%M" %}
   {% endif %}
-{% endfor %}
-{% assign road_numbers = road_numbers | uniq %}
+
+  {% assign max_delay = 0 %}
+  {% for section in route.sections %}
+    {% if section.sectionType == "TRAFFIC" %}
+      {% if section.magnitudeOfDelay > max_delay %}
+        {% assign max_delay = section.magnitudeOfDelay %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {% case max_delay %}
+    {% when 1 %}{% assign traffic_text = label_minor %}
+    {% when 2 %}{% assign traffic_text = label_moderate %}
+    {% when 3 %}{% assign traffic_text = label_major %}
+    {% when 4 %}{% assign traffic_text = label_closed %}
+    {% else %}{% assign traffic_text = label_clear %}
+  {% endcase %}
+
+  {% for instr in route.guidance.instructions %}
+    {% if instr.roadNumbers %}
+      {% assign road_numbers = road_numbers | concat: instr.roadNumbers %}
+    {% endif %}
+  {% endfor %}
+  {% assign road_numbers = road_numbers | uniq %}
+{% else %}
+  {% assign traffic_text = label_error %}
+{% endif %}
 
 {% template mode_icon %}
   <svg class="image" viewBox="0 0 260 140" width="72" height="40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor">
@@ -100,6 +128,15 @@
 	 M207.917,99.943c-6.617,0-12,5.386-12,12.006c0,6.621,5.383,12.006,12,12.006s12-5.386,12-12.006
 	C219.917,105.329,214.534,99.943,207.917,99.943z"/>
   </svg>
+{% endtemplate %}
+
+{% template error_panel %}
+  <div class="layout layout--col flex--center gap--medium">
+    {% render "mode_icon" %}
+    <span class="label label--large text--center">{{ display_name }}</span>
+    <span class="value value--small text--center">{{ label_error }}</span>
+    <span class="label label--small text--center">{{ error_text }}</span>
+  </div>
 {% endtemplate %}
 
 {% template routes_panel %}
