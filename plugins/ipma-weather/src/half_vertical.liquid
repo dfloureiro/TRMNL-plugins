@@ -18,7 +18,7 @@
   <div class="grid grid--cols-3 gap--xsmall lg:gap--medium w--full">
     {% for day in data offset:1 limit:3 %}
       <div class="flex flex--col flex--center gap--xsmall {% unless forloop.last %}border--v{% endunless %}">
-        <span class="label label--small">{{ day.forecastDate | date: "%a" | capitalize }}</span>
+        <span class="label label--small">{% render "weekday", date_str: day.forecastDate, lang: lang %}</span>
 
         {% render "day_icon_img", day: day, icon_class: "w--[7cqw] h--[7cqw] lg:w--[9cqw] lg:h--[9cqw]" %}
 
