@@ -143,7 +143,7 @@
 
 {% template error_panel %}
   <div class="layout layout--col flex--center gap--medium">
-    {% render "mode_icon" %}
+    {% render "mode_icon", trmnl: trmnl %}
     <span class="label label--large text--center">{{ display_name }}</span>
     <span class="value value--small text--center">{{ label_error }}</span>
     <span class="label label--small text--center">{{ error_text }}</span>
