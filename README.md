@@ -34,3 +34,7 @@ trmnlp serve
 ```
 
 This starts a local preview server that reloads on file changes. Use `trmnlp push` / `trmnlp pull` to sync a plugin with your TRMNL account (requires `trmnlp login`).
+
+## License
+
+Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). See [LICENSE.md](LICENSE.md).
