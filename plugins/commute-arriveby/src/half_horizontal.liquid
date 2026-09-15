@@ -1,16 +1,16 @@
 {% if plugin_ok %}
-<div class="layout layout--row layout--center gap--large">
-  <div class="flex flex--col flex--center gap--xsmall px--4">
+<div class="layout layout--row layout--center gap--small lg:gap--large">
+  <div class="flex flex--col flex--center gap--xsmall px--2 lg:px--4">
     {% render "mode_icon" %}
-    <span class="label label--small text--center">{{ display_name }}</span>
+    <span class="label label--small text--center hidden lg:block">{{ display_name }}</span>
   </div>
 
   <div class="flex flex--col flex--center gap--xsmall">
     <div class="flex flex--row flex--center gap--xsmall">
-      <span class="value value--large value--tnums" data-fit-value="true">{{ travel_min }}</span>
-      <span class="label">{{ label_mins }}</span>
+      <span class="value value--medium lg:value--large value--tnums" data-fit-value="true">{{ travel_min }}</span>
+      <span class="label label--small">{{ label_mins }}</span>
     </div>
-    <span class="label">{{ label_arrival }} {{ arrival }}</span>
+    <span class="label label--small">{{ label_arrival }} {{ arrival }}</span>
     <span class="label label--small">
       {{ distance_km }} km
       ·
@@ -19,7 +19,7 @@
   </div>
 
   <div class="flex flex--col gap--xsmall grow">
-    {% for r in routes limit:3 %}
+    {% for r in routes limit:2 %}
       {% assign r_roads = "" | split: "" %}
       {% for instr in r.guidance.instructions %}
         {% if instr.roadNumbers %}
@@ -41,7 +41,7 @@
         <span class="label label--small value--tnums">
           {{ r_km }} km{% if r_delay > 0 %} · +{{ r_delay }}{% endif %}
         </span>
-        <span class="label label--small">
+        <span class="label label--small hidden lg:block">
           {% if r_roads.size > 0 %}
             {{ label_via }} {{ r_roads | join: " · " }}
           {% else %}
@@ -56,4 +56,4 @@
   {% render "error_panel" %}
 {% endif %}
 
-{% render "title_bar" %}
+{% render "title_bar", display_name: display_name, traffic_text: traffic_text %}
