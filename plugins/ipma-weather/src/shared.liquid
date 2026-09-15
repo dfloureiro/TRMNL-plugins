@@ -93,6 +93,39 @@
   {% when 19 %}
     {% if lang == "pt" %}{% assign weather = "Trovoada" %}{% else %}{% assign weather = "Thunderstorms" %}{% endif %}
     {% assign icon = "wi-thunderstorm" %}
+  {% when 20 %}
+    {% if lang == "pt" %}{% assign weather = "Aguaceiros e trovoada" %}{% else %}{% assign weather = "Showers and thunderstorms" %}{% endif %}
+    {% assign icon = "wi-day-storm-showers" %}
+  {% when 21 %}
+    {% if lang == "pt" %}{% assign weather = "Granizo" %}{% else %}{% assign weather = "Hail" %}{% endif %}
+    {% assign icon = "wi-hail" %}
+  {% when 22 %}
+    {% if lang == "pt" %}{% assign weather = "Geada" %}{% else %}{% assign weather = "Frost" %}{% endif %}
+    {% assign icon = "wi-day-haze" %}
+  {% when 23 %}
+    {% if lang == "pt" %}{% assign weather = "Trovoada e chuva" %}{% else %}{% assign weather = "Thunderstorms and rain" %}{% endif %}
+    {% assign icon = "wi-thunderstorm" %}
+  {% when 24 %}
+    {% if lang == "pt" %}{% assign weather = "Nebulosidade convectiva" %}{% else %}{% assign weather = "Convective cloud" %}{% endif %}
+    {% assign icon = "wi-cloudy-gusts" %}
+  {% when 25 %}
+    {% if lang == "pt" %}{% assign weather = "Céu nublado" %}{% else %}{% assign weather = "Overcast" %}{% endif %}
+    {% assign icon = "wi-cloudy" %}
+  {% when 26 %}
+    {% if lang == "pt" %}{% assign weather = "Nevoeiro" %}{% else %}{% assign weather = "Fog" %}{% endif %}
+    {% assign icon = "wi-fog" %}
+  {% when 27 %}
+    {% if lang == "pt" %}{% assign weather = "Céu nublado" %}{% else %}{% assign weather = "Cloudy" %}{% endif %}
+    {% assign icon = "wi-cloudy" %}
+  {% when 28 %}
+    {% if lang == "pt" %}{% assign weather = "Neve" %}{% else %}{% assign weather = "Snow" %}{% endif %}
+    {% assign icon = "wi-snow" %}
+  {% when 29 %}
+    {% if lang == "pt" %}{% assign weather = "Chuva e neve" %}{% else %}{% assign weather = "Rain and snow" %}{% endif %}
+    {% assign icon = "wi-rain-mix" %}
+  {% when 30 %}
+    {% if lang == "pt" %}{% assign weather = "Chuva e neve" %}{% else %}{% assign weather = "Rain and snow" %}{% endif %}
+    {% assign icon = "wi-rain-mix" %}
   {% else %}
     {% assign weather = "—" %}
     {% assign icon = "wi-na" %}
@@ -100,9 +133,67 @@
 
 {% assign icon_url = "https://trmnl.com/images/plugins/weather/" | append: icon | append: ".svg" %}
 
+{% case today.classWindSpeed %}
+  {% when 0 %}
+    {% if lang == "pt" %}{% assign wind_speed = "Calmo" %}{% else %}{% assign wind_speed = "Calm" %}{% endif %}
+  {% when 1 %}
+    {% if lang == "pt" %}{% assign wind_speed = "Fraco" %}{% else %}{% assign wind_speed = "Light" %}{% endif %}
+  {% when 2 %}
+    {% if lang == "pt" %}{% assign wind_speed = "Moderado" %}{% else %}{% assign wind_speed = "Moderate" %}{% endif %}
+  {% when 3 %}
+    {% if lang == "pt" %}{% assign wind_speed = "Forte" %}{% else %}{% assign wind_speed = "Strong" %}{% endif %}
+  {% when 4 %}
+    {% if lang == "pt" %}{% assign wind_speed = "Muito forte" %}{% else %}{% assign wind_speed = "Very strong" %}{% endif %}
+  {% when 5 %}
+    {% if lang == "pt" %}{% assign wind_speed = "Excecional" %}{% else %}{% assign wind_speed = "Exceptional" %}{% endif %}
+  {% else %}
+    {% assign wind_speed = "" %}
+{% endcase %}
+
+{% template day_icon_img %}
+  {% case day.idWeatherType %}
+    {% when 1 %}{% assign day_icon = "wi-day-sunny" %}
+    {% when 2 %}{% assign day_icon = "wi-day-cloudy" %}
+    {% when 3 %}{% assign day_icon = "wi-day-sunny-overcast" %}
+    {% when 4 %}{% assign day_icon = "wi-cloudy" %}
+    {% when 5 %}{% assign day_icon = "wi-day-cloudy-high" %}
+    {% when 6 %}{% assign day_icon = "wi-day-showers" %}
+    {% when 7 %}{% assign day_icon = "wi-day-sprinkle" %}
+    {% when 8 %}{% assign day_icon = "wi-day-storm-showers" %}
+    {% when 9 %}{% assign day_icon = "wi-day-rain" %}
+    {% when 10 %}{% assign day_icon = "wi-day-sprinkle" %}
+    {% when 11 %}{% assign day_icon = "wi-rain" %}
+    {% when 12 %}{% assign day_icon = "wi-day-rain" %}
+    {% when 13 %}{% assign day_icon = "wi-day-sprinkle" %}
+    {% when 14 %}{% assign day_icon = "wi-day-rain" %}
+    {% when 15 %}{% assign day_icon = "wi-sprinkle" %}
+    {% when 16 %}{% assign day_icon = "wi-fog" %}
+    {% when 17 %}{% assign day_icon = "wi-fog" %}
+    {% when 18 %}{% assign day_icon = "wi-snow" %}
+    {% when 19 %}{% assign day_icon = "wi-thunderstorm" %}
+    {% when 20 %}{% assign day_icon = "wi-day-storm-showers" %}
+    {% when 21 %}{% assign day_icon = "wi-hail" %}
+    {% when 22 %}{% assign day_icon = "wi-day-haze" %}
+    {% when 23 %}{% assign day_icon = "wi-thunderstorm" %}
+    {% when 24 %}{% assign day_icon = "wi-cloudy-gusts" %}
+    {% when 25 %}{% assign day_icon = "wi-cloudy" %}
+    {% when 26 %}{% assign day_icon = "wi-fog" %}
+    {% when 27 %}{% assign day_icon = "wi-cloudy" %}
+    {% when 28 %}{% assign day_icon = "wi-snow" %}
+    {% when 29 %}{% assign day_icon = "wi-rain-mix" %}
+    {% when 30 %}{% assign day_icon = "wi-rain-mix" %}
+    {% else %}{% assign day_icon = "wi-na" %}
+  {% endcase %}
+  <img
+    class="image image--adaptive {{ icon_class }}"
+    src="https://trmnl.com/images/plugins/weather/{{ day_icon }}.svg"
+    alt=""
+  >
+{% endtemplate %}
+
 {% template title_bar %}
 <div class="title_bar">
-  <img class="image image-dither image--adaptive" src="https://trmnl.com/images/plugins/weather/wi-thermometer.svg" alt="IPMA Weather">
+  <img class="image image--adaptive" src="https://trmnl.com/images/plugins/weather/wi-thermometer.svg" alt="IPMA Weather">
   <span class="title">IPMA</span>
   <span class="instance">{{ display_name }}</span>
 </div>
