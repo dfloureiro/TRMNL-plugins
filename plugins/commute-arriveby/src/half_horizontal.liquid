@@ -1,8 +1,7 @@
+{% if plugin_ok %}
 <div class="layout layout--row layout--center gap--large">
-  <div class="w--[3cqw]"></div>
-
-  <div class="flex flex--col flex--center gap--xsmall px--3">
-    {% render "mode_icon", mode: mode %}
+  <div class="flex flex--col flex--center gap--xsmall px--4">
+    {% render "mode_icon" %}
     <span class="label label--small text--center">{{ display_name }}</span>
   </div>
 
@@ -52,8 +51,9 @@
       </div>
     {% endfor %}
   </div>
-
-  <div class="w--[2cqw]"></div>
 </div>
+{% else %}
+  {% render "error_panel" %}
+{% endif %}
 
-{% render "title_bar", display_name: display_name, traffic_text: traffic_text %}
+{% render "title_bar" %}

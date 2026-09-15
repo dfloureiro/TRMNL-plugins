@@ -1,7 +1,8 @@
+{% if plugin_ok %}
 <div class="layout layout--col gap--space-between">
   <div class="flex flex--col flex--center">
     <span class="label">{{ display_name }}</span>
-    {% render "mode_icon", mode: mode %}
+    {% render "mode_icon" %}
     <div class="flex flex--row flex--center gap--xsmall">
       <span class="value value--xxlarge lg:value--xxxlarge value--tnums" data-fit-value="true">{{ travel_min }}</span>
       <span class="label label--large">{{ label_mins }}</span>
@@ -42,5 +43,8 @@
     {% endfor %}
   </div>
 </div>
+{% else %}
+  {% render "error_panel" %}
+{% endif %}
 
-{% render "title_bar", display_name: display_name, traffic_text: traffic_text %}
+{% render "title_bar" %}
