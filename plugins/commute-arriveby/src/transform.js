@@ -7,6 +7,7 @@ function run(input) {
 
   if (apiError || !Array.isArray(input?.routes) || input.routes.length === 0) {
     return {
+      plugin_ok: false,
       has_error: true,
       error_message: apiError || "No route found. Check origin, destination, and API key.",
       routes: [],
@@ -33,5 +34,10 @@ function run(input) {
     };
   });
 
-  return { has_error: false, error_message: "", routes };
+  return {
+    plugin_ok: true,
+    has_error: false,
+    error_message: "",
+    routes,
+  };
 }
