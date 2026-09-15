@@ -56,33 +56,39 @@
   {% else %}{% assign tomorrow_icon = "wi-na" %}
 {% endcase %}
 
-<div class="layout layout--row gap--small">
-  <div class="flex flex--col flex--center gap--small" style="width: 50%;">
-    <span class="label label--small" style="display: block; width: 100%; text-align: center; font-weight: bold; letter-spacing: 1px;">{{ label_today }}</span>
-    <span class="label" style="display: block; width: 100%; text-align: center;">{{ display_name }}</span>
+<div class="layout layout--row layout--center gap--xsmall lg:gap--small">
+  <div class="flex flex--col flex--center gap--xsmall grow">
+    <span class="label label--small">{{ label_today }}</span>
+    <span class="label label--small hidden lg:block">{{ display_name }}</span>
+
     <img
-      class="image image-dither image--adaptive w--[18cqw] h--[18cqw] lg:w--[14cqw] lg:h--[14cqw]"
+      class="image image--adaptive w--[11cqw] h--[11cqw] lg:w--[14cqw] lg:h--[14cqw]"
       src="{{ icon_url }}"
       alt="{{ weather }}"
     >
-    <span class="value value--large lg:value--xlarge value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
-    <span class="label" style="display: block; width: 100%; text-align: center;">{{ weather }}</span>
-    <span class="description">{{ label_min }} {{ today.tMin | round }}°</span>
-    <span class="description" style="white-space: nowrap;">{{ label_rain }} {{ today.precipitaProb | round }}% · {{ today.predWindDir }} · {{ wind_speed }}</span>
+
+    <span class="value value--medium lg:value--large value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
+    <span class="label label--small text--center">{{ weather }}</span>
+    <span class="label label--small">{{ label_min }} {{ today.tMin | round }}°</span>
+    <span class="label label--small hidden lg:block text--center">
+      {{ label_rain }} {{ today.precipitaProb | round }}% · {{ today.predWindDir }} · {{ wind_speed }}
+    </span>
   </div>
 
-  <div style="border-left: 1px dotted var(--color, black); align-self: stretch;"></div>
+  <div class="divider--v"></div>
 
-  <div class="flex flex--col flex--center gap--small" style="width: 50%;">
-    <span class="label" style="display: block; width: 100%; text-align: center;">{{ tomorrow.forecastDate | date: "%a" | capitalize }}</span>
+  <div class="flex flex--col flex--center gap--xsmall grow">
+    <span class="label label--small">{{ tomorrow.forecastDate | date: "%a" | capitalize }}</span>
+
     <img
-      class="image image-dither image--adaptive w--[14cqw] h--[14cqw] lg:w--[11cqw] lg:h--[11cqw]"
+      class="image image--adaptive w--[9cqw] h--[9cqw] lg:w--[12cqw] lg:h--[12cqw]"
       src="https://trmnl.com/images/plugins/weather/{{ tomorrow_icon }}.svg"
       alt=""
     >
-    <span class="value value--large lg:value--xlarge value--tnums">{{ tomorrow.tMax | round }}°</span>
-    <span class="label value--tnums">{{ tomorrow.tMin | round }}°</span>
-    <span class="description">{{ label_rain }} {{ tomorrow.precipitaProb | round }}%</span>
+
+    <span class="value value--medium lg:value--large value--tnums" data-fit-value="true">{{ tomorrow.tMax | round }}°</span>
+    <span class="label label--small value--tnums">{{ tomorrow.tMin | round }}°</span>
+    <span class="label label--small hidden lg:block">{{ label_rain }} {{ tomorrow.precipitaProb | round }}%</span>
   </div>
 </div>
 
