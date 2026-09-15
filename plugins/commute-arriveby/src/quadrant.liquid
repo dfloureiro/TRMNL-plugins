@@ -38,7 +38,15 @@
   </div>
 </div>
 {% else %}
-  {% render "error_panel" %}
+  {% render "error_panel",
+     display_name: display_name,
+     label_error: label_error,
+     error_text: error_text,
+     trmnl: trmnl
+  %}
 {% endif %}
 
-{% render "title_bar", display_name: display_name, traffic_text: traffic_text %}
+{% render "title_bar",
+   display_name: display_name,
+   traffic_text: traffic_text
+%}
