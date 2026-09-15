@@ -46,10 +46,10 @@ custom_fields:
 - keyname: arrive_by
   field_type: string
   name: Arrive by
-  description: Desired arrival time as HH:mm (24h)
+  description: Desired arrival time as HH:mm (24h), later today
   placeholder: '09:00'
   default: '09:00'
-  help_text: If that time already passed today, tomorrow is used automatically (Europe/Lisbon).
+  help_text: Interpreted in the destination's local time. It must still be in the future today, otherwise TomTom returns no route.
 - keyname: route_label
   field_type: string
   name: Route Label
