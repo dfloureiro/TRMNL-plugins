@@ -1,39 +1,39 @@
 {% if plugin_ok %}
-<div class="layout layout--col gap--large">
-  <div class="flex flex--row flex--center gap--large">
+<div class="layout layout--col gap--small lg:gap--large">
+  <div class="flex flex--row flex--center gap--medium lg:gap--large">
     <div class="flex flex--center">
       {% render "mode_icon" %}
     </div>
 
     <div class="flex flex--col flex--center grow">
-      <span class="label label--underline">{{ label_travel_time }}</span>
+      <span class="label label--underline label--small lg:label--base">{{ label_travel_time }}</span>
       <div class="flex flex--row flex--center gap--xsmall">
-        <span class="value value--xxxlarge lg:value--giga value--tnums" data-fit-value="true">{{ travel_min }}</span>
-        <span class="label label--large">{{ label_mins }}</span>
+        <span class="value value--xlarge lg:value--giga value--tnums" data-fit-value="true">{{ travel_min }}</span>
+        <span class="label label--small lg:label--large">{{ label_mins }}</span>
       </div>
-      <span class="label label--large">{{ label_arrival }} {{ arrival }}</span>
+      <span class="label label--small lg:label--large">{{ label_arrival }} {{ arrival }}</span>
     </div>
   </div>
 
-  <div class="grid grid--cols-3 gap--large">
+  <div class="grid grid--cols-3 gap--small lg:gap--large">
     <div class="flex flex--col flex--center gap--xsmall">
       <span class="label label--small">{{ label_distance }}</span>
-      <span class="value value--small lg:value--base value--tnums">{{ distance_km }} km</span>
+      <span class="value value--xsmall lg:value--base value--tnums">{{ distance_km }} km</span>
     </div>
     <div class="flex flex--col flex--center gap--xsmall">
       <span class="label label--small">{{ label_normal }}</span>
-      <span class="value value--small lg:value--base value--tnums">{{ normal_min }} {{ label_mins }}</span>
+      <span class="value value--xsmall lg:value--base value--tnums">{{ normal_min }} {{ label_mins }}</span>
     </div>
     <div class="flex flex--col flex--center gap--xsmall">
       <span class="label label--small">{{ label_delay }}</span>
-      <span class="value value--small lg:value--base value--tnums">
+      <span class="value value--xsmall lg:value--base value--tnums">
         {% if delay_min > 0 %}+{{ delay_min }} {{ label_mins }}{% else %}—{% endif %}
       </span>
     </div>
   </div>
 
   {% if road_numbers.size > 0 %}
-    <span class="label text--center">{{ label_via }} {{ road_numbers | join: " · " }}</span>
+    <span class="label label--small text--center hidden lg:block">{{ label_via }} {{ road_numbers | join: " · " }}</span>
   {% endif %}
 
   <div class="divider"></div>
