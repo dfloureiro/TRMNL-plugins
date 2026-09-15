@@ -1,0 +1,59 @@
+<div class="layout layout--row layout--center gap--large">
+  <div class="w--[3cqw]"></div>
+
+  <div class="flex flex--col flex--center gap--xsmall px--3">
+    {% render "mode_icon", mode: mode %}
+    <span class="label label--small text--center">{{ display_name }}</span>
+  </div>
+
+  <div class="flex flex--col flex--center gap--xsmall">
+    <div class="flex flex--row flex--center gap--xsmall">
+      <span class="value value--large value--tnums" data-fit-value="true">{{ travel_min }}</span>
+      <span class="label">{{ label_mins }}</span>
+    </div>
+    <span class="label">{{ label_arrival }} {{ arrival }}</span>
+    <span class="label label--small">
+      {{ distance_km }} km
+      ·
+      {% if delay_min > 0 %}{{ label_delay }} +{{ delay_min }}{% else %}{{ traffic_text }}{% endif %}
+    </span>
+  </div>
+
+  <div class="flex flex--col gap--xsmall grow">
+    {% for r in routes limit:3 %}
+      {% assign r_roads = "" | split: "" %}
+      {% for instr in r.guidance.instructions %}
+        {% if instr.roadNumbers %}
+          {% assign r_roads = r_roads | concat: instr.roadNumbers %}
+        {% endif %}
+      {% endfor %}
+      {% assign r_roads = r_roads | uniq %}
+      {% assign r_min = r.summary.travelTimeInSeconds | plus: 0 | divided_by: 60 %}
+      {% assign r_km = r.summary.lengthInMeters | plus: 0 | divided_by: 1000.0 | round: 1 %}
+      {% assign r_delay = r.summary.trafficDelayInSeconds | plus: 0 | divided_by: 60 %}
+
+      <div class="flex flex--col gap--xsmall outline outline--2 rounded p--1 w--full">
+        <div class="flex flex--row flex--between w--full">
+          <span class="label label--small label--underline">
+            {% if forloop.first %}{{ label_main_route }}{% else %}{{ label_alt_route }} {{ forloop.index | minus: 1 }}{% endif %}
+          </span>
+          <span class="label label--small value--tnums">{{ r_min }} {{ label_mins }}</span>
+        </div>
+        <span class="label label--small value--tnums">
+          {{ r_km }} km{% if r_delay > 0 %} · +{{ r_delay }}{% endif %}
+        </span>
+        <span class="label label--small">
+          {% if r_roads.size > 0 %}
+            {{ label_via }} {{ r_roads | join: " · " }}
+          {% else %}
+            {{ label_via }} —
+          {% endif %}
+        </span>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="w--[2cqw]"></div>
+</div>
+
+{% render "title_bar", display_name: display_name, traffic_text: traffic_text %}
