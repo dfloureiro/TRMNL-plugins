@@ -1,0 +1,89 @@
+{% case today.classWindSpeed %}
+  {% when 0 %}
+    {% if lang == "pt" %}{% assign wind_speed = "Calmo" %}{% else %}{% assign wind_speed = "Calm" %}{% endif %}
+  {% when 1 %}
+    {% if lang == "pt" %}{% assign wind_speed = "Fraco" %}{% else %}{% assign wind_speed = "Light" %}{% endif %}
+  {% when 2 %}
+    {% if lang == "pt" %}{% assign wind_speed = "Moderado" %}{% else %}{% assign wind_speed = "Moderate" %}{% endif %}
+  {% when 3 %}
+    {% if lang == "pt" %}{% assign wind_speed = "Forte" %}{% else %}{% assign wind_speed = "Strong" %}{% endif %}
+  {% when 4 %}
+    {% if lang == "pt" %}{% assign wind_speed = "Muito forte" %}{% else %}{% assign wind_speed = "Very strong" %}{% endif %}
+  {% when 5 %}
+    {% if lang == "pt" %}{% assign wind_speed = "Excecional" %}{% else %}{% assign wind_speed = "Exceptional" %}{% endif %}
+  {% else %}
+    {% assign wind_speed = "" %}
+{% endcase %}
+
+{% if lang == "pt" %}
+  {% assign label_today = "HOJE" %}
+{% else %}
+  {% assign label_today = "TODAY" %}
+{% endif %}
+
+{% assign tomorrow = data[1] %}
+{% case tomorrow.idWeatherType %}
+  {% when 1 %}{% assign tomorrow_icon = "wi-day-sunny" %}
+  {% when 2 %}{% assign tomorrow_icon = "wi-day-cloudy" %}
+  {% when 3 %}{% assign tomorrow_icon = "wi-day-sunny-overcast" %}
+  {% when 4 %}{% assign tomorrow_icon = "wi-cloudy" %}
+  {% when 5 %}{% assign tomorrow_icon = "wi-day-cloudy-high" %}
+  {% when 6 %}{% assign tomorrow_icon = "wi-day-showers" %}
+  {% when 7 %}{% assign tomorrow_icon = "wi-day-sprinkle" %}
+  {% when 8 %}{% assign tomorrow_icon = "wi-day-storm-showers" %}
+  {% when 9 %}{% assign tomorrow_icon = "wi-day-rain" %}
+  {% when 10 %}{% assign tomorrow_icon = "wi-day-sprinkle" %}
+  {% when 11 %}{% assign tomorrow_icon = "wi-rain" %}
+  {% when 12 %}{% assign tomorrow_icon = "wi-day-rain" %}
+  {% when 13 %}{% assign tomorrow_icon = "wi-day-sprinkle" %}
+  {% when 14 %}{% assign tomorrow_icon = "wi-day-rain" %}
+  {% when 15 %}{% assign tomorrow_icon = "wi-sprinkle" %}
+  {% when 16 %}{% assign tomorrow_icon = "wi-fog" %}
+  {% when 17 %}{% assign tomorrow_icon = "wi-fog" %}
+  {% when 18 %}{% assign tomorrow_icon = "wi-snow" %}
+  {% when 19 %}{% assign tomorrow_icon = "wi-thunderstorm" %}
+  {% when 20 %}{% assign tomorrow_icon = "wi-day-storm-showers" %}
+  {% when 21 %}{% assign tomorrow_icon = "wi-hail" %}
+  {% when 22 %}{% assign tomorrow_icon = "wi-day-haze" %}
+  {% when 23 %}{% assign tomorrow_icon = "wi-thunderstorm" %}
+  {% when 24 %}{% assign tomorrow_icon = "wi-cloudy-gusts" %}
+  {% when 25 %}{% assign tomorrow_icon = "wi-cloudy" %}
+  {% when 26 %}{% assign tomorrow_icon = "wi-fog" %}
+  {% when 27 %}{% assign tomorrow_icon = "wi-cloudy" %}
+  {% when 28 %}{% assign tomorrow_icon = "wi-snow" %}
+  {% when 29 %}{% assign tomorrow_icon = "wi-rain-mix" %}
+  {% when 30 %}{% assign tomorrow_icon = "wi-rain-mix" %}
+  {% else %}{% assign tomorrow_icon = "wi-na" %}
+{% endcase %}
+
+<div class="layout layout--row gap--small">
+  <div class="flex flex--col flex--center gap--small" style="width: 50%;">
+    <span class="label label--small" style="display: block; width: 100%; text-align: center; font-weight: bold; letter-spacing: 1px;">{{ label_today }}</span>
+    <span class="label" style="display: block; width: 100%; text-align: center;">{{ display_name }}</span>
+    <img
+      class="image image-dither image--adaptive w--[18cqw] h--[18cqw] lg:w--[14cqw] lg:h--[14cqw]"
+      src="{{ icon_url }}"
+      alt="{{ weather }}"
+    >
+    <span class="value value--large lg:value--xlarge value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
+    <span class="label" style="display: block; width: 100%; text-align: center;">{{ weather }}</span>
+    <span class="description">{{ label_min }} {{ today.tMin | round }}°</span>
+    <span class="description" style="white-space: nowrap;">{{ label_rain }} {{ today.precipitaProb | round }}% · {{ today.predWindDir }} · {{ wind_speed }}</span>
+  </div>
+
+  <div style="border-left: 1px dotted var(--color, black); align-self: stretch;"></div>
+
+  <div class="flex flex--col flex--center gap--small" style="width: 50%;">
+    <span class="label" style="display: block; width: 100%; text-align: center;">{{ tomorrow.forecastDate | date: "%a" | capitalize }}</span>
+    <img
+      class="image image-dither image--adaptive w--[14cqw] h--[14cqw] lg:w--[11cqw] lg:h--[11cqw]"
+      src="https://trmnl.com/images/plugins/weather/{{ tomorrow_icon }}.svg"
+      alt=""
+    >
+    <span class="value value--large lg:value--xlarge value--tnums">{{ tomorrow.tMax | round }}°</span>
+    <span class="label value--tnums">{{ tomorrow.tMin | round }}°</span>
+    <span class="description">{{ label_rain }} {{ tomorrow.precipitaProb | round }}%</span>
+  </div>
+</div>
+
+{% render "title_bar", display_name: display_name %}

@@ -1,0 +1,113 @@
+{% assign lang = "" %}
+{% if language != blank %}
+  {% assign lang = language %}
+{% elsif trmnl.plugin_settings.custom_fields_values.language != blank %}
+  {% assign lang = trmnl.plugin_settings.custom_fields_values.language %}
+{% else %}
+  {% assign lang = "en" %}
+{% endif %}
+
+{% assign lang = lang | downcase | strip %}
+
+{% if lang == "pt" or lang == "portugues" or lang == "português" or lang == "portuguese" %}
+  {% assign lang = "pt" %}
+{% else %}
+  {% assign lang = "en" %}
+{% endif %}
+
+{% assign today = data[0] %}
+
+{% if trmnl.plugin_settings.custom_fields_values.location_name != blank %}
+  {% assign display_name = trmnl.plugin_settings.custom_fields_values.location_name %}
+{% elsif location_name != blank %}
+  {% assign display_name = location_name %}
+{% else %}
+  {% assign display_name = "IPMA" %}
+{% endif %}
+
+{% if lang == "pt" %}
+  {% assign label_min = "mín" %}
+  {% assign label_rain = "Chuva" %}
+  {% assign label_wind = "Vento" %}
+{% else %}
+  {% assign label_min = "min" %}
+  {% assign label_rain = "Rain" %}
+  {% assign label_wind = "Wind" %}
+{% endif %}
+
+{% case today.idWeatherType %}
+  {% when 1 %}
+    {% if lang == "pt" %}{% assign weather = "Céu limpo" %}{% else %}{% assign weather = "Clear sky" %}{% endif %}
+    {% assign icon = "wi-day-sunny" %}
+  {% when 2 %}
+    {% if lang == "pt" %}{% assign weather = "Céu pouco nublado" %}{% else %}{% assign weather = "Partly cloudy" %}{% endif %}
+    {% assign icon = "wi-day-cloudy" %}
+  {% when 3 %}
+    {% if lang == "pt" %}{% assign weather = "Céu parcialmente nublado" %}{% else %}{% assign weather = "Sunny intervals" %}{% endif %}
+    {% assign icon = "wi-day-sunny-overcast" %}
+  {% when 4 %}
+    {% if lang == "pt" %}{% assign weather = "Céu muito nublado" %}{% else %}{% assign weather = "Cloudy" %}{% endif %}
+    {% assign icon = "wi-cloudy" %}
+  {% when 5 %}
+    {% if lang == "pt" %}{% assign weather = "Nuvens altas" %}{% else %}{% assign weather = "High clouds" %}{% endif %}
+    {% assign icon = "wi-day-cloudy-high" %}
+  {% when 6 %}
+    {% if lang == "pt" %}{% assign weather = "Aguaceiros/chuva" %}{% else %}{% assign weather = "Showers" %}{% endif %}
+    {% assign icon = "wi-day-showers" %}
+  {% when 7 %}
+    {% if lang == "pt" %}{% assign weather = "Aguaceiros fracos" %}{% else %}{% assign weather = "Light showers" %}{% endif %}
+    {% assign icon = "wi-day-sprinkle" %}
+  {% when 8 %}
+    {% if lang == "pt" %}{% assign weather = "Aguaceiros fortes" %}{% else %}{% assign weather = "Heavy showers" %}{% endif %}
+    {% assign icon = "wi-day-storm-showers" %}
+  {% when 9 %}
+    {% if lang == "pt" %}{% assign weather = "Chuva" %}{% else %}{% assign weather = "Rain" %}{% endif %}
+    {% assign icon = "wi-day-rain" %}
+  {% when 10 %}
+    {% if lang == "pt" %}{% assign weather = "Chuva fraca" %}{% else %}{% assign weather = "Light rain" %}{% endif %}
+    {% assign icon = "wi-day-sprinkle" %}
+  {% when 11 %}
+    {% if lang == "pt" %}{% assign weather = "Chuva forte" %}{% else %}{% assign weather = "Heavy rain" %}{% endif %}
+    {% assign icon = "wi-rain" %}
+  {% when 12 %}
+    {% if lang == "pt" %}{% assign weather = "Períodos de chuva" %}{% else %}{% assign weather = "Periods of rain" %}{% endif %}
+    {% assign icon = "wi-day-rain" %}
+  {% when 13 %}
+    {% if lang == "pt" %}{% assign weather = "Períodos de chuva fraca" %}{% else %}{% assign weather = "Periods of light rain" %}{% endif %}
+    {% assign icon = "wi-day-sprinkle" %}
+  {% when 14 %}
+    {% if lang == "pt" %}{% assign weather = "Períodos de chuva forte" %}{% else %}{% assign weather = "Periods of heavy rain" %}{% endif %}
+    {% assign icon = "wi-day-rain" %}
+  {% when 15 %}
+    {% if lang == "pt" %}{% assign weather = "Chuvisco" %}{% else %}{% assign weather = "Drizzle" %}{% endif %}
+    {% assign icon = "wi-sprinkle" %}
+  {% when 16 %}
+    {% if lang == "pt" %}{% assign weather = "Neblina" %}{% else %}{% assign weather = "Mist" %}{% endif %}
+    {% assign icon = "wi-fog" %}
+  {% when 17 %}
+    {% if lang == "pt" %}{% assign weather = "Nevoeiro" %}{% else %}{% assign weather = "Fog" %}{% endif %}
+    {% assign icon = "wi-fog" %}
+  {% when 18 %}
+    {% if lang == "pt" %}{% assign weather = "Neve" %}{% else %}{% assign weather = "Snow" %}{% endif %}
+    {% assign icon = "wi-snow" %}
+  {% when 19 %}
+    {% if lang == "pt" %}{% assign weather = "Trovoada" %}{% else %}{% assign weather = "Thunderstorms" %}{% endif %}
+    {% assign icon = "wi-thunderstorm" %}
+  {% else %}
+    {% assign weather = "—" %}
+    {% assign icon = "wi-na" %}
+{% endcase %}
+
+{% assign icon_url = "https://trmnl.com/images/plugins/weather/" | append: icon | append: ".svg" %}
+
+{% template title_bar %}
+<div class="title_bar">
+  <img class="image image-dither image--adaptive" src="https://trmnl.com/images/plugins/weather/wi-thermometer.svg" alt="IPMA Weather">
+  <span class="title">IPMA</span>
+  <span class="instance">{{ display_name }}</span>
+</div>
+{% endtemplate %}
+
+{% template chef_layout_anchor %}
+<div class="layout layout--col"></div>
+{% endtemplate %}

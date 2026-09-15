@@ -1,0 +1,64 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: 3.3.1
+serverless_language: ''
+polling_url: https://api.ipma.pt/open-data/forecast/meteorology/cities/daily/{{ global_id_local }}.json
+polling_headers: ''
+polling_body: ''
+id: 477615
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+oauth_authorize_url: ''
+oauth_token_url: ''
+oauth_scopes: ''
+oauth_scope_separator: ''
+oauth_refresh_url: ''
+oauth_auth_params: ''
+oauth_token_headers: ''
+oauth_token_site: ''
+oauth_token_params: ''
+oauth_token_request_auth_method: ''
+oauth_body_format: ''
+oauth_token_response_metadata: ''
+oauth_authorization_method: ''
+oauth_refresh_params: ''
+oauth_token_field_name: ''
+oauth_expiry_field_name: ''
+oauth_expiry_strategy: ''
+oauth_fixed_expiry_ms: ''
+custom_fields:
+- keyname: global_id_local
+  field_type: string
+  name: IPMA Location ID
+  description: Numeric ID of the IPMA forecast station
+  description-pt: ID numérico da estação IPMA
+  placeholder: '1110600'
+  default: '1110600'
+  help_text: 'Lisbon 1110600 · Porto 1131200 · Faro 1080500 · Coimbra 1060300 · Braga 1030300 · Aveiro 1010500 · Setubal 1151200 · Funchal 2310300. Full list: <a href="https://api.ipma.pt/open-data/distrits-islands.json">IPMA locations JSON</a>'
+- keyname: location_name
+  field_type: string
+  optional: true
+  name: Display name
+  description: Optional name shown on screen
+  description-pt: Nome opcional mostrado no ecrã
+  placeholder: Lisbon
+  help_text: e.g. a custom label while using an IPMA station ID for forecast data
+- keyname: language
+  field_type: string
+  name: Language
+  description: en or pt
+  placeholder: en
+  default: en
+  help_text: Use <code>en</code> for English or <code>pt</code> for Português
+- keyname: doesnt_matter
+  name: About this plugin
+  field_type: author_bio
+  category: nature,life
+  description: Daily weather from <a href="https://api.ipma.pt/">IPMA open data</a> (Portugal). Set an IPMA Location ID, language, and optionally a custom display name.
+name: IPMA Weather
+description: 'Weather in Portugal from IPMA '
+refresh_interval: 15
