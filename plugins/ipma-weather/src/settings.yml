@@ -48,11 +48,13 @@ custom_fields:
   placeholder: Lisbon
   help_text: e.g. a custom label while using an IPMA station ID for forecast data
 - keyname: language
-  field_type: string
+  field_type: select
   name: Language
-  description: en or pt
-  placeholder: en
+  description: Screen language
   default: en
+  options:
+  - English: en
+  - Português: pt
   help_text: Use <code>en</code> for English or <code>pt</code> for Português
 - keyname: about_plugin
   name: About this plugin

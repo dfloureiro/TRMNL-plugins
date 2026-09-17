@@ -6,10 +6,8 @@
 {% else %}
   {% assign lang = "en" %}
 {% endif %}
-
 {% assign lang = lang | downcase | strip %}
-
-{% if lang == "pt" or lang == "portugues" or lang == "português" or lang == "portuguese" %}
+{% if lang contains "pt" or lang contains "portug" %}
   {% assign lang = "pt" %}
 {% else %}
   {% assign lang = "en" %}
