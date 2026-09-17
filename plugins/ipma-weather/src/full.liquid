@@ -1,14 +1,14 @@
-<div class="layout layout--col layout--center gap--medium">
+<div class="layout layout--col layout--center gap--small">
   <div class="flex flex--row flex--center gap--large w--full">
     <img
-      class="image image--adaptive h--[26cqh] w--max-[30cqw]"
+      class="image image--adaptive h--[26cqh] w--max-[26cqw]"
       src="{{ icon_url }}"
       alt="{{ weather }}"
     >
 
     <div class="flex flex--col flex--center grow">
       <span class="label label--large">{{ display_name }}</span>
-      <span class="value value--giga value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
+      <span class="value value--xxxlarge lg:value--giga value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
       <span class="label label--large text--center" data-clamp="1">{{ weather }}</span>
     </div>
   </div>
@@ -18,25 +18,25 @@
   <div class="flex flex--row flex--center gap--medium w--full">
     <div class="flex flex--col flex--center gap--xsmall grow">
       <span class="label label--small">{{ label_min }}</span>
-      <span class="value value--base value--tnums">{{ today.tMin | round }}°</span>
+      <span class="value value--base lg:value--large value--tnums">{{ today.tMin | round }}°</span>
     </div>
     <div class="divider--v"></div>
     <div class="flex flex--col flex--center gap--xsmall grow">
       <span class="label label--small">{{ label_rain }}</span>
-      <span class="value value--base value--tnums">{{ today.precipitaProb | round }}%</span>
+      <span class="value value--base lg:value--large value--tnums">{{ today.precipitaProb | round }}%</span>
     </div>
     <div class="divider--v"></div>
     <div class="flex flex--col flex--center gap--xsmall grow">
       <span class="label label--small">{{ label_wind }}</span>
-      <span class="label text--center" data-clamp="1">{{ today.predWindDir }} · {{ wind_speed }}</span>
+      <span class="label label--large text--center" data-clamp="1">{{ today.predWindDir }} · {{ wind_speed }}</span>
     </div>
   </div>
 
   <div class="divider w--full"></div>
 
-  <div class="flex flex--row flex--center gap--small w--full grow">
+  <div class="flex flex--row flex--center gap--small w--full">
     {% for day in data offset:1 limit:4 %}
-      {% render "day_tile", day: day, lang: lang %}
+      {% render "day_tile", day: day, lang: lang, icon_class: "h--[13cqh] w--max-[16cqw]" %}
       {% unless forloop.last %}<div class="divider--v"></div>{% endunless %}
     {% endfor %}
   </div>
