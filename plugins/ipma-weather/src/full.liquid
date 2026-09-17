@@ -1,42 +1,42 @@
 <div class="layout layout--col layout--center gap--small">
-  <div class="flex flex--row flex--center gap--large w--full">
+  <div class="flex flex--row flex--center gap--medium h--max-[42cqh]">
     <img
-      class="image image--adaptive h--[26cqh] w--max-[26cqw]"
+      class="image image--adaptive h--[20cqh] w--max-[20cqw]"
       src="{{ icon_url }}"
       alt="{{ weather }}"
     >
 
-    <div class="flex flex--col flex--center grow">
-      <span class="label label--large">{{ display_name }}</span>
-      <span class="value value--xxxlarge lg:value--giga value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
-      <span class="label label--large text--center" data-clamp="1">{{ weather }}</span>
-    </div>
-  </div>
-
-  <div class="divider w--full"></div>
-
-  <div class="flex flex--row flex--center gap--medium w--full">
-    <div class="flex flex--col flex--center gap--xsmall grow">
-      <span class="label label--small">{{ label_min }}</span>
-      <span class="value value--base lg:value--large value--tnums">{{ today.tMin | round }}°</span>
-    </div>
-    <div class="divider--v"></div>
-    <div class="flex flex--col flex--center gap--xsmall grow">
-      <span class="label label--small">{{ label_rain }}</span>
-      <span class="value value--base lg:value--large value--tnums">{{ today.precipitaProb | round }}%</span>
-    </div>
-    <div class="divider--v"></div>
-    <div class="flex flex--col flex--center gap--xsmall grow">
-      <span class="label label--small">{{ label_wind }}</span>
-      <span class="label label--large text--center" data-clamp="1">{{ today.predWindDir }} · {{ wind_speed }}</span>
+    <div class="flex flex--col flex--center">
+      <span class="label">{{ display_name }}</span>
+      <span class="value value--xxlarge lg:value--xxxlarge value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
+      <span class="label text--center">{{ weather }}</span>
     </div>
   </div>
 
   <div class="divider w--full"></div>
 
   <div class="flex flex--row flex--center gap--small w--full">
+    <div class="flex flex--col flex--center gap--xsmall grow">
+      <span class="label label--small">{{ label_min }}</span>
+      <span class="value value--small lg:value--base value--tnums">{{ today.tMin | round }}°</span>
+    </div>
+    <div class="divider--v"></div>
+    <div class="flex flex--col flex--center gap--xsmall grow">
+      <span class="label label--small">{{ label_rain }}</span>
+      <span class="value value--small lg:value--base value--tnums">{{ today.precipitaProb | round }}%</span>
+    </div>
+    <div class="divider--v"></div>
+    <div class="flex flex--col flex--center gap--xsmall grow">
+      <span class="label label--small">{{ label_wind }}</span>
+      <span class="label text--center">{{ today.predWindDir }} · {{ wind_speed }}</span>
+    </div>
+  </div>
+
+  <div class="divider w--full"></div>
+
+  <div class="flex flex--row flex--center gap--small w--full h--max-[36cqh]">
     {% for day in data offset:1 limit:4 %}
-      {% render "day_tile", day: day, lang: lang, icon_class: "h--[13cqh] w--max-[16cqw]" %}
+      {% render "day_tile", day: day, lang: lang, icon_class: "h--[10cqh] lg:h--[12cqh] w--max-[14cqw]" %}
       {% unless forloop.last %}<div class="divider--v"></div>{% endunless %}
     {% endfor %}
   </div>
