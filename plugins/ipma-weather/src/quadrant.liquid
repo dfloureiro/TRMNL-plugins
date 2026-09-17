@@ -6,37 +6,39 @@
 
 {% assign tomorrow = data[1] %}
 
-<div class="layout layout--row lg:portrait:layout--col layout--center gap--small">
+<div class="layout layout--row portrait:layout--col gap--auto">
   <div class="flex flex--col flex--center gap--xsmall grow">
     <span class="label label--small">{{ label_today }}</span>
 
     <img
-      class="image image--adaptive h--[26cqh] lg:portrait:h--[18cqh] w--max-[30cqw]"
+      class="image image--adaptive h--[22cqh] portrait:h--[12cqh] w--max-[26cqw] portrait:w--max-[20cqw]"
       src="{{ icon_url }}"
       alt="{{ weather }}"
     >
 
     <span class="value value--large lg:value--xxlarge value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
-    <span class="label text--center" data-clamp="1">{{ weather }}</span>
-    <span class="label label--small">{{ today.tMin | round }}° · {{ today.precipitaProb | round }}%</span>
+    <span class="label label--small text--center portrait:hidden">{{ weather }}</span>
+
+    <div class="flex flex--row portrait:flex--col flex--center gap--small">
+      <span class="label label--small value--tnums">{{ label_min }} {{ today.tMin | round }}°</span>
+      <span class="label label--small value--tnums">{{ label_rain }} {{ today.precipitaProb | round }}%</span>
+    </div>
   </div>
 
-  <div class="divider--v lg:portrait:hidden"></div>
-  <div class="divider w--full hidden lg:portrait:block"></div>
+  <div class="divider--v portrait:hidden"></div>
+  <div class="divider w--full hidden portrait:block"></div>
 
   <div class="flex flex--col flex--center gap--xsmall grow">
     <span class="label label--small">{% render "weekday", date_str: tomorrow.forecastDate, lang: lang %}</span>
 
-    <img
-      class="image image--adaptive h--[26cqh] lg:portrait:h--[18cqh] w--max-[30cqw]"
-      src="https://trmnl.com/images/plugins/weather/{{ icon }}.svg"
-      alt=""
-      hidden
-    >
-    {% render "day_icon_img", day: tomorrow, icon_class: "h--[26cqh] lg:portrait:h--[18cqh] w--max-[30cqw]" %}
+    {% render "day_icon_img", day: tomorrow, icon_class: "h--[22cqh] portrait:h--[12cqh] w--max-[26cqw] portrait:w--max-[20cqw]" %}
 
     <span class="value value--large lg:value--xxlarge value--tnums" data-fit-value="true">{{ tomorrow.tMax | round }}°</span>
-    <span class="label label--small">{{ tomorrow.tMin | round }}° · {{ tomorrow.precipitaProb | round }}%</span>
+
+    <div class="flex flex--row portrait:flex--col flex--center gap--small">
+      <span class="label label--small value--tnums">{{ label_min }} {{ tomorrow.tMin | round }}°</span>
+      <span class="label label--small value--tnums">{{ label_rain }} {{ tomorrow.precipitaProb | round }}%</span>
+    </div>
   </div>
 </div>
 
