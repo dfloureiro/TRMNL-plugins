@@ -27,7 +27,7 @@
 
   <div class="divider w--full"></div>
 
-  <div class="grid grid--cols-1 lg:grid--cols-2 lg:portrait:grid--cols-1 gap--xsmall lg:gap--small w--full">
+  <div class="grid grid--cols-2 portrait:grid--cols-1 gap--xsmall lg:gap--small w--full">
     {% for r in routes limit:2 %}
       {% assign r_roads = "" | split: "" %}
       {% for instr in r.guidance.instructions %}
@@ -49,11 +49,11 @@
       {% endif %}
       {% assign r_min = r.summary.travelTimeInSeconds | plus: 0 | divided_by: 60 %}
 
-      <div class="flex flex--col gap--xsmall outline rounded p--1 lg:p--2 w--full {% if forloop.index > 1 %}hidden lg:flex{% endif %}">
+      <div class="flex flex--col gap--xsmall outline rounded p--1 lg:p--2 w--full">
         <div class="flex flex--row flex--between flex--center-y gap--small w--full">
           <span class="label label--small lg:label--large label--underline">
-  {% if forloop.first %}{{ label_main_route }}{% else %}Alt. {{ forloop.index | minus: 1 }}{% endif %}
-</span>
+            {% if forloop.first %}{{ label_main_route }}{% else %}Alt. {{ forloop.index | minus: 1 }}{% endif %}
+          </span>
           <span class="label label--small lg:label--large value--tnums shrink-0">{{ r_time }}</span>
         </div>
 
