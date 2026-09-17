@@ -1,7 +1,7 @@
 {% if plugin_ok %}
 <div class="layout layout--col gap--auto">
   <div class="flex flex--row flex--center gap--large">
-    {% render "mode_icon", icon_class: "h--[18cqh] w--max-[14cqw]" %}
+    {% render "mode_icon", icon_class: "h--[18cqh] portrait:h--[12cqh] w--max-[14cqw] portrait:w--max-[18cqw]" %}
 
     <div class="flex flex--col flex--center">
       <span class="label lg:label--xlarge label--underline">
@@ -9,11 +9,11 @@
       </span>
 
       {% if is_arrive_mode %}
-        <span class="value value--xxlarge lg:value--giga value--tnums" data-fit-value="true">{{ leave_time }}</span>
+        <span class="value value--xxlarge portrait:value--xlarge lg:value--giga lg:portrait:value--xxxlarge value--tnums" data-fit-value="true">{{ leave_time }}</span>
         <span class="label lg:label--xlarge">{{ label_arrive_by }} {{ arrive_time }}</span>
       {% else %}
         <div class="flex flex--row flex--center gap--small">
-          <span class="value value--xxlarge lg:value--giga value--tnums" data-fit-value="true">{{ travel_min }}</span>
+          <span class="value value--xxlarge portrait:value--xlarge lg:value--giga lg:portrait:value--xxxlarge value--tnums" data-fit-value="true">{{ travel_min }}</span>
           <span class="label lg:label--xlarge">{{ label_mins }}</span>
         </div>
         <span class="label lg:label--xlarge">{{ label_arrival }} {{ arrive_time }}</span>
@@ -23,29 +23,29 @@
 
   <div class="divider w--full"></div>
 
-  <div class="grid grid--cols-3 lg:portrait:grid--cols-1 gap--medium lg:gap--large w--full">
-    <div class="flex flex--col flex--center gap--xsmall">
+  <div class="grid grid--cols-3 lg:portrait:grid--cols-1 gap--medium lg:gap--large lg:portrait:gap--small w--full">
+    <div class="flex flex--col lg:portrait:flex--row flex--center gap--xsmall lg:portrait:gap--medium">
       <span class="label label--small lg:label--large">
         {% if is_arrive_mode %}{{ label_travel_time }}{% else %}{{ label_normal }}{% endif %}
       </span>
-      <span class="value value--base lg:value--xlarge value--tnums">
+      <span class="value value--base lg:value--xlarge lg:portrait:value--large value--tnums">
         {% if is_arrive_mode %}{{ travel_min }}{% else %}{{ normal_min }}{% endif %} {{ label_mins }}
       </span>
     </div>
-    <div class="flex flex--col flex--center gap--xsmall">
+    <div class="flex flex--col lg:portrait:flex--row flex--center gap--xsmall lg:portrait:gap--medium">
       <span class="label label--small lg:label--large">{{ label_distance }}</span>
-      <span class="value value--base lg:value--xlarge value--tnums">{{ distance_km }} km</span>
+      <span class="value value--base lg:value--xlarge lg:portrait:value--large value--tnums">{{ distance_km }} km</span>
     </div>
-    <div class="flex flex--col flex--center gap--xsmall">
+    <div class="flex flex--col lg:portrait:flex--row flex--center gap--xsmall lg:portrait:gap--medium">
       <span class="label label--small lg:label--large">{{ label_delay }}</span>
-      <span class="value value--base lg:value--xlarge value--tnums">
+      <span class="value value--base lg:value--xlarge lg:portrait:value--large value--tnums">
         {% if delay_min > 0 %}+{{ delay_min }} {{ label_mins }}{% else %}—{% endif %}
       </span>
     </div>
   </div>
 
   {% if road_numbers.size > 0 %}
-    <span class="label label--small lg:label--large text--center">{{ label_via }} {{ road_numbers | join: " · " }}</span>
+    <span class="label label--small lg:label--large text--center portrait:hidden">{{ label_via }} {{ road_numbers | join: " · " }}</span>
   {% endif %}
 
   <div class="divider w--full"></div>

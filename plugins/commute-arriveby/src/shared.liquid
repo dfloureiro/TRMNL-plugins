@@ -183,7 +183,7 @@
 {% endtemplate %}
 
 {% template routes_panel %}
-  <div class="grid grid--cols-2 lg:grid--cols-3 lg:portrait:grid--cols-1 gap--small lg:gap--medium w--full">
+  <div class="grid grid--cols-2 lg:grid--cols-3 lg:portrait:grid--cols-2 gap--small lg:gap--medium w--full">
     {% for r in routes limit:3 %}
       {% assign r_roads = "" | split: "" %}
       {% for instr in r.guidance.instructions %}
