@@ -6,35 +6,32 @@
 
 {% assign tomorrow = data[1] %}
 
-<div class="layout layout--row layout--center gap--xsmall lg:gap--small">
+<div class="layout layout--row lg:portrait:layout--col layout--center gap--small">
   <div class="flex flex--col flex--center gap--xsmall grow">
     <span class="label label--small">{{ label_today }}</span>
-    <span class="label label--small hidden lg:block">{{ display_name }}</span>
 
     <img
-      class="image image--adaptive w--[11cqw] h--[11cqw] lg:w--[14cqw] lg:h--[14cqw]"
+      class="image image--adaptive h--[20cqh] w--max-[30cqw]"
       src="{{ icon_url }}"
       alt="{{ weather }}"
     >
 
-    <span class="value value--medium lg:value--large value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
-    <span class="label label--small text--center">{{ weather }}</span>
-    <span class="label label--small">{{ label_min }} {{ today.tMin | round }}°</span>
-    <span class="label label--small hidden lg:block text--center">
-      {{ label_rain }} {{ today.precipitaProb | round }}% · {{ today.predWindDir }} · {{ wind_speed }}
-    </span>
+    <span class="value value--large value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
+    <span class="label label--small text--center" data-clamp="1">{{ weather }}</span>
+    <span class="label label--small">{{ label_min }} {{ today.tMin | round }}° · {{ today.precipitaProb | round }}%</span>
   </div>
 
-  <div class="divider--v"></div>
+  <div class="divider--v lg:portrait:hidden"></div>
+  <div class="divider w--full hidden lg:portrait:block"></div>
 
   <div class="flex flex--col flex--center gap--xsmall grow">
     <span class="label label--small">{% render "weekday", date_str: tomorrow.forecastDate, lang: lang %}</span>
 
-    {% render "day_icon_img", day: tomorrow, icon_class: "w--[9cqw] h--[9cqw] lg:w--[12cqw] lg:h--[12cqw]" %}
+    {% render "day_icon_img", day: tomorrow %}
 
-    <span class="value value--medium lg:value--large value--tnums" data-fit-value="true">{{ tomorrow.tMax | round }}°</span>
+    <span class="value value--large value--tnums" data-fit-value="true">{{ tomorrow.tMax | round }}°</span>
     <span class="label label--small value--tnums">{{ tomorrow.tMin | round }}°</span>
-    <span class="label label--small hidden lg:block">{{ label_rain }} {{ tomorrow.precipitaProb | round }}%</span>
+    <span class="label label--small">{{ label_rain }} {{ tomorrow.precipitaProb | round }}%</span>
   </div>
 </div>
 
