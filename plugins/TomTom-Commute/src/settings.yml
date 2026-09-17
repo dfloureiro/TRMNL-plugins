@@ -72,7 +72,7 @@ custom_fields:
   field_type: author_bio
   category: productivity,travel
   description: Car commute times via <a href="https://developer.tomtom.com/">TomTom Routing</a>, by Diogo Loureiro. Set origin and destination as <code>lat,lng</code>. Leave <code>Arrive by</code> empty for live travel time, or set a time to see when to leave. Turn on <code>Return Trip?</code> for the way home.
-  github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/commute-arriveby
+  github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/TomTom-Commute
   email_address: dfl.accounts+trmnl@mailbox.org
   learn_more_url: https://developer.tomtom.com/routing-api/documentation/tomtom-maps/v1/calculate-route
 name: TomTom Commute
