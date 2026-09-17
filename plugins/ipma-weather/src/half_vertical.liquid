@@ -1,23 +1,23 @@
-<div class="layout layout--col layout--center gap--small">
-  <div class="flex flex--col flex--center gap--xsmall">
+<div class="layout layout--col gap--auto">
+  <div class="flex flex--col flex--center gap--xsmall w--full h--max-[56cqh]">
     <span class="label label--large">{{ display_name }}</span>
 
     <img
-      class="image image--adaptive h--[22cqh] lg:portrait:h--[18cqh] w--max-[42cqw]"
+      class="image image--adaptive h--[18cqh] portrait:h--[13cqh] w--max-[38cqw]"
       src="{{ icon_url }}"
       alt="{{ weather }}"
     >
 
-    <span class="value value--xxlarge lg:value--giga value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
-    <span class="label label--large text--center" data-clamp="1">{{ weather }}</span>
-    <span class="label">{{ today.tMin | round }}° – {{ today.tMax | round }}° · {{ today.precipitaProb | round }}%</span>
+    <span class="value value--xlarge lg:value--giga value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
+    <span class="label label--large text--center">{{ weather }}</span>
+    <span class="label">{{ label_min }} {{ today.tMin | round }}° · {{ label_rain }} {{ today.precipitaProb | round }}%</span>
   </div>
 
   <div class="divider w--full"></div>
 
   <div class="flex flex--row flex--center gap--small w--full">
     {% for day in data offset:1 limit:3 %}
-      {% render "day_tile", day: day, lang: lang, icon_class: "h--[13cqh] lg:portrait:h--[16cqh] w--max-[20cqw]" %}
+      {% render "day_tile", day: day, lang: lang, icon_class: "h--[11cqh] portrait:h--[9cqh] w--max-[16cqw]", value_class: "value--xsmall lg:value--small" %}
       {% unless forloop.last %}<div class="divider--v"></div>{% endunless %}
     {% endfor %}
   </div>
