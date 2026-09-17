@@ -1,4 +1,11 @@
+function coordsLookWrong(value) {
+  const parts = String(value || "").split(",");
+  if (parts.length !== 2) return true;
+  return parts.some((p) => p.trim() === "" || Number.isNaN(Number(p)));
+}
+
 function run(input) {
+  const fields = input?.trmnl?.plugin_settings?.custom_fields_values || {};
   const apiError =
     input?.detailedError?.message ||
     input?.error?.detailedError?.message ||
@@ -6,12 +13,15 @@ function run(input) {
     null;
 
   if (apiError || !Array.isArray(input?.routes) || input.routes.length === 0) {
-    return {
-      plugin_ok: false,
-      has_error: true,
-      error_message: apiError || "No route found. Check origin, destination, and API key.",
-      routes: [],
-    };
+    let hint = apiError || "No route found for this trip.";
+
+    if (coordsLookWrong(fields.origin) || coordsLookWrong(fields.destination)) {
+      hint = "Origin and destination must be lat,lng (e.g. 38.827864,-9.170433).";
+    } else if (fields.arrive_by) {
+      hint = "No route for that arrival time. Use a future HH:mm today.";
+    }
+
+    return { plugin_ok: false, has_error: true, error_message: hint, routes: [] };
   }
 
   const routes = input.routes.map((r) => {
@@ -34,10 +44,5 @@ function run(input) {
     };
   });
 
-  return {
-    plugin_ok: true,
-    has_error: false,
-    error_message: "",
-    routes,
-  };
+  return { plugin_ok: true, has_error: false, error_message: "", routes };
 }

@@ -6,7 +6,7 @@ static_data: ''
 polling_verb: get
 framework_version: 3.3.1
 serverless_language: node
-polling_url: https://api.tomtom.com/routing/1/calculateRoute/{{ origin }}:{{ destination }}/json?key={{ tomtom_api_key }}&traffic=true&maxAlternatives=2&routeType=fastest&computeTravelTimeFor=all&sectionType=traffic&instructionsType=coded&travelMode=car&routeRepresentation=summaryOnly
+polling_url: 'https://api.tomtom.com/routing/1/calculateRoute/{% if return_trip == false or return_trip == "false" or return_trip == blank %}{{ origin }}:{{ destination }}{% else %}{{ destination }}:{{ origin }}{% endif %}/json?key={{ tomtom_api_key }}&traffic=true&maxAlternatives=2&routeType=fastest&computeTravelTimeFor=all&sectionType=traffic&instructionsType=coded&travelMode=car&routeRepresentation=summaryOnly{% if arrive_by != blank %}&arriveAt={{ "now" | date: "%Y-%m-%d" }}T{{ arrive_by }}:00{% endif %}'
 polling_headers: ''
 polling_body: ''
 id: 477902
