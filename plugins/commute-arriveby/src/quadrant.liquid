@@ -1,44 +1,35 @@
 {% if plugin_ok %}
-<div class="layout layout--col layout--center gap--xsmall lg:gap--small">
-  <span class="label label--small lg:label--large">{{ display_name }}</span>
+<div class="layout layout--col gap--auto">
+  <div class="flex flex--col flex--center gap--xsmall w--full">
+    <span class="label label--small lg:label--large label--underline">
+      {% if is_arrive_mode %}{{ label_leave_by }}{% else %}{{ label_travel_time }}{% endif %}
+    </span>
 
-  <span class="label label--small lg:label--large label--underline">
-    {% if is_arrive_mode %}{{ label_leave_by }}{% else %}{{ label_travel_time }}{% endif %}
-  </span>
+    {% if is_arrive_mode %}
+      <span class="value value--large lg:value--xxlarge value--tnums" data-fit-value="true">{{ leave_time }}</span>
+      <span class="label label--small lg:label--large">{{ label_arrive_by }} {{ arrive_time }}</span>
+    {% else %}
+      <div class="flex flex--row flex--center gap--xsmall">
+        <span class="value value--large lg:value--xxlarge value--tnums" data-fit-value="true">{{ travel_min }}</span>
+        <span class="label label--small lg:label--large">{{ label_mins }}</span>
+      </div>
+      <span class="label label--small lg:label--large">{{ label_arrival }} {{ arrive_time }}</span>
+    {% endif %}
 
-  {% if is_arrive_mode %}
-    <span class="value value--large lg:value--xxxlarge value--tnums" data-fit-value="true">{{ leave_time }}</span>
-    <span class="label label--small lg:label--large">{{ label_arrive_by }} {{ arrive_time }}</span>
-  {% else %}
-    <div class="flex flex--row flex--center gap--xsmall">
-      <span class="value value--large lg:value--xxxlarge value--tnums" data-fit-value="true">{{ travel_min }}</span>
-      <span class="label label--small lg:label--large">{{ label_mins }}</span>
-    </div>
-    <span class="label label--small lg:label--large">{{ label_arrival }} {{ arrive_time }}</span>
-  {% endif %}
+    <span class="label label--small lg:label--base">{{ traffic_text }}</span>
 
-  <span class="label label--small lg:label--base">{{ traffic_text }}</span>
-
-  <div class="hidden lg:visible w--full">
-    <div class="flex flex--row lg:portrait:flex--col flex--center gap--small w--full">
-      <span class="label label--large value--tnums">{{ distance_km }} km</span>
-      <span class="label label--large value--tnums">
-        {% if delay_min > 0 %}+{{ delay_min }} {{ label_mins }}{% else %}{{ label_normal }} {{ normal_min }} {{ label_mins }}{% endif %}
+    <div class="flex flex--row lg:portrait:flex--col flex--center gap--small hidden lg:visible">
+      <span class="label label--base value--tnums">{{ distance_km }} km</span>
+      <span class="label label--base value--tnums">
+        {% if delay_min > 0 %}+{{ delay_min }} {{ label_mins }}{% else %}{{ direction_text }}{% endif %}
       </span>
-      <span class="label label--large">{{ direction_text }}</span>
     </div>
   </div>
 
+  <div class="divider w--full"></div>
+
   <div class="flex flex--col gap--xsmall w--full">
     {% for r in routes limit:2 %}
-      {% assign r_roads = "" | split: "" %}
-      {% for instr in r.guidance.instructions %}
-        {% if instr.roadNumbers %}
-          {% assign r_roads = r_roads | concat: instr.roadNumbers %}
-        {% endif %}
-      {% endfor %}
-      {% assign r_roads = r_roads | uniq %}
-
       {% assign r_time = "--:--" %}
       {% if is_arrive_mode %}
         {% if r.summary.departureTime != blank %}
@@ -49,31 +40,20 @@
           {% assign r_time = r.summary.arrivalTime | date: "%H:%M" %}
         {% endif %}
       {% endif %}
-
       {% assign r_min = r.summary.travelTimeInSeconds | plus: 0 | divided_by: 60 %}
 
-      <div class="flex flex--col gap--xsmall outline p--1 lg:p--2 w--full">
-        <div class="flex flex--row flex--between w--full">
-          <span class="label label--small lg:label--large label--underline">
-            {% if forloop.first %}{{ label_main_route }}{% else %}{{ label_alt_route }} {{ forloop.index | minus: 1 }}{% endif %}
-          </span>
-          <span class="label label--small lg:label--large value--tnums">{{ r_time }}</span>
-        </div>
-
-        <span class="label label--large value--tnums hidden lg:visible">{{ r_min }} {{ label_mins }}</span>
-        <span class="label label--base text--center hidden lg:visible">
-          {% if r_roads.size > 0 %}{{ label_via }} {{ r_roads | join: " · " }}{% else %}{{ label_via }} —{% endif %}
+      <div class="flex flex--row flex--between w--full outline p--1 lg:p--2 {% if forloop.index > 1 %}hidden lg:flex{% endif %}">
+        <span class="label label--small lg:label--large label--underline">
+          {% if forloop.first %}{{ label_main_route }}{% else %}{{ label_alt_route }} {{ forloop.index | minus: 1 }}{% endif %}
         </span>
+        <span class="label label--small lg:label--large value--tnums">{{ r_time }}</span>
+        <span class="label label--large value--tnums hidden lg:visible">{{ r_min }} {{ label_mins }}</span>
       </div>
     {% endfor %}
   </div>
 </div>
 {% else %}
-  {% render "error_panel",
-     display_name: display_name,
-     error_text: error_text,
-     trmnl: trmnl
-  %}
+  {% render "error_panel", display_name: display_name, error_text: error_text %}
 {% endif %}
 
 {% render "title_bar", display_name: display_name, traffic_text: traffic_text, direction_text: direction_text %}
