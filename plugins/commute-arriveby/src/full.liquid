@@ -1,45 +1,64 @@
 {% if plugin_ok %}
-<div class="layout layout--col gap--small lg:gap--large">
-  <div class="flex flex--row flex--center gap--medium lg:gap--large">
+<div class="layout layout--col gap--auto">
+  <div class="flex flex--row flex--center gap--large w--full">
     <div class="flex flex--center">
       {% render "mode_icon", trmnl: trmnl %}
     </div>
 
-    <div class="flex flex--col flex--center grow">
-      <span class="label label--underline label--small lg:label--base">{{ label_travel_time }}</span>
-      <div class="flex flex--row flex--center gap--xsmall">
-        <span class="value value--xlarge lg:value--giga value--tnums" data-fit-value="true">{{ travel_min }}</span>
-        <span class="label label--small lg:label--large">{{ label_mins }}</span>
-      </div>
-      <span class="label label--small lg:label--large">{{ label_arrival }} {{ arrival }}</span>
+    <div class="flex flex--col flex--center">
+      <span class="label label--large lg:label--xxlarge label--underline">
+        {% if is_arrive_mode %}{{ label_leave_by }}{% else %}{{ label_travel_time }}{% endif %}
+      </span>
+
+      {% if is_arrive_mode %}
+        <span class="value value--xxlarge lg:value--tera value--tnums" data-fit-value="true">{{ leave_time }}</span>
+        <span class="label label--large lg:label--xlarge">{{ label_arrive_by }} {{ arrive_time }}</span>
+      {% else %}
+        <div class="flex flex--row flex--center gap--small">
+          <span class="value value--xxlarge lg:value--tera value--tnums" data-fit-value="true">{{ travel_min }}</span>
+          <span class="label label--large lg:label--xxlarge">{{ label_mins }}</span>
+        </div>
+        <span class="label label--large lg:label--xlarge">{{ label_arrival }} {{ arrive_time }}</span>
+      {% endif %}
+
+      <span class="label lg:label--large">{{ direction_text }}</span>
     </div>
   </div>
 
-  <div class="grid grid--cols-3 gap--small lg:gap--large">
+  <div class="divider w--full"></div>
+
+  <div class="grid grid--cols-3 lg:portrait:grid--cols-1 gap--medium lg:gap--large w--full">
     <div class="flex flex--col flex--center gap--xsmall">
-      <span class="label label--small">{{ label_distance }}</span>
-      <span class="value value--xsmall lg:value--base value--tnums">{{ distance_km }} km</span>
+      <span class="label label--small lg:label--large">
+        {% if is_arrive_mode %}{{ label_travel_time }}{% else %}{{ label_normal }}{% endif %}
+      </span>
+      <span class="value value--base lg:value--xxlarge value--tnums">
+        {% if is_arrive_mode %}{{ travel_min }}{% else %}{{ normal_min }}{% endif %} {{ label_mins }}
+      </span>
     </div>
+
     <div class="flex flex--col flex--center gap--xsmall">
-      <span class="label label--small">{{ label_normal }}</span>
-      <span class="value value--xsmall lg:value--base value--tnums">{{ normal_min }} {{ label_mins }}</span>
+      <span class="label label--small lg:label--large">{{ label_distance }}</span>
+      <span class="value value--base lg:value--xxlarge value--tnums">{{ distance_km }} km</span>
     </div>
+
     <div class="flex flex--col flex--center gap--xsmall">
-      <span class="label label--small">{{ label_delay }}</span>
-      <span class="value value--xsmall lg:value--base value--tnums">
+      <span class="label label--small lg:label--large">{{ label_delay }}</span>
+      <span class="value value--base lg:value--xxlarge value--tnums">
         {% if delay_min > 0 %}+{{ delay_min }} {{ label_mins }}{% else %}—{% endif %}
       </span>
     </div>
   </div>
 
   {% if road_numbers.size > 0 %}
-    <span class="label label--small text--center hidden lg:block">{{ label_via }} {{ road_numbers | join: " · " }}</span>
+    <span class="label label--large lg:label--xlarge text--center">{{ label_via }} {{ road_numbers | join: " · " }}</span>
   {% endif %}
 
-  <div class="divider"></div>
+  <div class="divider w--full"></div>
 
   {% render "routes_panel",
      routes: routes,
+     is_arrive_mode: is_arrive_mode,
      label_main_route: label_main_route,
      label_alt_route: label_alt_route,
      label_mins: label_mins,
@@ -49,13 +68,9 @@
 {% else %}
   {% render "error_panel",
      display_name: display_name,
-     label_error: label_error,
      error_text: error_text,
      trmnl: trmnl
   %}
 {% endif %}
 
-{% render "title_bar",
-   display_name: display_name,
-   traffic_text: traffic_text
-%}
+{% render "title_bar", display_name: display_name, traffic_text: traffic_text, direction_text: direction_text %}
