@@ -38,11 +38,11 @@ custom_fields:
 - keyname: origin
   field_type: string
   name: Origin
-  description: lat,lng (ex. 38.827864,-9.170433)
+  description: lat,lng (ex. 38.707530,-9.136378)
 - keyname: destination
   field_type: string
   name: Destination
-  description: lat,lng (ex. 38.730743,-9.151019)
+  description: lat,lng (ex. 41.148836,-8.610915)
 - keyname: return_trip
   field_type: boolean
   name: Return Trip?
