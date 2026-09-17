@@ -75,6 +75,6 @@ custom_fields:
   github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/commute-arriveby
   email_address: dfl.accounts+trmnl@mailbox.org
   learn_more_url: https://developer.tomtom.com/routing-api/documentation/tomtom-maps/v1/calculate-route
-name: TomTom Commute Guide
+name: TomTom Commute
 description: Live car times with traffic
 refresh_interval: 15
