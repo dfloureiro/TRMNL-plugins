@@ -11,14 +11,14 @@
     <span class="label label--small">{{ label_today }}</span>
 
     <img
-      class="image image--adaptive h--[20cqh] w--max-[30cqw]"
+      class="image image--adaptive h--[26cqh] lg:portrait:h--[18cqh] w--max-[30cqw]"
       src="{{ icon_url }}"
       alt="{{ weather }}"
     >
 
-    <span class="value value--large value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
-    <span class="label label--small text--center" data-clamp="1">{{ weather }}</span>
-    <span class="label label--small">{{ label_min }} {{ today.tMin | round }}° · {{ today.precipitaProb | round }}%</span>
+    <span class="value value--large lg:value--xxlarge value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
+    <span class="label text--center" data-clamp="1">{{ weather }}</span>
+    <span class="label label--small">{{ today.tMin | round }}° · {{ today.precipitaProb | round }}%</span>
   </div>
 
   <div class="divider--v lg:portrait:hidden"></div>
@@ -27,11 +27,16 @@
   <div class="flex flex--col flex--center gap--xsmall grow">
     <span class="label label--small">{% render "weekday", date_str: tomorrow.forecastDate, lang: lang %}</span>
 
-    {% render "day_icon_img", day: tomorrow %}
+    <img
+      class="image image--adaptive h--[26cqh] lg:portrait:h--[18cqh] w--max-[30cqw]"
+      src="https://trmnl.com/images/plugins/weather/{{ icon }}.svg"
+      alt=""
+      hidden
+    >
+    {% render "day_icon_img", day: tomorrow, icon_class: "h--[26cqh] lg:portrait:h--[18cqh] w--max-[30cqw]" %}
 
-    <span class="value value--large value--tnums" data-fit-value="true">{{ tomorrow.tMax | round }}°</span>
-    <span class="label label--small value--tnums">{{ tomorrow.tMin | round }}°</span>
-    <span class="label label--small">{{ label_rain }} {{ tomorrow.precipitaProb | round }}%</span>
+    <span class="value value--large lg:value--xxlarge value--tnums" data-fit-value="true">{{ tomorrow.tMax | round }}°</span>
+    <span class="label label--small">{{ tomorrow.tMin | round }}° · {{ tomorrow.precipitaProb | round }}%</span>
   </div>
 </div>
 
