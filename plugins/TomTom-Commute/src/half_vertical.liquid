@@ -1,0 +1,67 @@
+{% if plugin_ok %}
+<div class="layout layout--col gap--auto">
+  <div class="flex flex--col flex--center gap--xsmall w--full h--max-[54cqh]">
+    {% render "mode_icon", icon_class: "h--[14cqh] w--max-[26cqw]" %}
+
+    <span class="label label--small lg:label--large label--underline">
+      {% if is_arrive_mode %}{{ label_leave_by }}{% else %}{{ label_travel_time }}{% endif %}
+    </span>
+
+    {% if is_arrive_mode %}
+      <span class="value value--xlarge lg:value--xxxlarge value--tnums" data-fit-value="true">{{ leave_time }}</span>
+      <span class="label label--small lg:label--large">{{ label_arrive_by }} {{ arrive_time }}</span>
+    {% else %}
+      <div class="flex flex--row flex--center gap--xsmall">
+        <span class="value value--xlarge lg:value--xxxlarge value--tnums" data-fit-value="true">{{ travel_min }}</span>
+        <span class="label label--small lg:label--large">{{ label_mins }}</span>
+      </div>
+      <span class="label label--small lg:label--large">{{ label_arrival }} {{ arrive_time }}</span>
+    {% endif %}
+
+    <span class="label label--small lg:label--base">{{ distance_km }} km · {{ traffic_text }}</span>
+    <span class="label label--base hidden lg:visible">{{ direction_text }} · {{ label_normal }} {{ normal_min }} {{ label_mins }}</span>
+  </div>
+
+  <div class="divider w--full"></div>
+
+  <div class="flex flex--col gap--xsmall lg:gap--small w--full">
+    {% for r in routes limit:2 %}
+      {% assign r_time = "--:--" %}
+      {% if is_arrive_mode %}
+        {% if r.summary.departureTime != blank %}
+          {% assign r_time = r.summary.departureTime | date: "%H:%M" %}
+        {% endif %}
+      {% else %}
+        {% if r.summary.arrivalTime != blank %}
+          {% assign r_time = r.summary.arrivalTime | date: "%H:%M" %}
+        {% endif %}
+      {% endif %}
+      {% assign r_min = r.summary.travelTimeInSeconds | plus: 0 | divided_by: 60 %}
+      {% assign r_roads = "" | split: "" %}
+      {% for instr in r.guidance.instructions %}
+        {% if instr.roadNumbers %}
+          {% assign r_roads = r_roads | concat: instr.roadNumbers %}
+        {% endif %}
+      {% endfor %}
+      {% assign r_roads = r_roads | uniq %}
+
+      <div class="flex flex--col gap--xsmall outline p--1 lg:p--2 w--full">
+        <div class="flex flex--row flex--between w--full">
+          <span class="label label--small lg:label--large label--underline">
+            {% if forloop.first %}{{ label_main_route }}{% else %}{{ label_alt_route }} {{ forloop.index | minus: 1 }}{% endif %}
+          </span>
+          <span class="value value--xsmall lg:value--base value--tnums">{{ r_time }}</span>
+        </div>
+        <span class="label label--small lg:label--base value--tnums">{{ r_min }} {{ label_mins }}</span>
+        <span class="label label--base text--center hidden lg:visible">
+          {% if r_roads.size > 0 %}{{ label_via }} {{ r_roads | join: " · " }}{% else %}{{ label_via }} —{% endif %}
+        </span>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+  {% render "error_panel", display_name: display_name, error_text: error_text %}
+{% endif %}
+
+{% render "title_bar", display_name: display_name, traffic_text: traffic_text, direction_text: direction_text %}
