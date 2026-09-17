@@ -1,12 +1,33 @@
 {% if plugin_ok %}
-<div class="layout layout--col flex--center gap--xsmall lg:gap--small">
-  <span class="label label--small">{{ display_name }}</span>
+<div class="layout layout--col layout--center gap--xsmall lg:gap--small">
+  <span class="label label--small lg:label--large">{{ display_name }}</span>
 
-  <div class="flex flex--row flex--center gap--xsmall">
-    <span class="value value--medium lg:value--xlarge value--tnums" data-fit-value="true">{{ travel_min }}</span>
-    <span class="label label--small">{{ label_mins }}</span>
+  <span class="label label--small lg:label--large label--underline">
+    {% if is_arrive_mode %}{{ label_leave_by }}{% else %}{{ label_travel_time }}{% endif %}
+  </span>
+
+  {% if is_arrive_mode %}
+    <span class="value value--large lg:value--xxxlarge value--tnums" data-fit-value="true">{{ leave_time }}</span>
+    <span class="label label--small lg:label--large">{{ label_arrive_by }} {{ arrive_time }}</span>
+  {% else %}
+    <div class="flex flex--row flex--center gap--xsmall">
+      <span class="value value--large lg:value--xxxlarge value--tnums" data-fit-value="true">{{ travel_min }}</span>
+      <span class="label label--small lg:label--large">{{ label_mins }}</span>
+    </div>
+    <span class="label label--small lg:label--large">{{ label_arrival }} {{ arrive_time }}</span>
+  {% endif %}
+
+  <span class="label label--small lg:label--base">{{ traffic_text }}</span>
+
+  <div class="hidden lg:visible w--full">
+    <div class="flex flex--row lg:portrait:flex--col flex--center gap--small w--full">
+      <span class="label label--large value--tnums">{{ distance_km }} km</span>
+      <span class="label label--large value--tnums">
+        {% if delay_min > 0 %}+{{ delay_min }} {{ label_mins }}{% else %}{{ label_normal }} {{ normal_min }} {{ label_mins }}{% endif %}
+      </span>
+      <span class="label label--large">{{ direction_text }}</span>
+    </div>
   </div>
-  <span class="label label--small">{{ arrival }} · {{ traffic_text }}</span>
 
   <div class="flex flex--col gap--xsmall w--full">
     {% for r in routes limit:2 %}
@@ -17,21 +38,31 @@
         {% endif %}
       {% endfor %}
       {% assign r_roads = r_roads | uniq %}
+
+      {% assign r_time = "--:--" %}
+      {% if is_arrive_mode %}
+        {% if r.summary.departureTime != blank %}
+          {% assign r_time = r.summary.departureTime | date: "%H:%M" %}
+        {% endif %}
+      {% else %}
+        {% if r.summary.arrivalTime != blank %}
+          {% assign r_time = r.summary.arrivalTime | date: "%H:%M" %}
+        {% endif %}
+      {% endif %}
+
       {% assign r_min = r.summary.travelTimeInSeconds | plus: 0 | divided_by: 60 %}
 
-      <div class="flex flex--col flex--center gap--xsmall outline outline--2 rounded p--1 w--full">
+      <div class="flex flex--col gap--xsmall outline p--1 lg:p--2 w--full">
         <div class="flex flex--row flex--between w--full">
-          <span class="label label--small label--underline">
+          <span class="label label--small lg:label--large label--underline">
             {% if forloop.first %}{{ label_main_route }}{% else %}{{ label_alt_route }} {{ forloop.index | minus: 1 }}{% endif %}
           </span>
-          <span class="label label--small value--tnums">{{ r_min }}'</span>
+          <span class="label label--small lg:label--large value--tnums">{{ r_time }}</span>
         </div>
-        <span class="label label--small text--center hidden lg:block">
-          {% if r_roads.size > 0 %}
-            {{ label_via }} {{ r_roads | join: " · " }}
-          {% else %}
-            {{ label_via }} —
-          {% endif %}
+
+        <span class="label label--large value--tnums hidden lg:visible">{{ r_min }} {{ label_mins }}</span>
+        <span class="label label--base text--center hidden lg:visible">
+          {% if r_roads.size > 0 %}{{ label_via }} {{ r_roads | join: " · " }}{% else %}{{ label_via }} —{% endif %}
         </span>
       </div>
     {% endfor %}
@@ -40,13 +71,9 @@
 {% else %}
   {% render "error_panel",
      display_name: display_name,
-     label_error: label_error,
      error_text: error_text,
      trmnl: trmnl
   %}
 {% endif %}
 
-{% render "title_bar",
-   display_name: display_name,
-   traffic_text: traffic_text
-%}
+{% render "title_bar", display_name: display_name, traffic_text: traffic_text, direction_text: direction_text %}
