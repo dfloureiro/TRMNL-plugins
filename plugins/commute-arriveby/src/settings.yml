@@ -76,5 +76,5 @@ custom_fields:
   email_address: dfl.accounts+trmnl@mailbox.org
   learn_more_url: https://developer.tomtom.com/routing-api/documentation/tomtom-maps/v1/calculate-route
 name: TomTom Commute
-description: Live car times with traffic
+description: Live travel and leave-by times
 refresh_interval: 15
