@@ -9,8 +9,7 @@ Each plugin lives in its own folder under [`plugins/`](plugins) and follows the 
 | Plugin | Description |
 | --- | --- |
 | [IPMA Weather](plugins/ipma-weather) | Daily weather forecast for locations in Portugal, using open data from IPMA (Instituto Português do Mar e da Atmosfera). Available in English and Portuguese. |
-| [Commute - Arrive By](plugins/commute-arriveby) | Live car travel time and arrival time between two points, with traffic delay and up to two alternative routes, using the TomTom Routing API. Available in English and Portuguese. |
-| [Commute - Leave By](plugins/commute-leaveby) | Tells you when to leave to arrive at a destination by a set time, with traffic and alternative routes, using the TomTom Routing API. Available in English and Portuguese. |
+| [TomTom Commute](plugins/TomTom-Commute) | Live car travel time between two points, with traffic delay and up to two alternative routes, using the TomTom Routing API. Works in "leave by" mode (travel time from now) or "arrive by" mode (works out when to leave to arrive at a set time), with an optional return trip. Available in English and Portuguese. |
 
 ## Repository structure
 
