@@ -55,7 +55,7 @@ custom_fields:
   options:
   - English: en
   - Português: pt
-  help_text: Use <code>en</code> for English or <code>pt</code> for Português
+  help_text: Pick your preferred language
 - keyname: about_plugin
   name: About this plugin
   field_type: author_bio
