@@ -200,10 +200,32 @@
     {% else %}{% assign day_icon = "wi-na" %}
   {% endcase %}
   <img
-    class="image image--adaptive {{ icon_class }}"
+    class="image image--adaptive h--[12cqh] w--max-[20cqw]"
     src="https://trmnl.com/images/plugins/weather/{{ day_icon }}.svg"
     alt=""
   >
+{% endtemplate %}
+
+{% template day_tile %}
+  <div class="flex flex--col flex--center gap--xsmall grow">
+    <span class="label label--small">{% render "weekday", date_str: day.forecastDate, lang: lang %}</span>
+
+    {% render "day_icon_img", day: day %}
+
+    <div class="flex flex--row flex--center gap--xsmall">
+      <span class="value value--small lg:value--base value--tnums">{{ day.tMax | round }}°</span>
+      <span class="label value--tnums">{{ day.tMin | round }}°</span>
+    </div>
+
+    <div class="flex flex--row flex--center gap--xsmall">
+      <img
+        class="image image--adaptive h--[4cqh] w--max-[6cqw]"
+        src="https://trmnl.com/images/plugins/weather/wi-raindrop.svg"
+        alt=""
+      >
+      <span class="label value--tnums">{{ day.precipitaProb | round }}%</span>
+    </div>
+  </div>
 {% endtemplate %}
 
 {% template title_bar %}
