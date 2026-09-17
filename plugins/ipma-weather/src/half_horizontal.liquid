@@ -9,7 +9,10 @@
     <div class="flex flex--col flex--center">
       <span class="value value--xlarge lg:value--xxxlarge value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
       <span class="label label--large text--center">{{ weather }}</span>
-      <span class="label">{{ label_min }} {{ today.tMin | round }}° · {{ label_rain }} {{ today.precipitaProb | round }}%</span>
+      <div class="flex flex--row flex--center gap--small">
+        <span class="label label--small value--tnums">{{ label_min }} {{ today.tMin | round }}°</span>
+        <span class="label label--small value--tnums">{{ label_rain }} {{ today.precipitaProb | round }}%</span>
+      </div>
     </div>
   </div>
 
@@ -18,7 +21,7 @@
 
   <div class="flex flex--row flex--center gap--auto grow w--full">
     {% for day in data offset:1 limit:3 %}
-      {% render "day_tile", day: day, lang: lang, icon_class: "h--[30cqh] portrait:h--[12cqh] w--max-[12cqw] portrait:w--max-[16cqw]" %}
+      {% render "day_tile", day: day, lang: lang, icon_class: "h--[30cqh] portrait:h--[12cqh] w--max-[12cqw] portrait:w--max-[16cqw]", rain_label: label_rain %}
       {% unless forloop.last %}<div class="divider--v"></div>{% endunless %}
     {% endfor %}
   </div>

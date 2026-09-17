@@ -219,7 +219,9 @@
       <span class="label label--small value--tnums">{{ day.tMin | round }}°</span>
     </div>
 
-    <span class="label label--small value--tnums">{{ day.precipitaProb | round }}%</span>
+    <span class="label label--small value--tnums">
+      {% if rain_label != blank %}{{ rain_label }} {% endif %}{{ day.precipitaProb | round }}%
+    </span>
   </div>
 {% endtemplate %}
 
