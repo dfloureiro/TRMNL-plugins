@@ -207,17 +207,19 @@
 {% endtemplate %}
 
 {% template day_tile %}
+  {% assign tile_value_class = value_class | default: "value--small lg:value--base" %}
+
   <div class="flex flex--col flex--center gap--xsmall grow">
     <span class="label">{% render "weekday", date_str: day.forecastDate, lang: lang %}</span>
 
     {% render "day_icon_img", day: day, icon_class: icon_class %}
 
     <div class="flex flex--row flex--center gap--xsmall">
-      <span class="value value--small lg:value--base value--tnums">{{ day.tMax | round }}°</span>
-      <span class="label value--tnums">{{ day.tMin | round }}°</span>
+      <span class="value {{ tile_value_class }} value--tnums">{{ day.tMax | round }}°</span>
+      <span class="label label--small value--tnums">{{ day.tMin | round }}°</span>
     </div>
 
-    <span class="label value--tnums">{{ day.precipitaProb | round }}%</span>
+    <span class="label label--small value--tnums">{{ day.precipitaProb | round }}%</span>
   </div>
 {% endtemplate %}
 
