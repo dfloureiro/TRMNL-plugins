@@ -1,41 +1,24 @@
-<div class="layout layout--col gap--small lg:gap--space-between">
+<div class="layout layout--col layout--center gap--medium">
   <div class="flex flex--col flex--center gap--xsmall">
-    <span class="label label--small">{{ display_name }}</span>
+    <span class="label">{{ display_name }}</span>
+
     <img
-      class="image image--adaptive w--[16cqw] h--[16cqw] portrait:w--[18cqw] portrait:h--[18cqw] lg:w--[22cqw] lg:h--[22cqw]"
+      class="image image--adaptive h--[22cqh] w--max-[34cqw]"
       src="{{ icon_url }}"
       alt="{{ weather }}"
     >
-    <span class="value value--xlarge lg:value--xxxlarge value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
-    <span class="label label--small lg:label--large text--center">{{ weather }}</span>
-    <span class="label label--small">{{ today.tMin | round }}° – {{ today.tMax | round }}°</span>
-    <span class="label label--small text--center hidden lg:block">
-      {{ label_rain }} {{ today.precipitaProb | round }}% · {{ today.predWindDir }} · {{ wind_speed }}
-    </span>
-    <span class="label label--small lg:hidden">{{ label_rain }} {{ today.precipitaProb | round }}%</span>
+
+    <span class="value value--xxxlarge value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
+    <span class="label label--large text--center" data-clamp="1">{{ weather }}</span>
+    <span class="label label--small">{{ today.tMin | round }}° – {{ today.tMax | round }}° · {{ label_rain }} {{ today.precipitaProb | round }}%</span>
   </div>
 
-  <div class="grid grid--cols-3 gap--xsmall lg:gap--medium w--full">
+  <div class="divider w--full"></div>
+
+  <div class="flex flex--row flex--center gap--small w--full grow">
     {% for day in data offset:1 limit:3 %}
-      <div class="flex flex--col flex--center gap--xsmall {% unless forloop.last %}border--v{% endunless %}">
-        <span class="label label--small">{% render "weekday", date_str: day.forecastDate, lang: lang %}</span>
-
-        {% render "day_icon_img", day: day, icon_class: "w--[7cqw] h--[7cqw] lg:w--[9cqw] lg:h--[9cqw]" %}
-
-        <div class="flex flex--row flex--center gap--xsmall">
-          <span class="value value--xsmall value--tnums">{{ day.tMax | round }}°</span>
-          <span class="label label--small value--tnums">{{ day.tMin | round }}°</span>
-        </div>
-
-        <div class="flex flex--row flex--center gap--xsmall">
-          <img
-            class="image image--adaptive w--[3cqw] h--[3cqw]"
-            src="https://trmnl.com/images/plugins/weather/wi-raindrop.svg"
-            alt=""
-          >
-          <span class="label label--small value--tnums">{{ day.precipitaProb | round }}%</span>
-        </div>
-      </div>
+      {% render "day_tile", day: day, lang: lang %}
+      {% unless forloop.last %}<div class="divider--v"></div>{% endunless %}
     {% endfor %}
   </div>
 </div>
