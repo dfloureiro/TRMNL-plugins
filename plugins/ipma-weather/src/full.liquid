@@ -36,7 +36,7 @@
 
   <div class="flex flex--row flex--center gap--medium w--full">
     {% for day in data offset:1 limit:4 %}
-      {% render "day_tile", day: day, lang: lang, icon_class: "h--[14cqh] lg:h--[16cqh] w--max-[16cqw]" %}
+      {% render "day_tile", day: day, lang: lang, icon_class: "h--[14cqh] lg:h--[16cqh] w--max-[16cqw]", rain_label: label_rain %}
       {% unless forloop.last %}<div class="divider--v"></div>{% endunless %}
     {% endfor %}
   </div>
