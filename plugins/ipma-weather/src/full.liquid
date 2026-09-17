@@ -1,14 +1,14 @@
 <div class="layout layout--col layout--center gap--medium lg:gap--large">
   <div class="flex flex--row flex--center gap--medium lg:gap--large">
     <img
-      class="image image--adaptive w--[16cqw] h--[16cqw] lg:w--[22cqw] lg:h--[22cqw]"
+      class="image image--adaptive w--[16cqw] h--[16cqw] lg:w--[22cqw] lg:h--[22cqw] lg:portrait:w--[18cqw] lg:portrait:h--[18cqw]"
       src="{{ icon_url }}"
       alt="{{ weather }}"
     >
 
     <div class="flex flex--col flex--center">
       <span class="label label--small lg:label--large text--center">{{ display_name }}</span>
-      <span class="value value--xxlarge lg:value--giga value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
+      <span class="value value--xxlarge lg:value--giga lg:portrait:value--xxxlarge value--tnums" data-fit-value="true">{{ today.tMax | round }}°</span>
       <span class="label label--small lg:label--large text--center">{{ weather }}</span>
     </div>
   </div>
@@ -30,12 +30,12 @@
 
   <div class="divider w--full"></div>
 
-  <div class="grid grid--cols-4 portrait:grid--cols-2 gap--small lg:gap--medium w--full">
+  <div class="grid grid--cols-4 lg:portrait:grid--cols-2 gap--small lg:gap--medium w--full">
     {% for day in data offset:1 limit:4 %}
-      <div class="flex flex--col flex--center gap--xsmall {% unless forloop.last %}lg:border--v{% endunless %}">
+      <div class="flex flex--col flex--center gap--xsmall {% unless forloop.last %}lg:landscape:border--v{% endunless %}">
         <span class="label label--small">{% render "weekday", date_str: day.forecastDate, lang: lang %}</span>
 
-        {% render "day_icon_img", day: day, icon_class: "w--[8cqw] h--[8cqw] lg:w--[11cqw] lg:h--[11cqw]" %}
+        {% render "day_icon_img", day: day, icon_class: "w--[8cqw] h--[8cqw] lg:w--[11cqw] lg:h--[11cqw] lg:portrait:w--[9cqw] lg:portrait:h--[9cqw]" %}
 
         <div class="flex flex--row flex--center gap--xsmall">
           <span class="value value--xsmall lg:value--small value--tnums">{{ day.tMax | round }}°</span>
