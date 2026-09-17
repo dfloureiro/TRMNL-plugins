@@ -61,7 +61,7 @@ custom_fields:
   field_type: author_bio
   category: nature,environment
   description: Daily weather for Portugal via <a href="https://api.ipma.pt/">IPMA open data</a>, by Diogo Loureiro. Set an IPMA Location ID, language, and optionally a display name. Not every municipality has its own station — pick the nearest city (e.g. Lisbon for Loures). Questions or issues? Open a GitHub issue or email me.
-  github_url: https://github.com/dfloureiro/TRMNL-IPMA-Weather
+  github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/ipma-weather
   learn_more_url: https://api.ipma.pt/
   email_address: dfl.accounts+trmnl@mailbox.org
 name: IPMA Weather
