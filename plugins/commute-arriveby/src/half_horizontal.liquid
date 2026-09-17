@@ -1,7 +1,7 @@
 {% if plugin_ok %}
 <div class="layout layout--row portrait:layout--col gap--auto">
-  <div class="flex flex--row flex--center gap--small lg:gap--medium">
-    {% render "mode_icon", trmnl: trmnl %}
+  <div class="flex flex--row flex--center gap--small">
+    {% render "mode_icon", icon_class: "h--[30cqh] portrait:h--[14cqh] w--max-[12cqw] portrait:w--max-[18cqw]" %}
 
     <div class="flex flex--col flex--center">
       <span class="label label--small lg:label--large label--underline">
@@ -9,21 +9,19 @@
       </span>
 
       {% if is_arrive_mode %}
-        <span class="value value--large lg:value--xxxlarge value--tnums" data-fit-value="true">{{ leave_time }}</span>
+        <span class="value value--large lg:value--xxlarge value--tnums" data-fit-value="true">{{ leave_time }}</span>
         <span class="label label--small lg:label--large">{{ label_arrive_by }} {{ arrive_time }}</span>
       {% else %}
         <div class="flex flex--row flex--center gap--xsmall">
-          <span class="value value--large lg:value--xxxlarge value--tnums" data-fit-value="true">{{ travel_min }}</span>
+          <span class="value value--large lg:value--xxlarge value--tnums" data-fit-value="true">{{ travel_min }}</span>
           <span class="label label--small lg:label--large">{{ label_mins }}</span>
         </div>
         <span class="label label--small lg:label--large">{{ label_arrival }} {{ arrive_time }}</span>
       {% endif %}
 
       <span class="label label--small lg:label--base">
-        {{ distance_km }} km{% if delay_min > 0 %} · +{{ delay_min }} {{ label_mins }}{% else %} · {{ traffic_text }}{% endif %}
+        {{ distance_km }} km{% if delay_min > 0 %} · +{{ delay_min }}{% else %} · {{ traffic_text }}{% endif %}
       </span>
-
-      <span class="label label--base hidden lg:visible">{{ direction_text }}</span>
     </div>
   </div>
 
@@ -32,14 +30,6 @@
 
   <div class="flex flex--col gap--xsmall lg:gap--small grow w--full">
     {% for r in routes limit:2 %}
-      {% assign r_roads = "" | split: "" %}
-      {% for instr in r.guidance.instructions %}
-        {% if instr.roadNumbers %}
-          {% assign r_roads = r_roads | concat: instr.roadNumbers %}
-        {% endif %}
-      {% endfor %}
-      {% assign r_roads = r_roads | uniq %}
-
       {% assign r_time = "--:--" %}
       {% if is_arrive_mode %}
         {% if r.summary.departureTime != blank %}
@@ -50,9 +40,14 @@
           {% assign r_time = r.summary.arrivalTime | date: "%H:%M" %}
         {% endif %}
       {% endif %}
-
       {% assign r_min = r.summary.travelTimeInSeconds | plus: 0 | divided_by: 60 %}
-      {% assign r_km = r.summary.lengthInMeters | plus: 0 | divided_by: 1000.0 | round: 1 %}
+      {% assign r_roads = "" | split: "" %}
+      {% for instr in r.guidance.instructions %}
+        {% if instr.roadNumbers %}
+          {% assign r_roads = r_roads | concat: instr.roadNumbers %}
+        {% endif %}
+      {% endfor %}
+      {% assign r_roads = r_roads | uniq %}
 
       <div class="flex flex--col gap--xsmall outline p--1 lg:p--2 w--full">
         <div class="flex flex--row flex--between w--full">
@@ -61,9 +56,7 @@
           </span>
           <span class="value value--xsmall lg:value--base value--tnums">{{ r_time }}</span>
         </div>
-
-        <span class="label label--small lg:label--large value--tnums">{{ r_min }} {{ label_mins }} · {{ r_km }} km</span>
-
+        <span class="label label--small lg:label--base value--tnums">{{ r_min }} {{ label_mins }}</span>
         <span class="label label--base hidden lg:visible">
           {% if r_roads.size > 0 %}{{ label_via }} {{ r_roads | join: " · " }}{% else %}{{ label_via }} —{% endif %}
         </span>
@@ -72,11 +65,7 @@
   </div>
 </div>
 {% else %}
-  {% render "error_panel",
-     display_name: display_name,
-     error_text: error_text,
-     trmnl: trmnl
-  %}
+  {% render "error_panel", display_name: display_name, error_text: error_text %}
 {% endif %}
 
 {% render "title_bar", display_name: display_name, traffic_text: traffic_text, direction_text: direction_text %}
