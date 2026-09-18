@@ -36,11 +36,11 @@ custom_fields:
   name: TomTom API Key
   description: Free key from <a href="https://developer.tomtom.com/">developer.tomtom.com</a>
 - keyname: origin
-  field_type: string
+  field_type: lat_lon
   name: Origin
   description: lat,lng (ex. 38.707530,-9.136378)
 - keyname: destination
-  field_type: string
+  field_type: lat_lon
   name: Destination
   description: lat,lng (ex. 41.148836,-8.610915)
 - keyname: return_trip
