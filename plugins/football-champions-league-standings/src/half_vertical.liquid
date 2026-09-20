@@ -10,7 +10,6 @@
   {% if featured != blank and featured.position > 12 %}
     <div class="w--full{% if featured.position <= 20 %} cl-og-landscape-only{% elsif featured.position <= 30 %} cl-not-x-portrait{% endif %}"><span class="label label--small">FAVOURITE</span><div class="cl-half-vertical-table">{% render "table_row", row: featured %}</div></div>
   {% endif %}
-  <span class="label label--small">9–24 playoff</span>
 </div>
 {% else %}{% render "error_panel", message: table_error %}{% endif %}
 {% render "title_bar", compact: true %}
