@@ -1,0 +1,49 @@
+{% assign table_ok = false %}
+{% if plugin_ok == true or plugin_ok == "true" %}{% if rows.size > 0 %}{% assign table_ok = true %}{% endif %}{% endif %}
+{% if error_message != blank %}{% assign table_error = error_message %}{% else %}{% assign table_error = "Standings are unavailable right now." %}{% endif %}
+
+{% template table_row %}
+  <div style="display:grid;grid-template-columns:2.3em minmax(0,1fr) 2em 2.4em 2.6em;align-items:center;gap:.2em;min-height:1.35em;border-bottom:{% if row.position == 8 or row.position == 24 %}2px{% else %}1px{% endif %} solid #111;{% if row.favorite %}background:#111;color:#fff;padding:0 3px;{% endif %}">
+    <span class="value--tnums" style="font-weight:700">{{ row.position }}</span>
+    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:{% if row.favorite %}700{% else %}500{% endif %}">{{ row.name | escape }}</span>
+    <span class="value--tnums" style="text-align:right">{{ row.played }}</span>
+    <span class="value--tnums" style="text-align:right">{{ row.gd_text }}</span>
+    <span class="value--tnums" style="text-align:right;font-weight:700">{{ row.points }}</span>
+  </div>
+{% endtemplate %}
+
+{% template table_heading %}
+  <div style="display:grid;grid-template-columns:2.3em minmax(0,1fr) 2em 2.4em 2.6em;gap:.2em;border-bottom:2px solid #111;font-weight:700">
+    <span>#</span><span>CLUB</span><span style="text-align:right">P</span><span style="text-align:right">GD</span><span style="text-align:right">PTS</span>
+  </div>
+{% endtemplate %}
+
+{% template featured_card %}
+  {% if row != blank %}
+    <div class="outline rounded p--2 w--full">
+      <div class="flex flex--row flex--between flex--center-y gap--small">
+        <span class="label label--small">{% if row.favorite %}FAVOURITE CLUB{% else %}LEADER{% endif %}</span>
+        <span class="value value--base value--tnums">#{{ row.position }}</span>
+      </div>
+      <div class="value value--large lg:value--xlarge" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ row.name | escape }}</div>
+      <div class="label label--base value--tnums">{{ row.points }} pts · {{ row.played }} played · GD {{ row.gd_text }}</div>
+      <div class="label label--small">{{ row.zone }}</div>
+    </div>
+  {% endif %}
+{% endtemplate %}
+
+{% template error_panel %}
+  <div class="layout layout--col flex flex--center">
+    <span class="value value--large">Champions League</span>
+    <span class="label label--base text--center">{{ message | escape }}</span>
+  </div>
+{% endtemplate %}
+
+{% template title_bar %}
+  <div class="title_bar">
+    <span class="title">Champions League</span>
+    <span class="instance">League phase{% if season_label != blank %} · {{ season_label }}{% endif %}</span>
+  </div>
+{% endtemplate %}
+
+{% template chef_layout_anchor %}<div class="layout layout--col"></div>{% endtemplate %}

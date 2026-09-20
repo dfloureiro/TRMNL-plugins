@@ -1,0 +1,16 @@
+{% if table_ok %}
+<div class="layout layout--col gap--small">
+  <div class="flex flex--row flex--between w--full">
+    <span class="label label--base">LEADERS · DIRECT</span>
+    <span class="label label--small">P / GD / PTS</span>
+  </div>
+  <div class="w--full" style="font-size:clamp(14px,3.5cqh,24px);line-height:1.35">
+    {% render "table_heading" %}
+    {% for row in rows limit:6 %}{% render "table_row", row: row %}{% endfor %}
+  </div>
+  {% if featured != blank and featured.position > 8 %}
+    <div class="w--full"><span class="label label--small">FAVOURITE</span>{% render "table_row", row: featured %}</div>
+  {% endif %}
+</div>
+{% else %}{% render "error_panel", message: table_error %}{% endif %}
+{% render "title_bar", season_label: season_label %}

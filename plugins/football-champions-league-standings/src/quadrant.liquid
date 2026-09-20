@@ -1,0 +1,7 @@
+{% if table_ok %}
+<div class="layout layout--col gap--small">
+  {% if featured != blank %}{% render "featured_card", row: featured %}{% else %}{% render "featured_card", row: leader %}{% endif %}
+  <span class="label label--small">TOP 8 DIRECT · 9–24 PLAYOFF</span>
+</div>
+{% else %}{% render "error_panel", message: table_error %}{% endif %}
+{% render "title_bar", season_label: season_label %}

@@ -5,31 +5,32 @@ dark_mode: 'no'
 static_data: ''
 polling_verb: get
 framework_version: 3.3.2
-serverless_language: ''
-polling_url: ''
-polling_headers: ''
+serverless_language: node
+polling_url: https://api.football-data.org/v4/competitions/CL/matches
+polling_headers: 'X-Auth-Token={{ football_data_token }}'
 polling_body: ''
 id: 483237
-oauth_enabled: 'false'
-oauth_pkce_enabled: 'no'
-oauth_authorize_url: ''
-oauth_token_url: ''
-oauth_scopes: ''
-oauth_scope_separator: ''
-oauth_refresh_url: ''
-oauth_auth_params: ''
-oauth_token_headers: ''
-oauth_token_site: ''
-oauth_token_params: ''
-oauth_token_request_auth_method: ''
-oauth_body_format: ''
-oauth_token_response_metadata: ''
-oauth_authorization_method: ''
-oauth_refresh_params: ''
-oauth_token_field_name: ''
-oauth_expiry_field_name: ''
-oauth_expiry_strategy: ''
-oauth_fixed_expiry_ms: ''
+custom_fields:
+  - keyname: football_data_token
+    field_type: password
+    name: football-data.org API token
+    description: Free token from <a href="https://www.football-data.org/client/register">football-data.org</a>.
+    help_text: Each installation uses its own token. The plugin reads Champions League matches to calculate the league-phase table.
+  - keyname: favorite_team
+    field_type: string
+    name: Favourite club
+    description: Club name to highlight in the table.
+    placeholder: Sporting CP
+    optional: true
+    help_text: Use a name or distinctive part of it as returned by football-data.org, for example Sporting or Benfica.
+  - keyname: about_plugin
+    name: About this plugin
+    field_type: author_bio
+    category: sports
+    description: UEFA Champions League league-phase table calculated from <a href="https://www.football-data.org/">football-data.org</a> matches. The top 8 advance directly, positions 9–24 enter the playoffs. Rankings tied after the available match statistics may differ from UEFA's official order. By Diogo Loureiro.
+    github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/football-champions-league-standings
+    learn_more_url: https://www.football-data.org/documentation/quickstart
+    email_address: dfl.accounts+trmnl@mailbox.org
 name: Football - Champions League Standings
-description: ''
-refresh_interval: 15
+description: UEFA league-phase table
+refresh_interval: 60
