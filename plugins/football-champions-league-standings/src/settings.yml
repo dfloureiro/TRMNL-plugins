@@ -51,6 +51,6 @@ custom_fields:
   github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/football-champions-league-standings
   learn_more_url: https://www.football-data.org/documentation/quickstart
   email_address: dfl.accounts+trmnl@mailbox.org
-name: Football - Champions League Standings
-description: UEFA league-phase table
+name: Football - UEFA Champions League Standings
+description: UEFA table from football-data
 refresh_interval: 60
