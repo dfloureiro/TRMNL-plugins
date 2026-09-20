@@ -67,7 +67,8 @@ function run(input) {
   });
   rows.forEach((row, index) => {
     row.position = index + 1;
-    row.zone = row.position <= 8 ? "Direct" : row.position <= 24 ? "Playoff" : "Out";
+    row.zone = row.position <= 8 ? "Direct" : row.position <= 24 ? "Playoff" :
+      complete ? "Eliminated" : "Outside top 24";
     row.gd_text = row.goal_difference > 0 ? `+${row.goal_difference}` : String(row.goal_difference);
     row.tie_unresolved = [rows[index - 1], rows[index + 1]].some((other) =>
       other && tieFields.every((field) => row[field] === other[field]));

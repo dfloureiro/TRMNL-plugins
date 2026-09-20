@@ -1,20 +1,34 @@
+<style>
+  .cl-grid { display: grid; grid-template-columns: 2.3em minmax(0, 1fr) 2em 2.4em 2.6em; gap: .2em; }
+  .cl-row { align-items: center; min-height: 1.35em; border-bottom: 1px solid #111; }
+  .cl-row--break { border-bottom-width: 2px; }
+  .cl-row--favorite { box-shadow: inset 4px 0 #111; padding-left: 6px; font-weight: 700; }
+  .cl-heading { border-bottom: 2px solid #111; font-weight: 700; }
+  .cl-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cl-strong { font-weight: 700; }
+  .cl-featured-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: clamp(32px, 11cqw, 72px); line-height: 1.1; }
+  .cl-landscape-table { display: grid; grid-template-columns: 1fr 1fr; gap: 2cqw; font-size: clamp(13px, 2.4cqh, 25px); line-height: 1.25; }
+  .cl-portrait-table { font-size: clamp(16px, 2.2cqh, 26px); line-height: 1.35; }
+  .cl-half-horizontal-table { font-size: clamp(14px, 3.5cqh, 24px); line-height: 1.35; }
+  .cl-half-vertical-table { font-size: clamp(13px, 2.4cqh, 22px); line-height: 1.35; }
+</style>
 {% assign table_ok = false %}
 {% if plugin_ok == true or plugin_ok == "true" %}{% if rows.size > 0 %}{% assign table_ok = true %}{% endif %}{% endif %}
 {% if error_message != blank %}{% assign table_error = error_message %}{% else %}{% assign table_error = "Standings are unavailable right now." %}{% endif %}
 
 {% template table_row %}
-  <div style="display:grid;grid-template-columns:2.3em minmax(0,1fr) 2em 2.4em 2.6em;align-items:center;gap:.2em;min-height:1.35em;border-bottom:{% if row.position == 8 or row.position == 24 %}2px{% else %}1px{% endif %} solid #111;{% if row.favorite %}background:#111;color:#fff;padding:0 3px;{% endif %}">
-    <span class="value--tnums" style="font-weight:700">{{ row.position }}</span>
-    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:{% if row.favorite %}700{% else %}500{% endif %}">{{ row.name | escape }}</span>
-    <span class="value--tnums" style="text-align:right">{{ row.played }}</span>
-    <span class="value--tnums" style="text-align:right">{{ row.gd_text }}</span>
-    <span class="value--tnums" style="text-align:right;font-weight:700">{{ row.points }}</span>
+  <div class="cl-grid cl-row{% if row.position == 8 or row.position == 24 %} cl-row--break{% endif %}{% if row.favorite %} cl-row--favorite{% endif %}">
+    <span class="value--tnums cl-strong">{{ row.position }}</span>
+    <span class="cl-name{% if row.favorite %} cl-strong{% endif %}">{{ row.name | escape }}</span>
+    <span class="value--tnums text--right">{{ row.played }}</span>
+    <span class="value--tnums text--right">{{ row.gd_text }}</span>
+    <span class="value--tnums text--right cl-strong">{{ row.points }}</span>
   </div>
 {% endtemplate %}
 
 {% template table_heading %}
-  <div style="display:grid;grid-template-columns:2.3em minmax(0,1fr) 2em 2.4em 2.6em;gap:.2em;border-bottom:2px solid #111;font-weight:700">
-    <span>#</span><span>CLUB</span><span style="text-align:right">P</span><span style="text-align:right">GD</span><span style="text-align:right">PTS</span>
+  <div class="cl-grid cl-heading">
+    <span>#</span><span>CLUB</span><span class="text--right">P</span><span class="text--right">GD</span><span class="text--right">PTS</span>
   </div>
 {% endtemplate %}
 
@@ -25,9 +39,8 @@
         <span class="label label--small">{% if row.favorite %}FAVOURITE CLUB{% else %}LEADER{% endif %}</span>
         <span class="value value--base value--tnums">#{{ row.position }}</span>
       </div>
-      <div class="value value--large lg:value--xlarge" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ row.name | escape }}</div>
-      <div class="label label--base value--tnums">{{ row.points }} pts · {{ row.played }} played · GD {{ row.gd_text }}</div>
-      <div class="label label--small">{{ row.zone }}</div>
+      <div class="value value--large lg:value--xlarge cl-featured-name">{{ row.name | escape }}</div>
+      <div class="label label--base value--tnums">{{ row.points }} pts · {{ row.played }} played · GD {{ row.gd_text }} · {{ row.zone }}</div>
     </div>
   {% endif %}
 {% endtemplate %}
@@ -41,8 +54,8 @@
 
 {% template title_bar %}
   <div class="title_bar">
-    <span class="title">Champions League</span>
-    <span class="instance">League phase{% if season_label != blank %} · {{ season_label }}{% endif %}</span>
+    <span class="title">{% if compact %}UCL{% else %}Champions League{% endif %}</span>
+    <span class="instance">{% if compact %}Data: football-data.org{% else %}Data provided by football-data.org{% endif %}</span>
   </div>
 {% endtemplate %}
 

@@ -1,11 +1,11 @@
 {% if table_ok %}
 <div class="layout layout--col gap--small">
   {% if featured != blank %}{% render "featured_card", row: featured %}{% else %}{% render "featured_card", row: leader %}{% endif %}
-  <div class="w--full" style="font-size:clamp(13px,2.4cqh,22px);line-height:1.35">
+  <div class="w--full cl-half-vertical-table">
     {% render "table_heading" %}
     {% for row in rows limit:6 %}{% render "table_row", row: row %}{% endfor %}
   </div>
   <span class="label label--small">1–8 direct · 9–24 playoff</span>
 </div>
 {% else %}{% render "error_panel", message: table_error %}{% endif %}
-{% render "title_bar", season_label: season_label %}
+{% render "title_bar", compact: true %}

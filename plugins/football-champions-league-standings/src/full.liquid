@@ -1,17 +1,17 @@
 {% if table_ok %}
-<div class="layout layout--col gap--small">
+<div class="layout layout--col layout--top gap--small">
   <div class="flex flex--row flex--between w--full">
     <span class="label label--base">LEAGUE PHASE</span>
     <span class="label label--small">1–8 DIRECT · 9–24 PLAYOFF</span>
   </div>
   <div class="w--full portrait:hidden">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2cqw;font-size:clamp(13px,2.4cqh,25px);line-height:1.25">
+  <div class="cl-landscape-table">
     <div>{% render "table_heading" %}{% for row in top_rows %}{% render "table_row", row: row %}{% endfor %}</div>
     <div>{% render "table_heading" %}{% for row in lower_rows %}{% render "table_row", row: row %}{% endfor %}</div>
   </div>
   </div>
   <div class="w--full hidden portrait:block">
-  <div style="font-size:clamp(16px,2.2cqh,26px);line-height:1.35">
+  <div class="cl-portrait-table">
     {% render "table_heading" %}
     {% for row in rows limit:8 %}{% render "table_row", row: row %}{% endfor %}
     {% if featured != blank and featured.position > 8 %}

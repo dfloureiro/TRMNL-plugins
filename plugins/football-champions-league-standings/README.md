@@ -6,17 +6,19 @@ A TRMNL plugin for the UEFA Champions League **league phase**. It calculates the
 
 - **Full landscape:** the complete table in two columns, with rules after positions 8 and 24.
 - **Full portrait:** the top eight, your favourite club when outside the top eight, and the 24/25 cutoff.
-- **Half horizontal:** leading six clubs and your favourite club when outside that group.
+- **Half horizontal:** leading six clubs, or leading four plus your favourite club when it is outside that group. On TRMNL X the leading eight appear.
 - **Half vertical:** your favourite club (or the leader) and the leading six clubs.
 - **Quadrant:** one large card for your favourite club (or the leader).
 
-Columns are position, club, played, goal difference and points. Positions 1–8 advance directly to the round of 16; positions 9–24 go to the knockout playoffs. The selected club is shown with an inverted row.
+Columns are position, club, played, goal difference and points. Positions 1–8 advance directly to the round of 16; positions 9–24 go to the knockout playoffs. The selected club is marked with a strong left border.
 
 ## Setup
 
 1. Create a free [football-data.org account](https://www.football-data.org/client/register) and obtain an API token.
 2. Add the token to the plugin's **football-data.org API token** password field. Each installation uses its own token.
 3. Optionally enter a **Favourite club** name, such as `Sporting` or `Benfica`. This is matched against the provider's club name; a provider team ID also works.
+
+Keep the token private. [Football-data.org's terms](https://www.football-data.org/about) require developer credentials to remain confidential and prohibit storing them in an open-source repository.
 
 TRMNL polls `GET https://api.football-data.org/v4/competitions/CL/matches` with the token in the `X-Auth-Token` header every 60 minutes. The token is not stored in this repository.
 
