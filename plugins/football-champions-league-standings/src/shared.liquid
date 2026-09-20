@@ -6,11 +6,18 @@
   .cl-heading { border-bottom: 2px solid #111; font-weight: 700; }
   .cl-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .cl-strong { font-weight: 700; }
-  .cl-featured-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: clamp(32px, 11cqw, 72px); line-height: 1.1; }
   .cl-landscape-table { display: grid; grid-template-columns: 1fr 1fr; gap: 2cqw; font-size: clamp(13px, 2.4cqh, 25px); line-height: 1.25; }
-  .cl-portrait-table { font-size: clamp(16px, 2.2cqh, 26px); line-height: 1.35; }
-  .cl-half-horizontal-table { font-size: clamp(14px, 3.5cqh, 24px); line-height: 1.35; }
-  .cl-half-vertical-table { font-size: clamp(13px, 2.4cqh, 22px); line-height: 1.35; }
+  .cl-portrait-table { font-size: clamp(13px, 1.6cqh, 19px); line-height: 1.25; }
+  .cl-half-horizontal-table { font-size: clamp(13px, 2.8cqh, 20px); line-height: 1.25; }
+  .cl-half-vertical-table { font-size: clamp(12px, 1.9cqh, 20px); line-height: 1.25; }
+  .cl-quadrant-table { font-size: clamp(13px, 3cqh, 21px); line-height: 1.3; }
+  .cl-x-only { display: none; }
+  .screen--lg .cl-x-only { display: block; }
+  .screen--portrait .cl-x-only { display: block; }
+  .cl-x-portrait-only { display: none; }
+  .screen--lg.screen--portrait .cl-x-portrait-only { display: block; }
+  .screen--lg .cl-og-landscape-only, .screen--portrait .cl-og-landscape-only { display: none; }
+  .screen--lg.screen--portrait .cl-not-x-portrait { display: none; }
 </style>
 {% assign table_ok = false %}
 {% if plugin_ok == true or plugin_ok == "true" %}{% if rows.size > 0 %}{% assign table_ok = true %}{% endif %}{% endif %}
@@ -30,19 +37,6 @@
   <div class="cl-grid cl-heading">
     <span>#</span><span>CLUB</span><span class="text--right">P</span><span class="text--right">GD</span><span class="text--right">PTS</span>
   </div>
-{% endtemplate %}
-
-{% template featured_card %}
-  {% if row != blank %}
-    <div class="outline rounded p--2 w--full">
-      <div class="flex flex--row flex--between flex--center-y gap--small">
-        <span class="label label--small">{% if row.favorite %}FAVOURITE CLUB{% else %}LEADER{% endif %}</span>
-        <span class="value value--base value--tnums">#{{ row.position }}</span>
-      </div>
-      <div class="value value--large lg:value--xlarge cl-featured-name">{{ row.name | escape }}</div>
-      <div class="label label--base value--tnums">{{ row.points }} pts · {{ row.played }} played · GD {{ row.gd_text }} · {{ row.zone }}</div>
-    </div>
-  {% endif %}
 {% endtemplate %}
 
 {% template error_panel %}

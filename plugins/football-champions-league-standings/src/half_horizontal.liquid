@@ -1,18 +1,14 @@
 {% if table_ok %}
-<div class="layout layout--col gap--small">
-  <div class="flex flex--row flex--between w--full">
-    <span class="label label--base">LEADERS · DIRECT</span>
-    <span class="label label--small">P / GD / PTS</span>
-  </div>
+<div class="layout layout--col layout--top gap--small">
   <div class="w--full cl-half-horizontal-table">
     {% render "table_heading" %}
-    {% if featured != blank and featured.position > 6 %}{% assign row_limit = 4 %}{% else %}{% assign row_limit = 6 %}{% endif %}
-    {% for row in rows limit:8 %}
-      {% if forloop.index > row_limit %}<div class="hidden lg:block">{% render "table_row", row: row %}</div>{% else %}{% render "table_row", row: row %}{% endif %}
+    {% if featured != blank and featured.position > 8 %}{% assign row_limit = 6 %}{% else %}{% assign row_limit = 8 %}{% endif %}
+    {% for row in rows limit:22 %}
+      {% if forloop.index > 14 %}<div class="cl-x-portrait-only">{% render "table_row", row: row %}</div>{% elsif forloop.index > row_limit %}<div class="cl-x-only">{% render "table_row", row: row %}</div>{% else %}{% render "table_row", row: row %}{% endif %}
     {% endfor %}
   </div>
-  {% if featured != blank and featured.position > row_limit %}
-    <div class="w--full{% if featured.position <= 8 %} lg:hidden{% endif %}"><span class="label label--small">FAVOURITE</span>{% render "table_row", row: featured %}</div>
+  {% if featured != blank and featured.position > 8 %}
+    <div class="w--full{% if featured.position <= 14 %} cl-og-landscape-only{% elsif featured.position <= 22 %} cl-not-x-portrait{% endif %}"><span class="label label--small">FAVOURITE</span><div class="cl-half-horizontal-table">{% render "table_row", row: featured %}</div></div>
   {% endif %}
 </div>
 {% else %}{% render "error_panel", message: table_error %}{% endif %}

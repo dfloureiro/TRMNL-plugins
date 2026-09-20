@@ -5,10 +5,10 @@ A TRMNL plugin for the UEFA Champions League **league phase**. It calculates the
 ## What it shows
 
 - **Full landscape:** the complete table in two columns, with rules after positions 8 and 24.
-- **Full portrait:** the top eight, your favourite club when outside the top eight, and the 24/25 cutoff.
-- **Half horizontal:** leading six clubs, or leading four plus your favourite club when it is outside that group. On TRMNL X the leading eight appear.
-- **Half vertical:** your favourite club (or the leader) and the leading six clubs.
-- **Quadrant:** one large card for your favourite club (or the leader).
+- **Full portrait:** all 36 clubs.
+- **Half horizontal:** the leading eight clubs on OG landscape (six when a separate favourite row is needed), 14 on OG portrait and TRMNL X landscape, or 22 on TRMNL X portrait, plus a favourite outside the visible table.
+- **Half vertical:** the leading 12 clubs on OG landscape, 20 on OG portrait and TRMNL X landscape, or 30 on TRMNL X portrait, plus a favourite outside the visible table.
+- **Quadrant:** the top three clubs, plus your favourite club when outside that group.
 
 Columns are position, club, played, goal difference and points. Positions 1–8 advance directly to the round of 16; positions 9–24 go to the knockout playoffs. The selected club is marked with a strong left border.
 

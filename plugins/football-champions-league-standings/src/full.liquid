@@ -13,13 +13,7 @@
   <div class="w--full hidden portrait:block">
   <div class="cl-portrait-table">
     {% render "table_heading" %}
-    {% for row in rows limit:8 %}{% render "table_row", row: row %}{% endfor %}
-    {% if featured != blank and featured.position > 8 %}
-      <div class="label label--small">YOUR CLUB</div>
-      {% render "table_row", row: featured %}
-    {% endif %}
-    <div class="label label--small">PLAYOFF CUTOFF</div>
-    {% for row in rows offset:23 limit:2 %}{% render "table_row", row: row %}{% endfor %}
+    {% for row in rows %}{% render "table_row", row: row %}{% endfor %}
   </div>
   </div>
   <div class="label label--small w--full">Calculated from finished matches{% if has_unresolved_ties %} · unresolved ties possible{% endif %}</div>

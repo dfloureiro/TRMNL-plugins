@@ -1,7 +1,13 @@
 {% if table_ok %}
-<div class="layout layout--col gap--small">
-  {% if featured != blank %}{% render "featured_card", row: featured %}{% else %}{% render "featured_card", row: leader %}{% endif %}
-  <span class="label label--small">TOP 8 DIRECT · 9–24 PLAYOFF</span>
+<div class="layout layout--col layout--top gap--small">
+  <div class="flex flex--row flex--between w--full"><span class="label label--base">TOP 3</span><span class="label label--small">P / GD / PTS</span></div>
+  <div class="w--full cl-quadrant-table">
+    {% render "table_heading" %}
+    {% for row in rows limit:3 %}{% render "table_row", row: row %}{% endfor %}
+  </div>
+  {% if featured != blank and featured.position > 3 %}
+    <div class="w--full"><span class="label label--small">FAVOURITE</span><div class="cl-quadrant-table">{% render "table_row", row: featured %}</div></div>
+  {% endif %}
 </div>
 {% else %}{% render "error_panel", message: table_error %}{% endif %}
 {% render "title_bar", compact: true %}
