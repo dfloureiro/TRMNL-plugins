@@ -1,19 +1,19 @@
 {% if table_ok and display_mode == "knockout" %}
-<div class="layout layout--col layout--top gap--small cl-knockout-quadrant cl-knockout-sparse{% if round_label == "Final" %} cl-knockout-final{% endif %}">
+<div class="layout layout--col layout--top gap--small">
   {% render "tie_card", tie: featured_tie, round_label: round_label, expanded: true %}
 </div>
 {% elsif table_ok %}
-<div class="layout layout--col layout--top gap--small cl-quadrant-body">
-  <div class="cl-focus-panel w--full p--1 flex flex--col flex--center">
+<div class="layout layout--col layout--top gap--small">
+  <div class="w--full p--1 flex flex--col flex--center grow outline rounded">
     <div class="flex flex--row flex--between w--full"><span class="label label--small">{% if featured != blank %}YOUR CLUB{% else %}LEAGUE LEADER{% endif %}</span><span class="label label--small">{{ quadrant_focus.zone | upcase }}</span></div>
-    <div class="flex flex--row flex--between flex--center-y w--full"><span class="cl-focus-rank value--tnums">#{{ quadrant_focus.position }}</span><span class="cl-focus-points value--tnums">{{ quadrant_focus.points }} PTS</span></div>
-    <div class="cl-focus-name w--full">{{ quadrant_focus.name | escape }}</div>
+    <div class="flex flex--row flex--between flex--center-y w--full"><span class="value value--large lg:value--xxlarge value--tnums font--bold">#{{ quadrant_focus.position }}</span><span class="value value--base lg:value--large value--tnums font--bold">{{ quadrant_focus.points }} PTS</span></div>
+    <div class="label label--base lg:label--large font--bold text--truncate w--full">{{ quadrant_focus.name | escape }}</div>
     <div class="label label--small value--tnums">{{ quadrant_focus.played }} played · GD {{ quadrant_focus.gd_text }} · {{ quadrant_focus.won }}W {{ quadrant_focus.drawn }}D {{ quadrant_focus.lost }}L</div>
   </div>
-  <div class="cl-nearby w--full">
+  <div class="w--full">
     <div class="flex flex--row flex--between w--full"><span class="label label--small">NEARBY CLUBS</span><span class="label label--small">PTS</span></div>
-    <div class="cl-og-landscape-only">{% for row in nearby_short %}{% render "neighbor_row", row: row, focus_id: quadrant_focus.id %}{% endfor %}</div>
-    <div class="cl-x-only">{% for row in nearby_long %}{% render "neighbor_row", row: row, focus_id: quadrant_focus.id %}{% endfor %}</div>
+    <div class="lg:hidden">{% for row in nearby_short %}{% render "neighbor_row", row: row, focus_id: quadrant_focus.id %}{% endfor %}</div>
+    <div class="hidden lg:block">{% for row in nearby_long %}{% render "neighbor_row", row: row, focus_id: quadrant_focus.id %}{% endfor %}</div>
   </div>
 </div>
 {% else %}{% render "error_panel", message: table_error %}{% endif %}

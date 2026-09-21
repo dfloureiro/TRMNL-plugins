@@ -1,19 +1,19 @@
 {% if table_ok and display_mode == "knockout" %}
-<div class="layout layout--col layout--top gap--small cl-knockout-half cl-knockout-horizontal{% if round_ties.size <= 4 %} cl-knockout-sparse{% endif %}{% if round_label == "Final" %} cl-knockout-final{% endif %}">
+<div class="layout layout--col layout--top gap--small">
   <div class="flex flex--row flex--between w--full"><span class="label label--base">{{ round_label | upcase }}</span><span class="label label--small">CURRENT TIES</span></div>
-  <div class="cl-ties grid {% if round_ties.size == 1 %}grid--cols-1{% else %}grid--cols-2 portrait:grid--cols-1{% endif %} gap--xsmall w--full grow{% if round_ties.size <= 4 %} cl-ties--sparse{% endif %}{% if round_ties.size == 1 %} cl-ties--single{% endif %}">{% for tie in round_ties limit:4 %}{% if forloop.index == 4 %}<div class="cl-x-landscape-only">{% render "tie_card", tie: tie, round_label: round_label %}</div>{% elsif forloop.index == 3 %}<div class="cl-x-only">{% render "tie_card", tie: tie, round_label: round_label %}</div>{% else %}{% render "tie_card", tie: tie, round_label: round_label %}{% endif %}{% endfor %}</div>
+  <div class="grid {% if round_ties.size == 1 %}grid--cols-1{% else %}grid--cols-2 portrait:grid--cols-1{% endif %} gap--xsmall w--full grow">{% for tie in round_ties limit:4 %}{% if forloop.index == 4 %}<div class="hidden lg:block portrait:hidden h--full">{% render "tie_card", tie: tie, round_label: round_label %}</div>{% elsif forloop.index == 3 %}<div class="hidden lg:block portrait:block h--full">{% render "tie_card", tie: tie, round_label: round_label %}</div>{% else %}{% render "tie_card", tie: tie, round_label: round_label %}{% endif %}{% endfor %}</div>
 </div>
 {% elsif table_ok %}
 <div class="layout layout--col layout--top gap--small">
-  <div class="w--full cl-half-horizontal-table">
-    {% render "table_heading", trmnl: trmnl %}
-    {% if featured != blank and featured.position > 8 %}{% assign row_limit = 6 %}{% else %}{% assign row_limit = 8 %}{% endif %}
+  <div class="w--full">
+    {% render "table_heading", text_class: "label label--small lg:label--base" %}
+    {% if featured != blank and featured.position > 8 %}{% assign row_limit = 8 %}{% else %}{% assign row_limit = 11 %}{% endif %}
     {% for row in rows limit:22 %}
-      {% if forloop.index > 14 %}<div class="cl-x-portrait-only">{% render "table_row", row: row %}</div>{% elsif forloop.index > row_limit %}<div class="cl-x-only">{% render "table_row", row: row %}</div>{% else %}{% render "table_row", row: row %}{% endif %}
+      {% if forloop.index > 14 %}<div class="hidden lg:portrait:block">{% render "table_row", row: row, text_class: "label label--small lg:label--base" %}</div>{% elsif forloop.index > row_limit %}<div class="hidden lg:block">{% render "table_row", row: row, text_class: "label label--small lg:label--base" %}</div>{% else %}{% render "table_row", row: row, text_class: "label label--small lg:label--base" %}{% endif %}
     {% endfor %}
   </div>
   {% if featured != blank and featured.position > 8 %}
-    <div class="w--full{% if featured.position <= 14 %} cl-og-landscape-only{% elsif featured.position <= 22 %} cl-not-x-portrait{% endif %}"><span class="label label--small">FAVOURITE</span><div class="cl-half-horizontal-table">{% render "table_row", row: featured %}</div></div>
+    <div class="w--full portrait:hidden lg:hidden"><span class="label label--small">FAVOURITE</span><div>{% render "table_row", row: featured, text_class: "label label--small" %}</div></div>
   {% endif %}
 </div>
 {% else %}{% render "error_panel", message: table_error %}{% endif %}

@@ -1,7 +1,7 @@
 {% if table_ok and display_mode == "knockout" %}
-<div class="layout layout--col layout--top gap--small cl-knockout-full{% if round_ties.size <= 4 %} cl-knockout-sparse{% endif %}{% if round_label == "Final" %} cl-knockout-final{% endif %}">
+<div class="layout layout--col layout--top gap--small">
   <div class="flex flex--row flex--between w--full"><span class="label label--base">{{ round_label | upcase }}</span><span class="label label--small">AGGREGATE SCORE</span></div>
-  <div class="cl-ties grid {% if round_ties.size == 1 %}grid--cols-1{% else %}grid--cols-2 portrait:grid--cols-1{% endif %} gap--xsmall w--full grow{% if round_ties.size <= 4 %} cl-ties--sparse{% endif %}{% if round_ties.size == 1 %} cl-ties--single{% endif %}">{% for tie in round_ties limit:8 %}{% render "tie_card", tie: tie, round_label: round_label %}{% endfor %}</div>
+  <div class="grid {% if round_ties.size == 1 %}grid--cols-1{% else %}grid--cols-2 portrait:grid--cols-1{% endif %} gap--xsmall w--full grow">{% for tie in round_ties limit:8 %}{% render "tie_card", tie: tie, round_label: round_label %}{% endfor %}</div>
 </div>
 {% elsif table_ok %}
 <div class="layout layout--col layout--top gap--small">
@@ -10,18 +10,18 @@
     <span class="label label--small">1–8 DIRECT · 9–24 PLAYOFF</span>
   </div>
   <div class="w--full portrait:hidden">
-  <div class="cl-landscape-table grid grid--cols-2 gap--medium">
-    <div>{% render "table_heading", trmnl: trmnl %}{% for row in top_rows %}{% render "table_row", row: row %}{% endfor %}</div>
-    <div>{% render "table_heading", trmnl: trmnl %}{% for row in lower_rows %}{% render "table_row", row: row %}{% endfor %}</div>
+  <div class="grid grid--cols-2 gap--medium">
+    <div>{% render "table_heading", text_class: "label label--base lg:label--large" %}{% for row in top_rows %}{% render "table_row", row: row, text_class: "label label--base lg:label--large" %}{% endfor %}</div>
+    <div>{% render "table_heading", text_class: "label label--base lg:label--large" %}{% for row in lower_rows %}{% render "table_row", row: row, text_class: "label label--base lg:label--large" %}{% endfor %}</div>
   </div>
   </div>
   <div class="w--full hidden portrait:block">
-  <div class="cl-portrait-table">
-    {% render "table_heading", trmnl: trmnl %}
-    {% for row in rows %}{% render "table_row", row: row %}{% endfor %}
+  <div>
+    {% render "table_heading", text_class: "label label--base lg:label--large" %}
+    {% for row in rows %}{% render "table_row", row: row, text_class: "label label--base lg:label--large" %}{% endfor %}
   </div>
   </div>
-  <div class="label label--small w--full cl-full-note">Calculated from finished matches{% if has_unresolved_ties %} · unresolved ties possible{% endif %}</div>
+  <div class="label label--small w--full portrait:hidden">Calculated from finished matches{% if has_unresolved_ties %} · unresolved ties possible{% endif %}</div>
 </div>
 {% else %}
   {% render "error_panel", message: table_error %}
