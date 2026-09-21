@@ -37,6 +37,8 @@ clubs = [
   "Club Brugge", "Celtic", "Frankfurt", "Athletic Club", "Feyenoord", "Copenhagen", "Bodø/Glimt",
   "Qarabağ", "Pafos"
 ].each_with_index.to_h { |name, index| [index + 1, { "id" => index + 1, "name" => name, "shortName" => name }] }
+crest_ids = [498, 57, 5, 81, 108, 64, 524, 86, 1903, 78, 4, 109, 65, 61, 113, 674]
+crest_ids.each_with_index { |crest_id, index| clubs.fetch(index + 1)["crest"] = "https://crests.football-data.org/#{crest_id}.png" }
 
 season = { "startDate" => "2026-08-01" }
 league_matches = clubs.keys.each_slice(2).with_index.map do |(home_id, away_id), index|
