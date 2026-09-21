@@ -1,0 +1,113 @@
+#!/usr/bin/env ruby
+
+require "fileutils"
+require "json"
+require "open3"
+require "yaml"
+
+STATES = %w[league upcoming playoffs round-of-16 quarter-finals semi-finals final final-complete final-penalties error].freeze
+DEVICES = {
+  "og" => [800, 480, 1, []],
+  "x-landscape" => [1872, 1404, 4, %w[screen--v2 screen--lg screen--density-2x screen--4bit]],
+  "x-portrait" => [1404, 1872, 4, %w[screen--v2 screen--lg screen--portrait screen--density-2x screen--4bit]]
+}.freeze
+
+state = ARGV[0] || "round-of-16"
+device = ARGV[1] || "og"
+unless STATES.include?(state) && DEVICES.key?(device)
+  warn "Usage: ./preview STATE [DEVICE]"
+  warn "States:  #{STATES.join(', ')}"
+  warn "Devices: #{DEVICES.keys.join(', ')}"
+  exit 1
+end
+
+root = __dir__
+output = File.join(root, ".preview", "#{state}-#{device}")
+FileUtils.rm_rf(output)
+FileUtils.mkdir_p(output)
+FileUtils.cp_r(File.join(root, "src"), output)
+FileUtils.cp(File.join(root, ".trmnlp.yml"), output)
+
+clubs = [
+  "Sporting CP", "Arsenal", "Bayern München", "Barcelona", "Inter", "Liverpool",
+  "Paris Saint-Germain", "Real Madrid", "Benfica", "Atlético Madrid", "Dortmund", "Juventus",
+  "Manchester City", "Chelsea", "Napoli", "PSV", "Ajax", "Marseille", "Monaco", "Atalanta",
+  "Leverkusen", "Tottenham", "Newcastle", "Galatasaray", "Olympiacos", "Villarreal", "Slavia Praha",
+  "Club Brugge", "Celtic", "Frankfurt", "Athletic Club", "Feyenoord", "Copenhagen", "Bodø/Glimt",
+  "Qarabağ", "Pafos"
+].each_with_index.to_h { |name, index| [index + 1, { "id" => index + 1, "name" => name, "shortName" => name }] }
+
+season = { "startDate" => "2026-08-01" }
+league_matches = clubs.keys.each_slice(2).with_index.map do |(home_id, away_id), index|
+  finished = state != "upcoming" && index < 9
+  {
+    "id" => index + 1, "stage" => "LEAGUE_STAGE", "group" => nil, "matchday" => 1,
+    "status" => finished ? "FINISHED" : "TIMED", "utcDate" => "2026-09-15T20:00:00Z",
+    "season" => season, "homeTeam" => clubs.fetch(home_id), "awayTeam" => clubs.fetch(away_id),
+    "score" => { "fullTime" => finished ? { "home" => 2 + index % 2, "away" => index % 2 } : { "home" => nil, "away" => nil } }
+  }
+end
+
+stage_config = {
+  "playoffs" => ["PLAYOFFS", 8], "round-of-16" => ["LAST_16", 8],
+  "quarter-finals" => ["QUARTER_FINALS", 4], "semi-finals" => ["SEMI_FINALS", 2]
+}
+
+def knockout_match(id, stage, status, home, away, score, date, season, winner = nil)
+  {
+    "id" => id, "stage" => stage, "status" => status, "utcDate" => date, "season" => season,
+    "homeTeam" => home, "awayTeam" => away,
+    "score" => { "winner" => winner, "fullTime" => score }
+  }
+end
+
+matches = league_matches
+if stage_config.key?(state)
+  stage, tie_count = stage_config.fetch(state)
+  knockout = (0...tie_count).flat_map do |index|
+    home = clubs.fetch(index * 2 + 1)
+    away = clubs.fetch(index * 2 + 2)
+    [
+      knockout_match(100 + index * 2, stage, "FINISHED", home, away, { "home" => 2, "away" => 1 }, "2027-03-02T20:00:00Z", season, "HOME_TEAM"),
+      knockout_match(101 + index * 2, stage, "TIMED", away, home, { "home" => nil, "away" => nil }, "2027-03-09T20:00:00Z", season)
+    ]
+  end
+  matches += knockout
+elsif state.start_with?("final")
+  status = state == "final" ? "TIMED" : "FINISHED"
+  score = status == "TIMED" ? { "home" => nil, "away" => nil } : state == "final-penalties" ? { "home" => 1, "away" => 1 } : { "home" => 2, "away" => 1 }
+  winner = status == "FINISHED" ? (state == "final-penalties" ? "AWAY_TEAM" : "HOME_TEAM") : nil
+  matches += [knockout_match(200, "FINAL", status, clubs.fetch(1), clubs.fetch(2), score, "2027-05-29T20:00:00Z", season, winner)]
+end
+
+settings_path = File.join(output, "src", "settings.yml")
+settings = YAML.load_file(settings_path)
+settings["strategy"] = "static"
+settings["static_data"] = JSON.generate(state == "error" ? { "message" => "Preview: provider authentication failed" } : { "matches" => matches })
+File.write(settings_path, settings.to_yaml)
+
+width, height, depth, classes = DEVICES.fetch(device)
+unless classes.empty?
+  shared_path = File.join(output, "src", "shared.liquid")
+  class_list = classes.map { |name| %Q{"#{name}"} }.join(",")
+  injector = %Q{<script>document.addEventListener("DOMContentLoaded",()=>document.querySelector(".screen").classList.add(#{class_list}))</script>\n}
+  File.write(shared_path, injector + File.read(shared_path))
+end
+
+trmnlp = ENV.fetch("TRMNLP", "trmnlp")
+command = [trmnlp, "build", "--png", "--width=#{width}", "--height=#{height}", "--color-depth=#{depth}"]
+puts "Rendering #{state} for #{device}..."
+Dir.chdir(output) do
+  stdout, stderr, status = Open3.capture3(*command)
+  puts stdout
+  warn stderr unless stderr.empty?
+  unless status.success?
+    warn "Could not run #{trmnlp}. Install it with: gem install trmnl_preview"
+    exit status.exitstatus || 1
+  end
+end
+
+puts "Preview files:"
+%w[full half_horizontal half_vertical quadrant].each do |layout|
+  puts "  #{File.join(output, '_build', "#{layout}.png")}" 
+end

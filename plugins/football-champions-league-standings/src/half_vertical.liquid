@@ -1,7 +1,7 @@
 {% if table_ok and display_mode == "knockout" %}
 <div class="layout layout--col layout--top gap--small cl-knockout-half cl-knockout-vertical">
   <div class="label label--base w--full">{{ round_label | upcase }}</div>
-  <div class="cl-ties">{% for tie in round_ties limit:6 %}{% render "tie_card", tie: tie, round_label: round_label %}{% endfor %}</div>
+  <div class="cl-ties{% if round_ties.size == 1 %} cl-ties--single{% endif %}">{% for tie in round_ties limit:6 %}{% render "tie_card", tie: tie, round_label: round_label %}{% endfor %}</div>
 </div>
 {% elsif table_ok %}
 <div class="layout layout--col layout--top gap--small">

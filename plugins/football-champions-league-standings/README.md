@@ -34,4 +34,14 @@ The ranking follows [UEFA's tie-break order](https://www.uefa.com/uefachampionsl
 
 Install [`trmnlp`](https://github.com/usetrmnl/trmnlp), then run `trmnlp serve` in this directory. To preview with live data without committing a token, temporarily set `custom_fields.football_data_token` in `.trmnlp.yml` to `"{{ env.FOOTBALL_DATA_TOKEN }}"` and export that environment variable before starting the server. Remove the local override before committing.
 
+To render a phase that is not currently available from the live API, run the fixture preview command from this plugin directory:
+
+```sh
+./preview round-of-16
+./preview quarter-finals x-landscape
+./preview final-complete x-portrait
+```
+
+Available states are `league`, `upcoming`, `playoffs`, `round-of-16`, `quarter-finals`, `semi-finals`, `final`, `final-complete`, `final-penalties` and `error`. Devices are `og` (the default), `x-landscape` and `x-portrait`. The command builds all four layouts as PNG files under `.preview/<state>-<device>/_build/`. These generated previews are ignored by Git and never change the production settings or use an API token.
+
 The plugin is linked to TRMNL plugin ID `483237`.
