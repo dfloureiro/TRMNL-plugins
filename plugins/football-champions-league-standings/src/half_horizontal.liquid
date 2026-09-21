@@ -6,7 +6,7 @@
 {% elsif table_ok %}
 <div class="layout layout--col layout--top gap--small">
   <div class="w--full cl-half-horizontal-table">
-    {% render "table_heading" %}
+    {% render "table_heading", trmnl: trmnl %}
     {% if featured != blank and featured.position > 8 %}{% assign row_limit = 6 %}{% else %}{% assign row_limit = 8 %}{% endif %}
     {% for row in rows limit:22 %}
       {% if forloop.index > 14 %}<div class="cl-x-portrait-only">{% render "table_row", row: row %}</div>{% elsif forloop.index > row_limit %}<div class="cl-x-only">{% render "table_row", row: row %}</div>{% else %}{% render "table_row", row: row %}{% endif %}

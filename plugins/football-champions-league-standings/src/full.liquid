@@ -11,13 +11,13 @@
   </div>
   <div class="w--full portrait:hidden">
   <div class="cl-landscape-table">
-    <div>{% render "table_heading" %}{% for row in top_rows %}{% render "table_row", row: row %}{% endfor %}</div>
-    <div>{% render "table_heading" %}{% for row in lower_rows %}{% render "table_row", row: row %}{% endfor %}</div>
+    <div>{% render "table_heading", trmnl: trmnl %}{% for row in top_rows %}{% render "table_row", row: row %}{% endfor %}</div>
+    <div>{% render "table_heading", trmnl: trmnl %}{% for row in lower_rows %}{% render "table_row", row: row %}{% endfor %}</div>
   </div>
   </div>
   <div class="w--full hidden portrait:block">
   <div class="cl-portrait-table">
-    {% render "table_heading" %}
+    {% render "table_heading", trmnl: trmnl %}
     {% for row in rows %}{% render "table_row", row: row %}{% endfor %}
   </div>
   </div>

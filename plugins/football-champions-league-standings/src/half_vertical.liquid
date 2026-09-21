@@ -7,7 +7,7 @@
 <div class="layout layout--col layout--top gap--small">
   <div class="flex flex--row flex--between w--full"><span class="label label--base">LEAGUE PHASE</span><span class="label label--small">1–8 DIRECT</span></div>
   <div class="w--full cl-half-vertical-table">
-    {% render "table_heading" %}
+    {% render "table_heading", trmnl: trmnl %}
     {% if featured != blank and featured.position > 20 %}{% assign landscape_limit = 16 %}{% else %}{% assign landscape_limit = 20 %}{% endif %}
     {% for row in rows limit:30 %}
       {% if forloop.index > landscape_limit %}<div class="cl-portrait-only">{% render "table_row", row: row %}</div>{% else %}{% render "table_row", row: row %}{% endif %}
