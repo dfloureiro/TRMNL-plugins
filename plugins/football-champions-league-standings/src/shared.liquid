@@ -36,7 +36,7 @@
   .cl-tie-team { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) 2.5em; gap: .35em; align-items: center; min-height: 1.7em; border-bottom: 1px solid #111; }
   .cl-tie-team:last-child { border-bottom: 0; }
   .cl-tie-crest-frame { display: flex; align-items: center; width: 1.8em; height: 1.8em; overflow: hidden; }
-  .cl-tie-crest { display: block; width: 100%; height: 100%; filter: grayscale(1) contrast(1.3); }
+  .cl-tie-crest { display: block; width: 100%; height: 100%; }
   .cl-ties--sparse .cl-tie-team { grid-template-columns: 4.5em minmax(0, 1fr) 1.5em; }
   .cl-ties--sparse .cl-tie-crest-frame { width: 4em; height: 4em; }
   .cl-ties--single .cl-tie-team { grid-template-columns: 7.5em minmax(0, 1fr) 1.5em; }
@@ -71,8 +71,6 @@
   .screen--lg .cl-knockout-horizontal.cl-knockout-final { --cl-tie-size: 40px; }
   .screen--lg .cl-knockout-vertical.cl-knockout-final { --cl-tie-size: 28px; }
   .screen--lg .cl-knockout-quadrant.cl-knockout-final { --cl-tie-size: 34px; }
-  .cl-knockout-sparse .cl-tie-score { zoom: 1.5; }
-  .cl-knockout-final .cl-tie-score { zoom: 1.8; }
   .cl-knockout-final .cl-tie { overflow: hidden; }
   .cl-knockout-final .cl-tie-team { min-height: 0; overflow: hidden; }
   .cl-knockout-quadrant .cl-tie { display: flex; flex-direction: column; }
@@ -126,12 +124,12 @@
   <div class="cl-tie{% if tie.favorite %} cl-tie--favorite{% endif %}{% if round_label == "Final" %} cl-tie--final{% endif %}{% if expanded %} h--full{% endif %} p--1">
     <div class="label label--small text--right">{{ tie.status_label }}</div>
     <div class="cl-tie-team{% if tie.winner_id == tie.home.id %} cl-strong{% endif %}">
-      <span class="cl-tie-crest-frame">{% if tie.home.crest != blank %}<img class="image image--contain cl-tie-crest" src="{{ tie.home.crest }}" alt="">{% endif %}</span>
-      <span class="cl-name">{{ tie.home.name | escape }}</span><span class="cl-tie-score value--tnums text--right">{{ tie.home_score }}</span>
+      <span class="cl-tie-crest-frame">{% if tie.home.crest != blank %}<img class="image image--contain image-dither cl-tie-crest" src="{{ tie.home.crest }}" alt="">{% endif %}</span>
+      <span class="cl-name">{{ tie.home.name | escape }}</span><span class="cl-tie-score value {% if round_label == 'Final' %}value--xlarge{% else %}value--large{% endif %} value--tnums text--right" data-fit-value="true">{{ tie.home_score }}</span>
     </div>
     <div class="cl-tie-team{% if tie.winner_id == tie.away.id %} cl-strong{% endif %}">
-      <span class="cl-tie-crest-frame">{% if tie.away.crest != blank %}<img class="image image--contain cl-tie-crest" src="{{ tie.away.crest }}" alt="">{% endif %}</span>
-      <span class="cl-name">{{ tie.away.name | escape }}</span><span class="cl-tie-score value--tnums text--right">{{ tie.away_score }}</span>
+      <span class="cl-tie-crest-frame">{% if tie.away.crest != blank %}<img class="image image--contain image-dither cl-tie-crest" src="{{ tie.away.crest }}" alt="">{% endif %}</span>
+      <span class="cl-name">{{ tie.away.name | escape }}</span><span class="cl-tie-score value {% if round_label == 'Final' %}value--xlarge{% else %}value--large{% endif %} value--tnums text--right" data-fit-value="true">{{ tie.away_score }}</span>
     </div>
     {% if tie.next_date != blank %}<div class="label label--small cl-tie-meta">Next: {{ tie.next_date }}</div>{% endif %}
   </div>
