@@ -52,5 +52,5 @@ custom_fields:
   learn_more_url: https://www.football-data.org/documentation/quickstart
   email_address: dfl.accounts+trmnl@mailbox.org
 name: Football - UEFA Champions League Standings
-description: UEFA table from football-data
+description: UCL table and knockout ties
 refresh_interval: 60

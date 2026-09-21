@@ -14,8 +14,21 @@ function run(input) {
     Number(match.matchday) >= 1 && Number(match.matchday) <= 8 &&
     match.homeTeam?.id && match.awayTeam?.id
   );
-  if (!matches.length) {
-    return fail("The current season's league-phase fixtures are not available yet.");
+  const stageInfo = {
+    PLAYOFF_ROUND_1: { order: 1, label: "Knockout play-offs" },
+    PLAYOFF_ROUND_2: { order: 1, label: "Knockout play-offs" },
+    PLAYOFFS: { order: 1, label: "Knockout play-offs" },
+    LAST_16: { order: 2, label: "Round of 16" },
+    QUARTER_FINALS: { order: 3, label: "Quarter-finals" },
+    SEMI_FINALS: { order: 4, label: "Semi-finals" },
+    FINAL: { order: 5, label: "Final" }
+  };
+  const knockoutMatches = input.matches.filter((match) => stageInfo[match.stage] &&
+    match.status !== "CANCELLED" && match.status !== "POSTPONED");
+  const currentStage = knockoutMatches.reduce((best, match) =>
+    !best || stageInfo[match.stage].order > stageInfo[best].order ? match.stage : best, null);
+  if (!matches.length && !knockoutMatches.length) {
+    return fail("The current season's fixtures are not available yet.");
   }
 
   const teams = new Map();
@@ -74,11 +87,74 @@ function run(input) {
       other && tieFields.every((field) => row[field] === other[field]));
   });
   const featured = rows.find((row) => row.favorite) || null;
-  const season = matches[0]?.season?.startDate?.slice(0, 4) || "";
+  const quadrantFocus = featured || rows[0] || null;
+  const nearby = (count) => {
+    if (!quadrantFocus) return [];
+    return rows.filter((row) => row.id !== quadrantFocus.id)
+      .sort((a, b) => Math.abs(a.position - quadrantFocus.position) - Math.abs(b.position - quadrantFocus.position) || a.position - b.position)
+      .slice(0, count).sort((a, b) => a.position - b.position);
+  };
+  const matchScore = (match) => {
+    const home = match.score?.fullTime?.home ?? match.score?.fullTime?.homeTeam;
+    const away = match.score?.fullTime?.away ?? match.score?.fullTime?.awayTeam;
+    return Number.isFinite(home) && Number.isFinite(away) ? { home, away } : null;
+  };
+  const teamView = (team) => ({
+    id: team?.id, name: team?.shortName || team?.name || team?.tla || "TBD", crest: team?.crest || ""
+  });
+  const roundMatches = currentStage ? knockoutMatches.filter((match) =>
+    stageInfo[match.stage].order === stageInfo[currentStage].order)
+    .sort((a, b) => String(a.utcDate).localeCompare(String(b.utcDate))) : [];
+  const tieMap = new Map();
+  for (const match of roundMatches) {
+    const ids = [match.homeTeam?.id, match.awayTeam?.id].filter(Boolean).sort((a, b) => a - b);
+    const key = ids.length === 2 ? ids.join(":") : String(match.id);
+    if (!tieMap.has(key)) tieMap.set(key, { matches: [], first: match });
+    tieMap.get(key).matches.push(match);
+  }
+  const roundTies = [...tieMap.values()].map(({ matches: tieMatches, first }) => {
+    const home = teamView(first.homeTeam);
+    const away = teamView(first.awayTeam);
+    let homeAggregate = 0, awayAggregate = 0, played = 0;
+    for (const match of tieMatches) {
+      const score = matchScore(match);
+      if (match.status !== "FINISHED" || !score) continue;
+      played++;
+      if (match.homeTeam?.id === home.id) { homeAggregate += score.home; awayAggregate += score.away; }
+      else { homeAggregate += score.away; awayAggregate += score.home; }
+    }
+    const next = tieMatches.find((match) => match.status !== "FINISHED") || null;
+    const last = [...tieMatches].reverse().find((match) => match.status === "FINISHED") || null;
+    const completeTie = currentStage === "FINAL" ? played === 1 : played >= 2;
+    let winnerId = null;
+    if (completeTie && homeAggregate !== awayAggregate) winnerId = homeAggregate > awayAggregate ? home.id : away.id;
+    else if (completeTie && last?.score?.winner) {
+      winnerId = last.score.winner === "HOME_TEAM" ? last.homeTeam?.id :
+        last.score.winner === "AWAY_TEAM" ? last.awayTeam?.id : null;
+    }
+    const dateText = next?.utcDate ? `${next.utcDate.slice(8, 10)}/${next.utcDate.slice(5, 7)} ${next.utcDate.slice(11, 16)} UTC` : "";
+    const decidedOnPenalties = completeTie && homeAggregate === awayAggregate && !!winnerId;
+    return {
+      home, away, home_score: played ? homeAggregate : "–", away_score: played ? awayAggregate : "–",
+      played, complete: completeTie, winner_id: winnerId, next_date: dateText,
+      status_label: completeTie ? decidedOnPenalties ? "FT · penalties" : "FT" : played ? `After leg ${played}` : dateText || "Scheduled",
+      favorite: !!favorite && [home, away].some((team) => team.name.toLocaleLowerCase().includes(favorite) || String(team.id) === favorite)
+    };
+  });
+  const featuredTie = roundTies.find((tie) => tie.favorite) || roundTies[0] || null;
+  const displayMode = currentStage ? "knockout" : "league";
+  const season = (matches[0] || knockoutMatches[0])?.season?.startDate?.slice(0, 4) || "";
   return {
     plugin_ok: true, error_message: "", rows,
     top_rows: rows.slice(0, 18), lower_rows: rows.slice(18),
     leader: rows[0], featured,
+    quadrant_focus: quadrantFocus,
+    nearby_short: nearby(2), nearby_long: nearby(5),
+    display_mode: displayMode,
+    competition_state: currentStage === "FINAL" && roundTies[0]?.complete ? "complete" :
+      currentStage ? "knockout" : rows.every((row) => row.played === 0) ? "upcoming" : "league",
+    round_label: currentStage ? stageInfo[currentStage].label : "League phase",
+    round_ties: roundTies, featured_tie: featuredTie,
     season_label: season ? `${season}/${String(Number(season) + 1).slice(-2)}` : "",
     games_played: matches.filter((m) => m.status === "FINISHED").length,
     has_unresolved_ties: rows.some((row) => row.tie_unresolved)

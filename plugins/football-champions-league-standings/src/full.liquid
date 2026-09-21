@@ -1,4 +1,9 @@
-{% if table_ok %}
+{% if table_ok and display_mode == "knockout" %}
+<div class="layout layout--col layout--top gap--small cl-knockout-full">
+  <div class="flex flex--row flex--between w--full"><span class="label label--base">{{ round_label | upcase }}</span><span class="label label--small">AGGREGATE SCORE</span></div>
+  <div class="cl-ties">{% for tie in round_ties limit:8 %}{% render "tie_card", tie: tie, round_label: round_label %}{% endfor %}</div>
+</div>
+{% elsif table_ok %}
 <div class="layout layout--col layout--top gap--small">
   <div class="flex flex--row flex--between w--full">
     <span class="label label--base">LEAGUE PHASE</span>

@@ -1,14 +1,20 @@
-{% if table_ok %}
+{% if table_ok and display_mode == "knockout" %}
+<div class="layout layout--col layout--top gap--small cl-knockout-half cl-knockout-vertical">
+  <div class="label label--base w--full">{{ round_label | upcase }}</div>
+  <div class="cl-ties">{% for tie in round_ties limit:6 %}{% render "tie_card", tie: tie, round_label: round_label %}{% endfor %}</div>
+</div>
+{% elsif table_ok %}
 <div class="layout layout--col layout--top gap--small">
   <div class="flex flex--row flex--between w--full"><span class="label label--base">LEAGUE PHASE</span><span class="label label--small">1–8 DIRECT</span></div>
   <div class="w--full cl-half-vertical-table">
     {% render "table_heading" %}
+    {% if featured != blank and featured.position > 20 %}{% assign landscape_limit = 16 %}{% else %}{% assign landscape_limit = 20 %}{% endif %}
     {% for row in rows limit:30 %}
-      {% if forloop.index > 20 %}<div class="cl-x-portrait-only">{% render "table_row", row: row %}</div>{% elsif forloop.index > 12 %}<div class="cl-x-only">{% render "table_row", row: row %}</div>{% else %}{% render "table_row", row: row %}{% endif %}
+      {% if forloop.index > landscape_limit %}<div class="cl-portrait-only">{% render "table_row", row: row %}</div>{% else %}{% render "table_row", row: row %}{% endif %}
     {% endfor %}
   </div>
-  {% if featured != blank and featured.position > 12 %}
-    <div class="w--full{% if featured.position <= 20 %} cl-og-landscape-only{% elsif featured.position <= 30 %} cl-not-x-portrait{% endif %}"><span class="label label--small">FAVOURITE</span><div class="cl-half-vertical-table">{% render "table_row", row: featured %}</div></div>
+  {% if featured != blank and featured.position > landscape_limit %}
+    <div class="w--full{% if featured.position <= 30 %} cl-landscape-only{% endif %}"><span class="label label--small">FAVOURITE</span><div class="cl-half-vertical-table">{% render "table_row", row: featured %}</div></div>
   {% endif %}
 </div>
 {% else %}{% render "error_panel", message: table_error %}{% endif %}
