@@ -1,7 +1,7 @@
 {% if table_ok and display_mode == "knockout" %}
 <div class="layout layout--col layout--top gap--small cl-knockout-full{% if round_ties.size <= 4 %} cl-knockout-sparse{% endif %}{% if round_label == "Final" %} cl-knockout-final{% endif %}">
   <div class="flex flex--row flex--between w--full"><span class="label label--base">{{ round_label | upcase }}</span><span class="label label--small">AGGREGATE SCORE</span></div>
-  <div class="cl-ties{% if round_ties.size <= 4 %} cl-ties--sparse{% endif %}{% if round_ties.size == 1 %} cl-ties--single{% endif %}">{% for tie in round_ties limit:8 %}{% render "tie_card", tie: tie, round_label: round_label %}{% endfor %}</div>
+  <div class="cl-ties grid {% if round_ties.size == 1 %}grid--cols-1{% else %}grid--cols-2 portrait:grid--cols-1{% endif %} gap--xsmall w--full grow{% if round_ties.size <= 4 %} cl-ties--sparse{% endif %}{% if round_ties.size == 1 %} cl-ties--single{% endif %}">{% for tie in round_ties limit:8 %}{% render "tie_card", tie: tie, round_label: round_label %}{% endfor %}</div>
 </div>
 {% elsif table_ok %}
 <div class="layout layout--col layout--top gap--small">
@@ -10,7 +10,7 @@
     <span class="label label--small">1–8 DIRECT · 9–24 PLAYOFF</span>
   </div>
   <div class="w--full portrait:hidden">
-  <div class="cl-landscape-table">
+  <div class="cl-landscape-table grid grid--cols-2 gap--medium">
     <div>{% render "table_heading", trmnl: trmnl %}{% for row in top_rows %}{% render "table_row", row: row %}{% endfor %}</div>
     <div>{% render "table_heading", trmnl: trmnl %}{% for row in lower_rows %}{% render "table_row", row: row %}{% endfor %}</div>
   </div>
