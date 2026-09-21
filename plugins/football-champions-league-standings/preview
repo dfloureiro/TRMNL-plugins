@@ -3,6 +3,7 @@
 require "fileutils"
 require "json"
 require "open3"
+require "rubygems"
 require "yaml"
 
 STATES = %w[league upcoming playoffs round-of-16 quarter-finals semi-finals final final-complete final-penalties error].freeze
@@ -94,7 +95,17 @@ unless classes.empty?
   File.write(shared_path, injector + File.read(shared_path))
 end
 
-trmnlp = ENV.fetch("TRMNLP", "trmnlp")
+trmnlp = ENV["TRMNLP"]
+unless trmnlp
+  candidates = ENV.fetch("PATH", "").split(File::PATH_SEPARATOR).map { |dir| File.join(dir, "trmnlp") }
+  candidates += [File.join(Gem.bindir, "trmnlp"), File.join(Gem.user_dir, "bin", "trmnlp")]
+  trmnlp = candidates.find { |path| File.file?(path) && File.executable?(path) }
+end
+unless trmnlp
+  warn "trmnlp is required to render previews. Install it with:"
+  warn "  gem install trmnl_preview"
+  exit 1
+end
 command = [trmnlp, "build", "--png", "--width=#{width}", "--height=#{height}", "--color-depth=#{depth}"]
 puts "Rendering #{state} for #{device}..."
 Dir.chdir(output) do
@@ -102,7 +113,7 @@ Dir.chdir(output) do
   puts stdout
   warn stderr unless stderr.empty?
   unless status.success?
-    warn "Could not run #{trmnlp}. Install it with: gem install trmnl_preview"
+    warn "Preview rendering failed. Reinstall trmnlp with: gem install trmnl_preview"
     exit status.exitstatus || 1
   end
 end
