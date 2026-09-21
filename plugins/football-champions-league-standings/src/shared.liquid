@@ -13,7 +13,7 @@
 {% endtemplate %}
 
 {% template neighbor_row %}
-  <div class="grid grid--cols-12 gap--xsmall flex--center-y border--h-black w--full value value--small lg:value--base{% if row.id == focus_id %} font--bold{% endif %}">
+  <div class="grid grid--cols-12 gap--xsmall flex--center-y border--h-black w--full value value--small{% if row.id == focus_id %} font--bold{% endif %}">
     <span class="col--span-2 value--tnums">{{ row.position }}</span>
     <span class="col--span-8 text--truncate">{{ row.name | escape }}</span>
     <span class="col--span-2 value--tnums text--right">{{ row.points }}</span>
@@ -24,14 +24,14 @@
   <div class="flex flex--col{% if expanded %} h--full{% endif %} w--full outline rounded p--1 lg:p--2">
     <div class="label label--small text--right">{{ tie.status_label }}</div>
     <div class="grid grid--cols-12 gap--xsmall flex--center-y grow border--h-black w--full{% if tie.winner_id == tie.home.id %} font--bold{% endif %}">
-      <span class="col--span-2 flex flex--center">{% if tie.home.crest != blank %}<img class="image image--contain image-dither h--[7cqh] w--max-[7cqh] lg:h--[9cqh] lg:w--max-[9cqh]" src="{{ tie.home.crest }}" alt="">{% endif %}</span>
-      <span class="col--span-8 label label--base lg:label--large text--truncate">{{ tie.home.name | escape }}</span>
-      <span class="col--span-2 value {% if round_label == 'Final' %}value--xlarge lg:value--xxlarge{% else %}value--large lg:value--xlarge{% endif %} value--tnums text--right" data-fit-value="true">{{ tie.home_score }}</span>
+      {% unless compact %}<span class="col--span-2 flex flex--center">{% if tie.home.crest != blank %}<img class="image image--contain h--16 w--16 lg:h--24 lg:w--24" src="{{ tie.home.crest }}" alt="">{% endif %}</span>{% endunless %}
+      <span class="{% if compact %}col--span-10{% else %}col--span-8{% endif %} label label--base{% unless compact %} lg:label--large{% endunless %} text--truncate">{{ tie.home.name | escape }}</span>
+      <span class="col--span-2 value {% if round_label == 'Final' %}value--xlarge{% unless compact %} lg:value--xxlarge{% endunless %}{% else %}value--large lg:value--xlarge{% endif %} value--tnums text--right" data-fit-value="true">{{ tie.home_score }}</span>
     </div>
     <div class="grid grid--cols-12 gap--xsmall flex--center-y grow w--full{% if tie.winner_id == tie.away.id %} font--bold{% endif %}">
-      <span class="col--span-2 flex flex--center">{% if tie.away.crest != blank %}<img class="image image--contain image-dither h--[7cqh] w--max-[7cqh] lg:h--[9cqh] lg:w--max-[9cqh]" src="{{ tie.away.crest }}" alt="">{% endif %}</span>
-      <span class="col--span-8 label label--base lg:label--large text--truncate">{{ tie.away.name | escape }}</span>
-      <span class="col--span-2 value {% if round_label == 'Final' %}value--xlarge lg:value--xxlarge{% else %}value--large lg:value--xlarge{% endif %} value--tnums text--right" data-fit-value="true">{{ tie.away_score }}</span>
+      {% unless compact %}<span class="col--span-2 flex flex--center">{% if tie.away.crest != blank %}<img class="image image--contain h--16 w--16 lg:h--24 lg:w--24" src="{{ tie.away.crest }}" alt="">{% endif %}</span>{% endunless %}
+      <span class="{% if compact %}col--span-10{% else %}col--span-8{% endif %} label label--base{% unless compact %} lg:label--large{% endunless %} text--truncate">{{ tie.away.name | escape }}</span>
+      <span class="col--span-2 value {% if round_label == 'Final' %}value--xlarge{% unless compact %} lg:value--xxlarge{% endunless %}{% else %}value--large lg:value--xlarge{% endif %} value--tnums text--right" data-fit-value="true">{{ tie.away_score }}</span>
     </div>
     {% if tie.next_date != blank %}<div class="label label--small text--center">Next: {{ tie.next_date }}</div>{% endif %}
   </div>
