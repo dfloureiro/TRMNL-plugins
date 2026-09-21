@@ -1,5 +1,5 @@
 {% if table_ok and display_mode == "knockout" %}
-<div class="layout layout--col layout--top gap--small cl-knockout-quadrant">
+<div class="layout layout--col layout--top gap--small cl-knockout-quadrant cl-knockout-sparse{% if round_label == "Final" %} cl-knockout-final{% endif %}">
   {% render "tie_card", tie: featured_tie, round_label: round_label, expanded: true %}
 </div>
 {% elsif table_ok %}

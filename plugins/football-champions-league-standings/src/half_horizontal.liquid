@@ -1,5 +1,5 @@
 {% if table_ok and display_mode == "knockout" %}
-<div class="layout layout--col layout--top gap--small cl-knockout-half cl-knockout-horizontal">
+<div class="layout layout--col layout--top gap--small cl-knockout-half cl-knockout-horizontal{% if round_ties.size <= 4 %} cl-knockout-sparse{% endif %}{% if round_label == "Final" %} cl-knockout-final{% endif %}">
   <div class="flex flex--row flex--between w--full"><span class="label label--base">{{ round_label | upcase }}</span><span class="label label--small">CURRENT TIES</span></div>
   <div class="cl-ties{% if round_ties.size <= 4 %} cl-ties--sparse{% endif %}{% if round_ties.size == 1 %} cl-ties--single{% endif %}">{% for tie in round_ties limit:4 %}{% if forloop.index == 4 %}<div class="cl-x-landscape-only">{% render "tie_card", tie: tie, round_label: round_label %}</div>{% elsif forloop.index == 3 %}<div class="cl-x-only">{% render "tie_card", tie: tie, round_label: round_label %}</div>{% else %}{% render "tie_card", tie: tie, round_label: round_label %}{% endif %}{% endfor %}</div>
 </div>
