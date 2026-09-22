@@ -52,5 +52,5 @@ custom_fields:
   learn_more_url: https://www.football-data.org/documentation/quickstart
   email_address: dfl.accounts+trmnl@mailbox.org
 name: Football - Liga Betclic Portugal Standings
-description: Liga Portugal table and qualification zones
+description: Liga Portugal standings table
 refresh_interval: 60
