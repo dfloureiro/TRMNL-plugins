@@ -8,7 +8,7 @@
     <div class="flex flex--row flex--between w--full"><span class="label label--small">{% if featured != blank %}YOUR CLUB{% else %}LEAGUE LEADER{% endif %}</span><span class="label label--small">{{ quadrant_focus.zone | upcase }}</span></div>
     <div class="flex flex--row flex--between flex--center-y w--full"><span class="value value--large value--tnums font--bold">#{{ quadrant_focus.position }}</span><span class="value value--base value--tnums font--bold">{{ quadrant_focus.points }} PTS</span></div>
     <div class="flex flex--row flex--between w--full">
-      <span class="label label--base font--bold text--truncate w--full">{{ quadrant_focus.name | escape }}</span>
+      <span class="label label--base{% if featured != blank %} lg:label--large{% endif %} font--bold text--truncate w--full">{{ quadrant_focus.name | escape }}</span>
       {% if featured != blank and quadrant_focus.crest != blank %}<img src="{{ quadrant_focus.crest }}" alt="{{ quadrant_focus.name }} crest" class="image image--contain hidden lg:block h--12 w--12" />{% endif %}
     </div>
     <div class="label label--small value--tnums">{{ quadrant_focus.played }} played · GD {{ quadrant_focus.gd_text }} · {{ quadrant_focus.won }}W {{ quadrant_focus.drawn }}D {{ quadrant_focus.lost }}L</div>
