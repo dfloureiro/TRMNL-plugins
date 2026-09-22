@@ -1,0 +1,21 @@
+{% if table_ok %}
+<div class="layout layout--col layout--top gap--small">
+  <div class="flex flex--row flex--between w--full">
+    <span class="label label--base">PRIMEIRA LIGA</span>
+    <span class="label label--small">{% if season_label != blank %}{{ season_label }}{% endif %}</span>
+  </div>
+  <div class="w--full">
+    {% render "table_heading", text_class: "label label--small lg:label--base" %}
+    {% for row in rows limit:18 %}
+      {% if forloop.index > 8 %}<div class="hidden lg:block">{% render "table_row", row: row, text_class: "label label--small lg:label--base" %}</div>{% else %}{% render "table_row", row: row, text_class: "label label--small lg:label--base" %}{% endif %}
+    {% endfor %}
+  </div>
+  {% if featured != blank and featured.position > 8 %}
+    <div class="w--full portrait:hidden lg:hidden"><span class="label label--small">FAVOURITE</span>{% render "table_row", row: featured, text_class: "label label--small" %}</div>
+  {% endif %}
+  {% render "zone_legend" %}
+</div>
+{% else %}
+  {% render "error_panel", message: table_error %}
+{% endif %}
+{% render "title_bar", season_label: season_label %}

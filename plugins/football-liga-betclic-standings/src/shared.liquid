@@ -1,0 +1,58 @@
+{% assign table_ok = false %}
+{% if plugin_ok and rows.size > 0 %}{% assign table_ok = true %}{% endif %}
+{% if error_message != blank %}{% assign table_error = error_message %}{% else %}{% assign table_error = "Standings are unavailable right now." %}{% endif %}
+
+{% template table_row %}
+  <div class="grid grid--cols-12 gap--xsmall flex--center-y border--h-black w--full{% if row.favorite %} border--l-black font--bold{% endif %}">
+    <span class="col--span-1 value--tnums font--bold {{ text_class }}">{{ row.position }}</span>
+    <span class="col--span-6 flex flex--row flex--center-y gap--xsmall text--truncate {{ text_class }}">
+      {% if row.favorite and row.crest != blank %}<img src="{{ row.crest }}" alt="" class="image image--contain image-dither h--6 w--6 lg:h--8 lg:w--8" />{% elsif row.favorite %}★{% endif %}
+      <span class="grow text--truncate">{{ row.name | escape }}</span>
+    </span>
+    <span class="col--span-1 value--tnums text--right {{ text_class }}">{{ row.played }}</span>
+    <span class="col--span-1 value--tnums text--right {{ text_class }}">{{ row.gd_text }}</span>
+    <span class="col--span-2 value--tnums text--right font--bold {{ text_class }}">{{ row.points }}</span>
+    <span class="col--span-1 label label--small text--right {{ text_class }}">{{ row.zone }}</span>
+  </div>
+{% endtemplate %}
+
+{% template neighbor_row %}
+  <div class="grid grid--cols-12 gap--xsmall flex--center-y border--h-black w--full value value--small{% if row.id == focus_id %} font--bold{% endif %}">
+    <span class="col--span-2 value--tnums">{{ row.position }}</span>
+    <span class="col--span-8 text--truncate">{{ row.name | escape }}</span>
+    <span class="col--span-2 value--tnums text--right">{{ row.points }}</span>
+  </div>
+{% endtemplate %}
+
+{% template table_heading %}
+  <div class="grid grid--cols-12 gap--xsmall flex--center-y border--h-black w--full font--bold">
+    <span class="col--span-1 {{ text_class }}">#</span>
+    <span class="col--span-6 {{ text_class }}">CLUB</span>
+    <span class="col--span-1 text--right {{ text_class }}">P</span>
+    <span class="col--span-1 text--right {{ text_class }}">GD</span>
+    <span class="col--span-2 text--right {{ text_class }}">PTS</span>
+    <span class="col--span-1 text--right {{ text_class }}">Z</span>
+  </div>
+{% endtemplate %}
+
+{% template zone_legend %}
+  <div class="label label--small w--full text--truncate">CL 1–4 · EL 5 · ECL 6 · PO 16 · REL 17–18</div>
+{% endtemplate %}
+
+{% template error_panel %}
+  <div class="layout layout--col flex flex--center">
+    <span class="value value--large">Liga Betclic Portugal</span>
+    <span class="label label--base text--center">{{ message | escape }}</span>
+  </div>
+{% endtemplate %}
+
+{% template title_bar %}
+  <div class="title_bar">
+    <svg class="image image--adaptive" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="6" aria-hidden="true">
+      <circle cx="50" cy="50" r="42" />
+      <path d="m50 28 13 9-5 15H42l-5-15 13-9Zm-8 24L28 63l6 15m24-26 14 11-6 15M42 79h16" />
+    </svg>
+    <span class="title">{% if compact %}Liga Portugal{% else %}Liga Betclic Portugal{% endif %}</span>
+    <span class="instance">{% if compact %}Data: football-data.org{% else %}Data provided by football-data.org{% endif %}</span>
+  </div>
+{% endtemplate %}

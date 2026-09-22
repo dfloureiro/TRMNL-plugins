@@ -1,0 +1,28 @@
+{% if table_ok %}
+<div class="layout layout--col layout--top gap--small">
+  <div class="flex flex--row flex--between w--full">
+    <span class="label label--base">PRIMEIRA LIGA</span>
+    <span class="label label--small">{% if season_label != blank %}{{ season_label }}{% endif %}{% if matchday %} · MATCHDAY {{ matchday }}{% endif %}</span>
+  </div>
+  <div class="w--full portrait:hidden">
+    <div class="grid grid--cols-2 gap--medium">
+      <div>
+        {% render "table_heading", text_class: "label label--base lg:label--large" %}
+        {% for row in rows limit:9 %}{% render "table_row", row: row, text_class: "label label--base lg:label--large" %}{% endfor %}
+      </div>
+      <div>
+        {% render "table_heading", text_class: "label label--base lg:label--large" %}
+        {% for row in rows offset:9 %}{% render "table_row", row: row, text_class: "label label--base lg:label--large" %}{% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="w--full hidden portrait:block">
+    {% render "table_heading", text_class: "label label--base lg:label--large" %}
+    {% for row in rows %}{% render "table_row", row: row, text_class: "label label--base lg:label--large" %}{% endfor %}
+  </div>
+  {% render "zone_legend" %}
+</div>
+{% else %}
+  {% render "error_panel", message: table_error %}
+{% endif %}
+{% render "title_bar", season_label: season_label %}

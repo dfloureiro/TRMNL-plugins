@@ -5,9 +5,9 @@ dark_mode: 'no'
 static_data: ''
 polling_verb: get
 framework_version: 3.3.2
-serverless_language: ''
-polling_url: ''
-polling_headers: ''
+serverless_language: node
+polling_url: https://api.football-data.org/v4/competitions/PPL/standings
+polling_headers: X-Auth-Token={{ football_data_token }}
 polling_body: ''
 id: 485464
 oauth_enabled: 'false'
@@ -30,6 +30,27 @@ oauth_token_field_name: ''
 oauth_expiry_field_name: ''
 oauth_expiry_strategy: ''
 oauth_fixed_expiry_ms: ''
-name: 'Football - Liga Portugal Betclic '
-description:
-refresh_interval:
+custom_fields:
+- keyname: football_data_token
+  field_type: password
+  name: football-data.org API token
+  description: Free token from <a href="https://www.football-data.org/client/register">football-data.org</a>.
+  help_text: Each installation uses its own token. The plugin reads the Primeira Liga table.
+- keyname: favorite_team
+  field_type: string
+  name: Favourite club
+  description: Optional club name to highlight and show in the quadrant.
+  placeholder: Sporting CP
+  optional: true
+  help_text: Use a name or distinctive part of it as returned by football-data.org, for example Sporting or Benfica.
+- keyname: about_plugin
+  name: About this plugin
+  field_type: author_bio
+  category: sports
+  description: Liga Betclic Portugal standings from the <a href="https://www.football-data.org/">Football-Data.org API</a>. European and relegation zones are indicative because cup and UEFA qualification rules can vary. By Diogo Loureiro.
+  github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/football-liga-betclic-standings
+  learn_more_url: https://www.football-data.org/documentation/quickstart
+  email_address: dfl.accounts+trmnl@mailbox.org
+name: Football - Liga Betclic Portugal Standings
+description: Liga Portugal table and qualification zones
+refresh_interval: 60

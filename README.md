@@ -11,6 +11,7 @@ Each plugin lives in its own folder under [`plugins/`](plugins) and follows the 
 | [IPMA Weather](plugins/ipma-weather) | Daily weather forecast for locations in Portugal, using open data from IPMA (Instituto Português do Mar e da Atmosfera). Available in English and Portuguese. |
 | [TomTom Commute](plugins/TomTom-Commute) | Live car travel time between two points, with traffic delay and up to two alternative routes, using the TomTom Routing API. Works in "leave by" mode (travel time from now) or "arrive by" mode (works out when to leave to arrive at a set time), with an optional return trip. Available in English and Portuguese. |
 | [Champions League Standings](plugins/football-champions-league-standings) | UEFA Champions League league-phase table calculated from football-data.org matches, with qualification cutoffs and an optional favourite club. |
+| [Liga Betclic Portugal Standings](plugins/football-liga-betclic-standings) | Liga Portugal table from football-data.org, with European and relegation zones plus an optional favourite club. |
 
 ## Repository structure
 

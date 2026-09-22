@@ -1,0 +1,114 @@
+#!/usr/bin/env ruby
+
+require "fileutils"
+require "json"
+require "open3"
+require "rubygems"
+require "yaml"
+
+STATES = %w[league error].freeze
+DEVICES = {
+  "og" => [800, 480, 1, []],
+  "x-landscape" => [1872, 1404, 4, %w[screen--v2 screen--lg screen--density-2x screen--4bit]],
+  "x-portrait" => [1404, 1872, 4, %w[screen--v2 screen--lg screen--portrait screen--density-2x screen--4bit]]
+}.freeze
+
+state = ARGV[0] || "league"
+device = ARGV[1] || "og"
+unless STATES.include?(state) && DEVICES.key?(device)
+  warn "Usage: ./preview STATE [DEVICE]"
+  warn "States: #{STATES.join(', ')}"
+  warn "Devices: #{DEVICES.keys.join(', ')}"
+  exit 1
+end
+
+root = __dir__
+output = File.join(root, ".preview", "#{state}-#{device}")
+FileUtils.rm_rf(output)
+FileUtils.mkdir_p(output)
+FileUtils.cp_r(File.join(root, "src"), output)
+FileUtils.cp(File.join(root, ".trmnlp.yml"), output)
+
+clubs = [
+  ["Sporting CP", "SCP"], ["Benfica", "SLB"], ["FC Porto", "FCP"],
+  ["SC Braga", "SCB"], ["Vitória SC", "VSC"], ["Boavista FC", "BOA"],
+  ["Gil Vicente", "GIL"], ["Casa Pia AC", "CPI"], ["Rio Ave FC", "RIO"],
+  ["Famalicão", "FAM"], ["Estoril Praia", "EST"], ["Moreirense FC", "MOR"],
+  ["Arouca", "ARO"], ["Nacional", "NAC"], ["Santa Clara", "SAN"],
+  ["AVS Futebol", "AVS"], ["Estrela da Amadora", "ESA"], ["Tondela", "TON"]
+]
+points = [15, 13, 12, 10, 9, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 2, 1, 0]
+table = clubs.each_with_index.map do |(name, tla), index|
+  played = 5
+  won = points[index] / 3
+  drawn = points[index] % 3 == 1 ? 1 : 0
+  goals_for = 12 - index / 3
+  goals_against = 3 + index / 4
+  {
+    "position" => index + 1,
+    "team" => {
+      "id" => index + 1,
+      "name" => name,
+      "shortName" => name,
+      "tla" => tla,
+      "crest" => index < 6 ? "https://crests.football-data.org/#{index + 1}.png" : nil
+    },
+    "playedGames" => played,
+    "won" => won,
+    "draw" => drawn,
+    "lost" => played - won - drawn,
+    "points" => points[index],
+    "goalsFor" => goals_for,
+    "goalsAgainst" => goals_against,
+    "goalDifference" => goals_for - goals_against
+  }
+end
+
+static_data = if state == "error"
+  { "message" => "Preview: provider authentication failed" }
+else
+  {
+    "competition" => { "name" => "Primeira Liga", "code" => "PPL" },
+    "season" => { "startDate" => "2026-08-01", "currentMatchday" => 5 },
+    "standings" => [{ "stage" => "REGULAR_SEASON", "type" => "TOTAL", "table" => table }]
+  }
+end
+
+settings_path = File.join(output, "src", "settings.yml")
+settings = YAML.load_file(settings_path)
+settings["strategy"] = "static"
+settings["static_data"] = JSON.generate(static_data)
+File.write(settings_path, settings.to_yaml)
+
+width, height, depth, classes = DEVICES.fetch(device)
+unless classes.empty?
+  shared_path = File.join(output, "src", "shared.liquid")
+  class_list = classes.map { |name| %Q{"#{name}"} }.join(",")
+  injector = %Q{<script>document.addEventListener("DOMContentLoaded",()=>document.querySelector(".screen").classList.add(#{class_list}))</script>\n}
+  File.write(shared_path, injector + File.read(shared_path))
+end
+
+trmnlp = ENV["TRMNLP"]
+unless trmnlp
+  candidates = ENV.fetch("PATH", "").split(File::PATH_SEPARATOR).map { |dir| File.join(dir, "trmnlp") }
+  candidates += [File.join(Gem.bindir, "trmnlp"), File.join(Gem.user_dir, "bin", "trmnlp")]
+  trmnlp = candidates.find { |path| File.file?(path) && File.executable?(path) }
+end
+unless trmnlp
+  warn "trmnlp is required to render previews. Install it with: gem install trmnl_preview"
+  exit 1
+end
+
+command = [trmnlp, "build", "--png", "--width=#{width}", "--height=#{height}", "--color-depth=#{depth}"]
+puts "Rendering #{state} for #{device}..."
+Dir.chdir(output) do
+  stdout, stderr, status = Open3.capture3(*command)
+  puts stdout
+  warn stderr unless stderr.empty?
+  exit(status.exitstatus || 1) unless status.success?
+end
+
+puts "Preview files:"
+%w[full half_horizontal half_vertical quadrant].each do |layout|
+  puts "  #{File.join(output, "_build", "#{layout}.png")}"
+end
