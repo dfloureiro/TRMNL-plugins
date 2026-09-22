@@ -4,10 +4,9 @@ This plugin shows the current Liga Betclic Portugal table, also known as the Pri
 
 ## What it shows
 
-- Full landscape: all 18 clubs in two columns.
-- Full portrait: all 18 clubs in one readable table.
-- Half horizontal: the top eight clubs on compact screens, with more rows on larger layouts and a separate favourite row when needed.
-- Half vertical: the top 12 clubs on compact screens, with more rows on larger layouts and a separate favourite row when needed.
+- Full landscape and portrait: all 18 clubs, plus a larger favourite-club summary when configured.
+- Half horizontal: the top eight clubs on compact screens; X shows more of the table beside the favourite summary.
+- Half vertical: the top 10 clubs on compact screens; X uses the additional height for more rows and the favourite summary.
 - Quadrant: the favourite club, or the league leader when no favourite is configured, with nearby clubs and the club's record.
 
 Every table includes position, club, played, goal difference, points, and a compact zone marker. The zone legend marks positions 1–4 as Champions League, 5 as Europa League, 6 as Conference League, 16 as relegation play-off, and 17–18 as relegation. These are indicative: actual European places can change with cup results and UEFA allocation rules.
@@ -28,6 +27,7 @@ Install trmnlp from https://github.com/usetrmnl/trmnlp, then run trmnlp serve in
 
 ~~~sh
 ./preview league og
+./preview league-favorite x-landscape
 ./preview league x-landscape
 ./preview league x-portrait
 ./preview error og

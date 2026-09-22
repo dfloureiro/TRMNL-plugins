@@ -20,6 +20,10 @@
     {% render "table_heading", text_class: "label label--base lg:label--large" %}
     {% for row in rows %}{% render "table_row", row: row, text_class: "label label--base lg:label--large" %}{% endfor %}
   </div>
+  {% if featured != blank %}
+    <div class="lg:hidden">{% render "featured_panel", focus: featured, favorite_view: true, compact: true %}</div>
+    <div class="hidden lg:block">{% render "featured_panel", focus: featured, favorite_view: true, expanded: true %}</div>
+  {% endif %}
   {% render "zone_legend" %}
 </div>
 {% else %}

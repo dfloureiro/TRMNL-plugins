@@ -6,7 +6,7 @@ require "open3"
 require "rubygems"
 require "yaml"
 
-STATES = %w[league error].freeze
+STATES = %w[league league-favorite error].freeze
 DEVICES = {
   "og" => [800, 480, 1, []],
   "x-landscape" => [1872, 1404, 4, %w[screen--v2 screen--lg screen--density-2x screen--4bit]],
@@ -67,11 +67,15 @@ end
 static_data = if state == "error"
   { "message" => "Preview: provider authentication failed" }
 else
-  {
+  data = {
     "competition" => { "name" => "Primeira Liga", "code" => "PPL" },
     "season" => { "startDate" => "2026-08-01", "currentMatchday" => 5 },
     "standings" => [{ "stage" => "REGULAR_SEASON", "type" => "TOTAL", "table" => table }]
   }
+  if state == "league-favorite"
+    data["trmnl"] = { "plugin_settings" => { "custom_fields_values" => { "favorite_team" => "Benfica" } } }
+  end
+  data
 end
 
 settings_path = File.join(output, "src", "settings.yml")

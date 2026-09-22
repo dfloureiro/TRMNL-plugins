@@ -39,6 +39,46 @@
   <div class="label label--small w--full text--truncate">CL 1–4 · EL 5 · ECL 6 · PO 16 · REL 17–18</div>
 {% endtemplate %}
 
+{% template featured_panel %}
+  {% if focus != blank %}
+    {% if compact %}
+      <div class="grid grid--cols-12 gap--xsmall flex--center-y outline rounded p--1 w--full">
+        <span class="col--span-3 label label--small">{% if favorite_view %}FAVOURITE{% else %}LEADER{% endif %}</span>
+        <span class="col--span-3 label label--base font--bold text--truncate">{{ focus.name | escape }}</span>
+        <span class="col--span-2 value value--base value--tnums font--bold">#{{ focus.position }}</span>
+        <span class="col--span-2 label label--base value--tnums font--bold text--right">{{ focus.points }} PTS</span>
+        <span class="col--span-2 label label--small text--right">{{ focus.won }}–{{ focus.drawn }}–{{ focus.lost }}</span>
+      </div>
+    {% else %}
+      <div class="flex flex--col gap--xsmall outline rounded p--1{% if expanded %} lg:p--2{% endif %} w--full">
+        <div class="flex flex--row flex--between flex--center-y w--full">
+          <span class="label label--small{% if expanded %} lg:label--base{% endif %}">{% if favorite_view %}YOUR CLUB{% else %}LEAGUE LEADER{% endif %}</span>
+          <span class="label label--small">{% if focus.zone_label != blank %}{{ focus.zone_label }}{% else %}MID-TABLE{% endif %}</span>
+        </div>
+        <div class="flex flex--row flex--between flex--center-y gap--small w--full">
+          <div class="flex flex--row flex--center-y gap--small text--truncate">
+            {% if focus.crest != blank %}<img src="{{ focus.crest }}" alt="" class="image image--contain image-dither h--10 w--10{% if expanded %} lg:h--16 lg:w--16{% endif %}" />{% endif %}
+            <div class="flex flex--col text--truncate">
+              <span class="value value--large{% if expanded %} lg:value--xlarge{% endif %} value--tnums font--bold">#{{ focus.position }}</span>
+              <span class="label label--base{% if expanded %} lg:label--large{% endif %} font--bold text--truncate">{{ focus.name | escape }}</span>
+            </div>
+          </div>
+          <div class="flex flex--col flex--center text--right">
+            <span class="value value--xlarge{% if expanded %} lg:value--xxlarge{% endif %} value--tnums font--bold" data-fit-value="true">{{ focus.points }}</span>
+            <span class="label label--small">POINTS</span>
+          </div>
+        </div>
+        <div class="grid grid--cols-4 gap--xsmall border--h-black w--full pt--1">
+          <div class="flex flex--col"><span class="label label--small">PLAYED</span><span class="value value--small value--tnums">{{ focus.played }}</span></div>
+          <div class="flex flex--col"><span class="label label--small">W-D-L</span><span class="value value--small value--tnums text--truncate">{{ focus.won }}–{{ focus.drawn }}–{{ focus.lost }}</span></div>
+          <div class="flex flex--col"><span class="label label--small">GD</span><span class="value value--small value--tnums">{{ focus.gd_text }}</span></div>
+          <div class="flex flex--col text--right"><span class="label label--small">RANK</span><span class="value value--small value--tnums">#{{ focus.position }}</span></div>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+{% endtemplate %}
+
 {% template error_panel %}
   <div class="layout layout--col flex flex--center">
     <span class="value value--large">Liga Betclic Portugal</span>

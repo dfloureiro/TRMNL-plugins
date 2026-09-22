@@ -1,24 +1,17 @@
 {% if table_ok %}
 <div class="layout layout--col layout--top gap--small">
-  <div class="w--full p--1 flex flex--col flex--center grow outline rounded">
-    <div class="flex flex--row flex--between w--full">
-      <span class="label label--small">{% if featured != blank %}YOUR CLUB{% else %}LEAGUE LEADER{% endif %}</span>
-      <span class="label label--small">{{ quadrant_focus.zone }}</span>
-    </div>
-    <div class="flex flex--row flex--between flex--center-y w--full">
-      <span class="value value--large value--tnums font--bold">#{{ quadrant_focus.position }}</span>
-      <span class="value value--base value--tnums font--bold">{{ quadrant_focus.points }} PTS</span>
-    </div>
-    <div class="flex flex--row flex--between w--full">
-      <span class="label label--base{% if featured != blank %} lg:label--large{% endif %} font--bold text--truncate w--full">{{ quadrant_focus.name | escape }}</span>
-      {% if quadrant_focus.crest != blank %}<img src="{{ quadrant_focus.crest }}" alt="{{ quadrant_focus.name }} crest" class="image image--contain hidden lg:block h--12 w--12" />{% endif %}
-    </div>
-    <div class="label label--small value--tnums">{{ quadrant_focus.played }} played · GD {{ quadrant_focus.gd_text }} · {{ quadrant_focus.won }}W {{ quadrant_focus.drawn }}D {{ quadrant_focus.lost }}L</div>
-  </div>
+  {% if featured != blank %}
+    <div class="lg:hidden">{% render "featured_panel", focus: featured, favorite_view: true, compact: true %}</div>
+    <div class="hidden lg:block">{% render "featured_panel", focus: featured, favorite_view: true, expanded: true %}</div>
+  {% else %}
+    <div class="lg:hidden">{% render "featured_panel", focus: leader, compact: true %}</div>
+    <div class="hidden lg:block">{% render "featured_panel", focus: leader, expanded: true %}</div>
+  {% endif %}
   <div class="w--full">
     <div class="flex flex--row flex--between w--full"><span class="label label--small">NEARBY CLUBS</span><span class="label label--small">PTS</span></div>
     <div class="lg:hidden">{% for row in nearby_short %}{% render "neighbor_row", row: row, focus_id: quadrant_focus.id %}{% endfor %}</div>
-    <div class="hidden lg:block">{% for row in nearby_long %}{% render "neighbor_row", row: row, focus_id: quadrant_focus.id %}{% endfor %}</div>
+    <div class="hidden lg:block portrait:hidden">{% for row in nearby_long %}{% render "neighbor_row", row: row, focus_id: quadrant_focus.id %}{% endfor %}</div>
+    <div class="hidden lg:portrait:block">{% for row in nearby_short %}{% render "neighbor_row", row: row, focus_id: quadrant_focus.id %}{% endfor %}</div>
   </div>
 </div>
 {% else %}
