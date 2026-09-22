@@ -36,7 +36,8 @@ function run(input) {
     if (!teams.has(team.id)) teams.set(team.id, {
       id: team.id, name: team.shortName || team.name || team.tla || "Unknown club",
       played: 0, won: 0, drawn: 0, lost: 0, goals_for: 0, goals_against: 0,
-      away_goals: 0, away_wins: 0, points: 0, opponents: []
+      away_goals: 0, away_wins: 0, points: 0, opponents: [],
+      crest: team.crest || ""
     });
     return teams.get(team.id);
   };
