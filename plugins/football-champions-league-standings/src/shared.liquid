@@ -52,6 +52,11 @@
 
 {% template title_bar %}
   <div class="title_bar">
+    <svg class="image image--adaptive" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="m12 7-4 3 1.5 4.7h5L16 10l-4-3Z"/>
+      <path d="m12 7-.8-4.9M8 10 3.4 8.2m6.1 6.5-3 4m8-4 3 4M16 10l4.6-1.8M6.5 18.7l-2.8.2m13.8-.2 2.8.2"/>
+    </svg>
     <span class="title">{% if compact %}UCL{% else %}Champions League{% endif %}</span>
     <span class="instance">{% if compact %}Data: football-data.org{% else %}Data provided by football-data.org{% endif %}</span>
   </div>
