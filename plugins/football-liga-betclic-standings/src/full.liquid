@@ -4,6 +4,13 @@
     <span class="label label--base">PRIMEIRA LIGA</span>
     <span class="label label--small">{% if season_label != blank %}{{ season_label }}{% endif %}{% if matchday %} · MATCHDAY {{ matchday }}{% endif %}</span>
   </div>
+  {% if featured != blank %}
+    <div class="lg:hidden">{% render "club_hero", focus: featured, favorite_view: true, compact: true %}</div>
+    <div class="hidden lg:block">{% render "club_hero", focus: featured, favorite_view: true, expanded: true %}</div>
+  {% else %}
+    <div class="lg:hidden">{% render "club_hero", focus: leader, compact: true %}</div>
+    <div class="hidden lg:block">{% render "club_hero", focus: leader, expanded: true %}</div>
+  {% endif %}
   <div class="w--full portrait:hidden">
     <div class="grid grid--cols-2 gap--medium">
       <div>
@@ -20,10 +27,6 @@
     {% render "table_heading", text_class: "label label--base lg:label--large" %}
     {% for row in rows %}{% render "table_row", row: row, text_class: "label label--base lg:label--large" %}{% endfor %}
   </div>
-  {% if featured != blank %}
-    <div class="lg:hidden">{% render "featured_panel", focus: featured, favorite_view: true, compact: true %}</div>
-    <div class="hidden lg:block">{% render "featured_panel", focus: featured, favorite_view: true, expanded: true %}</div>
-  {% endif %}
   {% render "zone_legend" %}
 </div>
 {% else %}

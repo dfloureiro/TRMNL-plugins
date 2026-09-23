@@ -4,12 +4,12 @@ This plugin shows the current Liga Betclic Portugal table, also known as the Pri
 
 ## What it shows
 
-- Full landscape and portrait: all 18 clubs, plus a larger favourite-club summary when configured.
-- Half horizontal: the top eight clubs on compact screens; X shows more of the table beside the favourite summary.
-- Half vertical: the top 10 clubs on compact screens; X uses the additional height for more rows and the favourite summary.
-- Quadrant: the favourite club, or the league leader when no favourite is configured, with nearby clubs and the club's record.
+- Full landscape and portrait: the favourite club or league leader first, followed by all 18 clubs.
+- Half horizontal: a compact favourite-first hero followed by four clubs on compact screens and eight on X.
+- Half vertical: the favourite-first hero followed by nine clubs on compact screens and 15 on X.
+- Quadrant: a compact favourite or league-leader hero with two nearby clubs on compact screens and three on X.
 
-Every table includes position, club, played, goal difference, points, and a compact zone marker. The zone legend marks positions 1–4 as Champions League, 5 as Europa League, 6 as Conference League, 16 as relegation play-off, and 17–18 as relegation. These are indicative: actual European places can change with cup results and UEFA allocation rules.
+Tables include position, club, played, goal difference, and points. The full and half-vertical layouts also include a zone legend for positions 1–4 as Champions League, 5 as Europa League, 6 as Conference League, 16 as relegation play-off, and 17–18 as relegation. These are indicative: actual European places can change with cup results and UEFA allocation rules.
 
 ## Setup
 

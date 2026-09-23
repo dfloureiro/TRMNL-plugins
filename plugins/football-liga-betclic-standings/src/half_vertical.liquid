@@ -4,26 +4,24 @@
     <span class="label label--base">PRIMEIRA LIGA</span>
     <span class="label label--small">{% if season_label != blank %}{{ season_label }}{% endif %}</span>
   </div>
-  <div class="flex flex--col gap--small w--full lg:hidden">
+  {% if featured != blank %}
+    <div class="lg:hidden">{% render "club_hero", focus: featured, favorite_view: true, compact: true %}</div>
+    <div class="hidden lg:block">{% render "club_hero", focus: featured, favorite_view: true, expanded: true %}</div>
+  {% else %}
+    <div class="lg:hidden">{% render "club_hero", focus: leader, compact: true %}</div>
+    <div class="hidden lg:block">{% render "club_hero", focus: leader, expanded: true %}</div>
+  {% endif %}
+  <div class="w--full lg:hidden">
     <div class="w--full">
       {% render "table_heading", text_class: "label label--small" %}
-      {% for row in rows limit:10 %}{% render "table_row", row: row, text_class: "label label--small" %}{% endfor %}
+      {% for row in rows limit:9 %}{% render "table_row", row: row, text_class: "label label--small" %}{% endfor %}
     </div>
-    {% if featured != blank %}{% render "featured_panel", focus: featured, favorite_view: true, compact: true %}{% endif %}
   </div>
-  <div class="flex flex--col gap--small w--full hidden lg:portrait:block">
-    <div>
-      {% render "table_heading", text_class: "label label--small lg:label--base" %}
-      {% for row in rows limit:14 %}{% render "table_row", row: row, text_class: "label label--small lg:label--base" %}{% endfor %}
-    </div>
-    {% if featured != blank %}{% render "featured_panel", focus: featured, favorite_view: true, expanded: true %}{% endif %}
-  </div>
-  <div class="flex flex--col gap--small w--full hidden lg:block portrait:hidden">
+  <div class="w--full hidden lg:block">
     <div>
       {% render "table_heading", text_class: "label label--base" %}
-      {% for row in rows %}{% render "table_row", row: row, text_class: "label label--base" %}{% endfor %}
+      {% for row in rows limit:15 %}{% render "table_row", row: row, text_class: "label label--base" %}{% endfor %}
     </div>
-    {% if featured != blank %}{% render "featured_panel", focus: featured, favorite_view: true, expanded: true %}{% endif %}
   </div>
   {% render "zone_legend" %}
 </div>

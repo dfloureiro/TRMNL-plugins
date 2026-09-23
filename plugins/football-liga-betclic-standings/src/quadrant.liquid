@@ -1,17 +1,16 @@
 {% if table_ok %}
 <div class="layout layout--col layout--top gap--small">
   {% if featured != blank %}
-    <div class="lg:hidden">{% render "featured_panel", focus: featured, favorite_view: true, compact: true %}</div>
-    <div class="hidden lg:block">{% render "featured_panel", focus: featured, favorite_view: true, expanded: true %}</div>
+    <div class="lg:hidden">{% render "club_hero", focus: featured, favorite_view: true, micro: true %}</div>
+    <div class="hidden lg:block">{% render "club_hero", focus: featured, favorite_view: true, micro: true, expanded: true %}</div>
   {% else %}
-    <div class="lg:hidden">{% render "featured_panel", focus: leader, compact: true %}</div>
-    <div class="hidden lg:block">{% render "featured_panel", focus: leader, expanded: true %}</div>
+    <div class="lg:hidden">{% render "club_hero", focus: leader, micro: true %}</div>
+    <div class="hidden lg:block">{% render "club_hero", focus: leader, micro: true, expanded: true %}</div>
   {% endif %}
   <div class="w--full">
     <div class="flex flex--row flex--between w--full"><span class="label label--small">NEARBY CLUBS</span><span class="label label--small">PTS</span></div>
     <div class="lg:hidden">{% for row in nearby_short %}{% render "neighbor_row", row: row, focus_id: quadrant_focus.id %}{% endfor %}</div>
-    <div class="hidden lg:block portrait:hidden">{% for row in nearby_long %}{% render "neighbor_row", row: row, focus_id: quadrant_focus.id %}{% endfor %}</div>
-    <div class="hidden lg:portrait:block">{% for row in nearby_short %}{% render "neighbor_row", row: row, focus_id: quadrant_focus.id %}{% endfor %}</div>
+    <div class="hidden lg:block">{% for row in nearby_long limit:3 %}{% render "neighbor_row", row: row, focus_id: quadrant_focus.id %}{% endfor %}</div>
   </div>
 </div>
 {% else %}

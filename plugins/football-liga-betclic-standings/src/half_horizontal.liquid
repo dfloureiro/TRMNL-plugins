@@ -4,28 +4,25 @@
     <span class="label label--base">PRIMEIRA LIGA</span>
     <span class="label label--small">{% if season_label != blank %}{{ season_label }}{% endif %}</span>
   </div>
-  <div class="flex flex--col gap--small w--full lg:hidden">
-    {% if featured != blank %}{% render "featured_panel", focus: featured, favorite_view: true, compact: true %}{% endif %}
+  {% if featured != blank %}
+    <div class="lg:hidden">{% render "club_hero", focus: featured, favorite_view: true, micro: true %}</div>
+    <div class="hidden lg:block">{% render "club_hero", focus: featured, favorite_view: true, micro: true, expanded: true %}</div>
+  {% else %}
+    <div class="lg:hidden">{% render "club_hero", focus: leader, micro: true %}</div>
+    <div class="hidden lg:block">{% render "club_hero", focus: leader, micro: true, expanded: true %}</div>
+  {% endif %}
+  <div class="w--full lg:hidden">
     <div class="w--full">
       {% render "table_heading", text_class: "label label--small" %}
-      {% if featured != blank %}{% for row in rows limit:7 %}{% render "table_row", row: row, text_class: "label label--small" %}{% endfor %}{% else %}{% for row in rows limit:8 %}{% render "table_row", row: row, text_class: "label label--small" %}{% endfor %}{% endif %}
+      {% for row in rows limit:4 %}{% render "table_row", row: row, text_class: "label label--small" %}{% endfor %}
     </div>
   </div>
-  <div class="w--full hidden lg:grid portrait:hidden{% if featured != blank %} grid--cols-2 gap--small{% endif %}">
+  <div class="w--full hidden lg:block">
     <div>
       {% render "table_heading", text_class: "label label--base" %}
-      {% for row in rows limit:12 %}{% render "table_row", row: row, text_class: "label label--base" %}{% endfor %}
+      {% for row in rows limit:8 %}{% render "table_row", row: row, text_class: "label label--base" %}{% endfor %}
     </div>
-    {% if featured != blank %}{% render "featured_panel", focus: featured, favorite_view: true, expanded: true %}{% endif %}
   </div>
-  <div class="flex flex--col gap--small w--full hidden lg:portrait:block">
-    <div>
-      {% render "table_heading", text_class: "label label--small lg:label--base" %}
-      {% for row in rows limit:12 %}{% render "table_row", row: row, text_class: "label label--small lg:label--base" %}{% endfor %}
-    </div>
-    {% if featured != blank %}{% render "featured_panel", focus: featured, favorite_view: true, compact: true %}{% endif %}
-  </div>
-  {% render "zone_legend" %}
 </div>
 {% else %}
   {% render "error_panel", message: table_error %}
