@@ -30,15 +30,15 @@ FileUtils.cp_r(File.join(root, "src"), output)
 FileUtils.cp(File.join(root, ".trmnlp.yml"), output)
 
 clubs = [
-  ["Sporting CP", "SCP"], ["Benfica", "SLB"], ["FC Porto", "FCP"],
-  ["SC Braga", "SCB"], ["Vitória SC", "VSC"], ["Boavista FC", "BOA"],
+  ["Sporting CP", "SCP", 498], ["Benfica", "SLB", 1903], ["FC Porto", "FCP", 503],
+  ["SC Braga", "SCB", 5613], ["Vitória SC", "VSC", 5543], ["Boavista FC", "BOA"],
   ["Gil Vicente", "GIL"], ["Casa Pia AC", "CPI"], ["Rio Ave FC", "RIO"],
   ["Famalicão", "FAM"], ["Estoril Praia", "EST"], ["Moreirense FC", "MOR"],
   ["Arouca", "ARO"], ["Nacional", "NAC"], ["Santa Clara", "SAN"],
-  ["AVS Futebol", "AVS"], ["Estrela da Amadora", "ESA"], ["Tondela", "TON"]
+  ["AVS Futebol", "AVS"], ["Estrela da Amadora", "ESA"], ["Tondela", "TON", 1049]
 ]
 points = [15, 13, 12, 10, 9, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 2, 1, 0]
-table = clubs.each_with_index.map do |(name, tla), index|
+table = clubs.each_with_index.map do |(name, tla, crest_id), index|
   played = 5
   won = points[index] / 3
   drawn = points[index] % 3 == 1 ? 1 : 0
@@ -47,11 +47,11 @@ table = clubs.each_with_index.map do |(name, tla), index|
   {
     "position" => index + 1,
     "team" => {
-      "id" => index + 1,
+      "id" => crest_id || index + 1,
       "name" => name,
       "shortName" => name,
       "tla" => tla,
-      "crest" => index < 6 ? "https://crests.football-data.org/#{index + 1}.png" : nil
+      "crest" => crest_id ? "https://crests.football-data.org/#{crest_id}.png" : nil
     },
     "playedGames" => played,
     "won" => won,
