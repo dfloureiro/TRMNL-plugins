@@ -1,0 +1,18 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: 3.4.6
+serverless_language: ''
+refresh_interval_floor: ''
+polling_url: ''
+polling_headers: ''
+polling_body: ''
+id: 543130
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+name: Observador - Notícias
+description:
+refresh_interval:
