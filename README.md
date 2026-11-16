@@ -12,7 +12,6 @@ Each plugin lives in its own folder under [`plugins/`](plugins) and follows the 
 | [TomTom Commute](plugins/TomTom-Commute) | Live car travel time between two points, with traffic delay and up to two alternative routes, using the TomTom Routing API. Works in "leave by" mode (travel time from now) or "arrive by" mode (works out when to leave to arrive at a set time), with an optional return trip. Available in English and Portuguese. |
 | [Champions League Standings](plugins/football-champions-league-standings) | UEFA Champions League league-phase table calculated from football-data.org matches, with qualification cutoffs and an optional favourite club. |
 | [Liga Portugal Betclic Standings](plugins/football-liga-betclic-standings) | Liga Portugal Betclic table from football-data.org, with an optional favourite club highlighted and centred in the smaller layouts. Available in English and Portuguese. |
-| [Observador](plugins/observador-news) | Latest headlines from the Portuguese newspaper Observador, from its RSS feed, with an optional section filter (Política, Desporto, Mundo, …). Labels in English or Portuguese. |
 
 ## Repository structure
 
