@@ -7,7 +7,7 @@ polling_verb: get
 framework_version: 3.4.6
 serverless_language: node
 refresh_interval_floor: ''
-polling_url: https://observador.pt/feed/
+polling_url: https://observador.pt/rss/ultimas/
 polling_headers: ''
 polling_body: ''
 id: 543130
