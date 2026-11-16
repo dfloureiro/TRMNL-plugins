@@ -1,0 +1,73 @@
+#!/usr/bin/env ruby
+
+require "fileutils"
+require "open3"
+require "rubygems"
+require "yaml"
+
+# Renders all four layouts from the live Observador feed for one device.
+DEVICES = {
+  "og" => [800, 480, 1, []],
+  "og-portrait" => [480, 800, 1, %w[screen--portrait]],
+  "x-landscape" => [1872, 1404, 4, %w[screen--v2 screen--lg screen--density-2x screen--4bit]],
+  "x-portrait" => [1404, 1872, 4, %w[screen--v2 screen--lg screen--portrait screen--density-2x screen--4bit]],
+  # trmnlp build recognises the Frame's size and applies its screen classes itself.
+  "frame" => [2560, 1440, 1, [], "color-6a"],
+  "frame-portrait" => [1440, 2560, 1, [], "color-6a"]
+}.freeze
+
+device = ARGV[0] || "og"
+language = ARGV[1] || "pt"
+section = ARGV[2] || "all"
+unless DEVICES.key?(device) && %w[en pt].include?(language)
+  warn "Usage: ./preview [DEVICE] [LANGUAGE] [SECTION]"
+  warn "Devices: #{DEVICES.keys.join(', ')}"
+  warn "Languages: en, pt · Section: all (default) or e.g. Desporto"
+  exit 1
+end
+
+root = __dir__
+output = File.join(root, ".preview", [device, language, (section unless section == "all")].compact.join("-"))
+FileUtils.rm_rf(output)
+FileUtils.mkdir_p(output)
+FileUtils.cp_r(File.join(root, "src"), output)
+FileUtils.cp(File.join(root, ".trmnlp.yml"), output)
+
+project_path = File.join(output, ".trmnlp.yml")
+project = YAML.load_file(project_path)
+project["custom_fields"] = { "language" => language, "section" => section }
+File.write(project_path, project.to_yaml)
+
+width, height, depth, classes, palette = DEVICES.fetch(device)
+unless classes.empty?
+  shared_path = File.join(output, "src", "shared.liquid")
+  class_list = classes.map { |name| %Q{"#{name}"} }.join(",")
+  injector = %Q{<script>document.querySelector(".screen").classList.add(#{class_list})</script>\n}
+  File.write(shared_path, injector + File.read(shared_path))
+end
+
+trmnlp = ENV["TRMNLP"]
+unless trmnlp
+  candidates = ENV.fetch("PATH", "").split(File::PATH_SEPARATOR).map { |dir| File.join(dir, "trmnlp") }
+  candidates += [File.join(Gem.bindir, "trmnlp"), File.join(Gem.user_dir, "bin", "trmnlp")]
+  trmnlp = candidates.find { |path| File.file?(path) && File.executable?(path) }
+end
+unless trmnlp
+  warn "trmnlp is required to render previews. Install it with: gem install trmnl_preview"
+  exit 1
+end
+
+command = [trmnlp, "build", "--png", "--width=#{width}", "--height=#{height}", "--color-depth=#{depth}"]
+command << "--palette=#{palette}" if palette
+puts "Rendering #{device}..."
+Dir.chdir(output) do
+  stdout, stderr, status = Open3.capture3(*command)
+  puts stdout
+  warn stderr unless stderr.empty?
+  exit(status.exitstatus || 1) unless status.success?
+end
+
+puts "Preview files:"
+%w[full half_horizontal half_vertical quadrant].each do |layout|
+  puts "  #{File.join(output, "_build", "#{layout}.png")}"
+end

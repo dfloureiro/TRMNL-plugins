@@ -1,0 +1,25 @@
+<div class="layout layout--col layout--stretch-x layout--top">
+  {% if has_articles %}
+    {% assign lead = articles[0] %}
+    {% render "article_item", article: lead, now: now_ts, lang: lang,
+      title_class: "title--base lg:title--large", title_clamp: 3, title_clamp_portrait: 4,
+      desc_class: "description--base portrait:hidden", desc_clamp: 2,
+      label_class: "label--small" %}
+
+    <div class="divider"></div>
+
+    <div class="columns news-list" data-overflow-max-cols="1">
+      <div class="column">
+        {% for article in articles offset: 1 %}
+          {% render "article_item", article: article, now: now_ts, lang: lang,
+            title_class: "title--small lg:title--base", title_clamp: 2, title_clamp_portrait: 3,
+            label_class: "label--small" %}
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    {{ empty_state }}
+  {% endif %}
+</div>
+
+{% render "title_bar", instance_label: instance_label %}
