@@ -1,6 +1,6 @@
 # Observador
 
-A TRMNL plugin that shows the latest headlines from [Observador](https://observador.pt/), read from its public RSS feed. Inspired by the [Público plugin](https://github.com/mcduarte2000/trmnl-publico).
+A TRMNL plugin that shows the latest headlines from [Observador](https://observador.pt/), read from its public RSS feed.
 
 ## What it shows
 
