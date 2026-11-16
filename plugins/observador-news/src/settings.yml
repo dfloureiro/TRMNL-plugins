@@ -4,11 +4,13 @@ no_screen_padding: 'no'
 dark_mode: 'no'
 static_data: ''
 polling_verb: get
-framework_version: 3.3.2
+framework_version: 3.4.6
 serverless_language: node
+refresh_interval_floor: ''
 polling_url: https://observador.pt/feed/
 polling_headers: ''
 polling_body: ''
+id: 543130
 oauth_enabled: 'false'
 oauth_pkce_enabled: 'no'
 oauth_authorize_url: ''
@@ -71,6 +73,6 @@ custom_fields:
   github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/observador-news
   learn_more_url: https://observador.pt/
   email_address: dfl.accounts+trmnl@mailbox.org
-name: Observador
+name: Observador - Notícias
 description: Latest news from Observador (PT)
 refresh_interval: 30
