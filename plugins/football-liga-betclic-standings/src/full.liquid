@@ -1,33 +1,21 @@
 {% if table_ok %}
-<div class="layout layout--col layout--top gap--small">
-  <div class="flex flex--row flex--between w--full">
-    <span class="label label--base">PRIMEIRA LIGA</span>
-    <span class="label label--small">{% if season_label != blank %}{{ season_label }}{% endif %}{% if matchday %} · MATCHDAY {{ matchday }}{% endif %}</span>
-  </div>
-  <div class="w--full grow">
-    {% render "club_hero", focus: hero_club, favorite_view: has_favorite, variant: "full" %}
-  </div>
-  <div class="w--full shrink-0">
-    <div class="w--full portrait:hidden">
-      <div class="grid grid--cols-2 gap--medium">
-        <div>
-          {% render "table_heading", text_class: "label label--base lg:label--large" %}
-          {% for row in rows limit:9 %}{% render "table_row", row: row, text_class: "label label--base lg:label--large" %}{% endfor %}
-        </div>
-        <div>
-          {% render "table_heading", text_class: "label label--base lg:label--large" %}
-          {% for row in rows offset:9 %}{% render "table_row", row: row, text_class: "label label--base lg:label--large" %}{% endfor %}
-        </div>
-      </div>
+<div class="layout layout--col layout--top gap--small portrait:gap--medium">
+  {% render "brand_header", emblem: league_emblem, image_class: "h--10 w--10 portrait:h--16 portrait:w--16 lg:h--16 lg:w--16", title_class: "title--large portrait:title--xlarge lg:title--xlarge" %}
+  <div class="grid grid--cols-2 gap--large w--full portrait:hidden">
+    <div class="flex flex--col gap--xsmall">
+      <span class="label label--underline text--center w--full lg:label--large">{{ t_top_half }}</span>
+      {% render "standings_table", rows: rows, lang: lang, offset: 0, limit: half_count, columns: "full", table_class: "table--small lg:table--large", text_class: "label--large lg:label--xlarge", club_class: "w--max-[22cqw]", club_chars: 14 %}
     </div>
-    <div class="w--full hidden portrait:block">
-      {% render "table_heading", text_class: "label label--base lg:label--large" %}
-      {% for row in rows %}{% render "table_row", row: row, text_class: "label label--base lg:label--large" %}{% endfor %}
+    <div class="flex flex--col gap--xsmall">
+      <span class="label label--underline text--center w--full lg:label--large">{{ t_bottom_half }}</span>
+      {% render "standings_table", rows: rows, lang: lang, offset: half_count, limit: row_count, columns: "full", table_class: "table--small lg:table--large", text_class: "label--large lg:label--xlarge", club_class: "w--max-[22cqw]", club_chars: 14 %}
     </div>
-    {% render "zone_legend" %}
+  </div>
+  <div class="w--full hidden portrait:block">
+    {% render "standings_table", rows: rows, lang: lang, offset: 0, limit: row_count, columns: "full", table_class: "table--small lg:table--base", text_class: "label--large lg:label--xlarge", club_class: "w--max-[50cqw]", club_chars: 26 %}
   </div>
 </div>
 {% else %}
-  {% render "error_panel", message: table_error %}
+  {% render "error_panel", message: table_error, emblem: league_emblem %}
 {% endif %}
-{% render "title_bar", season_label: season_label %}
+{% render "title_bar", emblem: league_emblem, meta: table_meta %}

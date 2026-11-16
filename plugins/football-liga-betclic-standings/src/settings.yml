@@ -40,15 +40,24 @@ custom_fields:
 - keyname: favorite_team
   field_type: string
   name: Favourite club
-  description: Optional club name to highlight and show in the quadrant.
+  description: Optional club name to highlight in the table. Smaller layouts centre on it.
   placeholder: Sporting CP
   optional: true
   help_text: Use a name or distinctive part of it as returned by football-data.org, for example Sporting or Benfica.
+- keyname: language
+  field_type: select
+  name: Language
+  description: Screen language
+  default: en
+  options:
+  - English: en
+  - Português: pt
+  help_text: Pick your preferred language
 - keyname: about_plugin
   name: About this plugin
   field_type: author_bio
   category: sports
-  description: Liga Betclic Portugal standings from the <a href="https://www.football-data.org/">Football-Data.org API</a>. European and relegation zones are indicative because cup and UEFA qualification rules can vary. By Diogo Loureiro.
+  description: Liga Portugal Betclic standings from the <a href="https://www.football-data.org/">Football-Data.org API</a>. By Diogo Loureiro.
   github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/football-liga-betclic-standings
   learn_more_url: https://www.football-data.org/documentation/quickstart
   email_address: dfl.accounts+trmnl@mailbox.org

@@ -1,20 +1,19 @@
 {% if table_ok %}
-<div class="layout layout--col layout--top gap--small">
-  <div class="w--full grow">
-    {% render "club_hero", focus: hero_club, favorite_view: has_favorite, variant: "quadrant" %}
+<div class="layout layout--col layout--top">
+  <div class="w--full portrait:hidden lg:hidden">
+    {% render "standings_table", rows: rows, lang: lang, offset: offsets.w5, limit: 5, columns: "compact", table_class: "table--small", text_class: "", club_class: "w--max-[55cqw]", club_chars: 20 %}
   </div>
-  <div class="w--full shrink-0">
-    <div class="lg:hidden">
-      {% render "table_heading", text_class: "label label--small" %}
-      {% for row in rows limit:3 %}{% render "table_row", row: row, text_class: "label label--small" %}{% endfor %}
-    </div>
-    <div class="hidden lg:block">
-      {% render "table_heading", text_class: "label label--base" %}
-      {% for row in rows limit:4 %}{% render "table_row", row: row, text_class: "label label--base" %}{% endfor %}
-    </div>
+  <div class="w--full hidden portrait:block lg:portrait:hidden">
+    {% render "standings_table", rows: rows, lang: lang, offset: offsets.w10, limit: 10, columns: "mini", table_class: "table--small", text_class: "", club_class: "w--max-[65cqw]", club_chars: 14 %}
+  </div>
+  <div class="w--full hidden lg:block lg:portrait:hidden">
+    {% render "standings_table", rows: rows, lang: lang, offset: offsets.w6, limit: 6, columns: "compact", table_class: "table--base", text_class: "label--large", club_class: "w--max-[55cqw]", club_chars: 20 %}
+  </div>
+  <div class="w--full hidden lg:portrait:block">
+    {% render "standings_table", rows: rows, lang: lang, offset: offsets.w9, limit: 9, columns: "compact", table_class: "table--base", text_class: "label--large", club_class: "w--max-[55cqw]", club_chars: 20 %}
   </div>
 </div>
 {% else %}
-  {% render "error_panel", message: table_error %}
+  {% render "error_panel", message: table_error, emblem: league_emblem %}
 {% endif %}
-{% render "title_bar", compact: true %}
+{% render "title_bar", emblem: league_emblem, compact: true, meta: table_meta %}

@@ -1,20 +1,28 @@
 {% if table_ok %}
-<div class="layout layout--col layout--top gap--small">
-  <div class="w--full grow">
-    {% render "club_hero", focus: hero_club, favorite_view: has_favorite, variant: "horizontal" %}
-  </div>
-  <div class="w--full shrink-0">
-    <div class="w--full lg:hidden">
-      {% render "table_heading", text_class: "label label--small" %}
-      {% for row in rows limit:4 %}{% render "table_row", row: row, text_class: "label label--small" %}{% endfor %}
+<div class="layout layout--col layout--top">
+  <div class="w--full portrait:hidden lg:hidden">
+    <div class="grid grid--cols-2 gap--large">
+      <div>{% render "standings_table", rows: rows, lang: lang, offset: offsets.w10, limit: 5, columns: "compact", table_class: "table--small", text_class: "", club_class: "w--max-[28cqw]", club_chars: 20 %}</div>
+      <div>{% assign second = offsets.w10 | plus: 5 %}{% render "standings_table", rows: rows, lang: lang, offset: second, limit: 5, columns: "compact", table_class: "table--small", text_class: "", club_class: "w--max-[28cqw]", club_chars: 20 %}</div>
     </div>
-    <div class="w--full hidden lg:block">
-      {% render "table_heading", text_class: "label label--base" %}
-      {% for row in rows limit:5 %}{% render "table_row", row: row, text_class: "label label--base" %}{% endfor %}
+  </div>
+  <div class="w--full hidden portrait:block lg:portrait:hidden">
+    {% render "standings_table", rows: rows, lang: lang, offset: offsets.w10, limit: 10, columns: "compact", table_class: "table--small", text_class: "", club_class: "w--max-[55cqw]", club_chars: 22 %}
+  </div>
+  <div class="w--full hidden lg:block lg:portrait:hidden">
+    <div class="grid grid--cols-2 gap--large">
+      <div>{% render "standings_table", rows: rows, lang: lang, offset: offsets.w12, limit: 6, columns: "full", table_class: "table--base", text_class: "label--large", club_class: "w--max-[22cqw]", club_chars: 14 %}</div>
+      <div>{% assign second = offsets.w12 | plus: 6 %}{% render "standings_table", rows: rows, lang: lang, offset: second, limit: 6, columns: "full", table_class: "table--base", text_class: "label--large", club_class: "w--max-[22cqw]", club_chars: 14 %}</div>
+    </div>
+  </div>
+  <div class="w--full hidden lg:portrait:block">
+    <div class="grid grid--cols-2 gap--large">
+      <div>{% render "standings_table", rows: rows, lang: lang, offset: 0, limit: half_count, columns: "full", table_class: "table--base", text_class: "label--large", club_class: "w--max-[22cqw]", club_chars: 14 %}</div>
+      <div>{% render "standings_table", rows: rows, lang: lang, offset: half_count, limit: row_count, columns: "full", table_class: "table--base", text_class: "label--large", club_class: "w--max-[22cqw]", club_chars: 14 %}</div>
     </div>
   </div>
 </div>
 {% else %}
-  {% render "error_panel", message: table_error %}
+  {% render "error_panel", message: table_error, emblem: league_emblem %}
 {% endif %}
-{% render "title_bar", season_label: season_label %}
+{% render "title_bar", emblem: league_emblem, meta: table_meta %}

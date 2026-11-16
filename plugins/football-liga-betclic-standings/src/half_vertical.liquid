@@ -1,25 +1,20 @@
 {% if table_ok %}
 <div class="layout layout--col layout--top gap--small">
-  <div class="flex flex--row flex--between w--full">
-    <span class="label label--base">PRIMEIRA LIGA</span>
-    <span class="label label--small">{% if season_label != blank %}{{ season_label }}{% endif %}</span>
+  {% render "brand_header", emblem: league_emblem, image_class: "h--8 w--8 lg:h--14 lg:w--14", title_class: "lg:title--large" %}
+  <div class="w--full portrait:hidden lg:hidden">
+    {% render "standings_table", rows: rows, lang: lang, offset: offsets.w11, limit: 11, columns: "compact", table_class: "table--small", text_class: "", club_class: "w--max-[55cqw]", club_chars: 20 %}
   </div>
-  <div class="w--full grow">
-    {% render "club_hero", focus: hero_club, favorite_view: has_favorite, variant: "vertical" %}
+  <div class="w--full hidden portrait:block lg:portrait:hidden">
+    {% render "standings_table", rows: rows, lang: lang, offset: 0, limit: row_count, columns: "mini", table_class: "table--small", text_class: "", club_class: "w--max-[65cqw]", club_chars: 14 %}
   </div>
-  <div class="w--full shrink-0">
-    <div class="w--full lg:hidden">
-      {% render "table_heading", text_class: "label label--small" %}
-      {% for row in rows limit:9 %}{% render "table_row", row: row, text_class: "label label--small" %}{% endfor %}
-    </div>
-    <div class="w--full hidden lg:block">
-      {% render "table_heading", text_class: "label label--base" %}
-      {% for row in rows limit:15 %}{% render "table_row", row: row, text_class: "label label--base" %}{% endfor %}
-    </div>
-    {% render "zone_legend" %}
+  <div class="w--full hidden lg:block lg:portrait:hidden">
+    {% render "standings_table", rows: rows, lang: lang, offset: offsets.w12, limit: 12, columns: "compact", table_class: "table--base", text_class: "label--large", club_class: "w--max-[55cqw]", club_chars: 20 %}
+  </div>
+  <div class="w--full hidden lg:portrait:block">
+    {% render "standings_table", rows: rows, lang: lang, offset: 0, limit: row_count, columns: "compact", table_class: "table--base", text_class: "label--large", club_class: "w--max-[55cqw]", club_chars: 20 %}
   </div>
 </div>
 {% else %}
-  {% render "error_panel", message: table_error %}
+  {% render "error_panel", message: table_error, emblem: league_emblem %}
 {% endif %}
-{% render "title_bar", compact: true %}
+{% render "title_bar", emblem: league_emblem, compact: true, meta: table_meta %}

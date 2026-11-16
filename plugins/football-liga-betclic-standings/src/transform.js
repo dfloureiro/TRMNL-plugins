@@ -1,17 +1,22 @@
 function run(input) {
+  const DEFAULT_EMBLEM = "https://crests.football-data.org/PPL.png";
+  // Window sizes the layouts use to show part of the table around the focus club.
+  const WINDOW_SIZES = [5, 6, 7, 8, 9, 10, 11, 12, 14, 16];
+
   const empty = {
     plugin_ok: false,
     error_message: "",
+    emblem: DEFAULT_EMBLEM,
     rows: [],
     featured: null,
     leader: null,
-    quadrant_focus: null,
-    nearby_short: [],
-    nearby_long: [],
+    offsets: {},
     season_label: "",
-    matchday: null,
-    games_played: 0
+    matchday: null
   };
+
+  const fields = input?.trmnl?.plugin_settings?.custom_fields_values || {};
+  const portuguese = /pt|portug/i.test(String(fields.language || ""));
 
   const apiError = input?.detailedError?.message ||
     input?.error?.detailedError?.message ||
@@ -29,19 +34,20 @@ function run(input) {
   if (!Array.isArray(total?.table) || total.table.length === 0) {
     return {
       ...empty,
-      error_message: "No Primeira Liga standings were returned. Check the API token and plan."
+      error_message: portuguese
+        ? "A football-data.org não devolveu a classificação da Liga Portugal. Verifique o token da API e o plano."
+        : "No Liga Portugal standings were returned. Check the API token and plan."
     };
   }
 
-  const fields = input?.trmnl?.plugin_settings?.custom_fields_values || {};
   const favorite = String(fields.favorite_team || "").trim().toLocaleLowerCase();
   const zoneFor = (position) => {
-    if (position <= 4) return { short: "CL", label: "Champions League" };
-    if (position === 5) return { short: "EL", label: "Europa League" };
-    if (position === 6) return { short: "ECL", label: "Conference League" };
-    if (position === 16) return { short: "PO", label: "Relegation play-off" };
-    if (position >= 17) return { short: "REL", label: "Relegation" };
-    return { short: "", label: "" };
+    if (position <= 4) return "CL";
+    if (position === 5) return "EL";
+    if (position === 6) return "ECL";
+    if (position === 16) return "PO";
+    if (position >= 17) return "REL";
+    return "";
   };
 
   const rows = total.table.map((entry, index) => {
@@ -53,64 +59,62 @@ function run(input) {
     const goalDifference = Number.isFinite(Number(entry.goalDifference))
       ? Number(entry.goalDifference)
       : goalsFor - goalsAgainst;
-    const zone = zoneFor(position);
+    const searchable = [team.name, team.shortName, team.tla]
+      .filter(Boolean)
+      .map((value) => String(value).toLocaleLowerCase());
     return {
       id: team.id,
       position,
       name,
+      tla: team.tla || name.slice(0, 3).toUpperCase(),
       crest: team.crest || "",
       played: Number(entry.playedGames) || 0,
       won: Number(entry.won) || 0,
       drawn: Number(entry.draw) || 0,
       lost: Number(entry.lost) || 0,
-      goals_for: goalsFor,
-      goals_against: goalsAgainst,
       goal_difference: goalDifference,
       gd_text: goalDifference > 0 ? "+" + goalDifference : String(goalDifference),
       points: Number(entry.points) || 0,
-      zone: zone.short,
-      zone_label: zone.label,
+      zone: zoneFor(position),
       favorite: !!favorite && (
-        name.toLocaleLowerCase().includes(favorite) ||
+        searchable.some((value) => value.includes(favorite)) ||
         String(team.id) === favorite
       )
     };
   }).sort((a, b) => a.position - b.position);
 
-  const leader = rows[0] || null;
-  const featured = rows.find((row) => row.favorite) || null;
-  const quadrantFocus = featured || leader;
-  const nearby = (count) => {
-    if (!quadrantFocus) return [];
-    return rows
-      .filter((row) => row.id !== quadrantFocus.id)
-      .sort((a, b) =>
-        Math.abs(a.position - quadrantFocus.position) -
-        Math.abs(b.position - quadrantFocus.position) ||
-        a.position - b.position
-      )
-      .slice(0, count)
-      .sort((a, b) => a.position - b.position);
-  };
+  // Only the first match is highlighted, so a vague name cannot light up several rows.
+  const featuredIndex = rows.findIndex((row) => row.favorite);
+  rows.forEach((row, index) => { row.favorite = index === featuredIndex; });
+  const featured = featuredIndex >= 0 ? rows[featuredIndex] : null;
+
+  // Offset of a contiguous slice of `size` rows that keeps the favourite near the middle.
+  // Without a favourite, every window starts at the top of the table.
+  const offsets = {};
+  WINDOW_SIZES.forEach((size) => {
+    let offset = 0;
+    if (featuredIndex >= 0 && rows.length > size) {
+      offset = featuredIndex - Math.floor((size - 1) / 2);
+      offset = Math.max(0, Math.min(offset, rows.length - size));
+    }
+    offsets["w" + size] = offset;
+  });
 
   const season = input?.season || standings[0]?.season || {};
   const startYear = String(season.startDate || "").slice(0, 4);
   const seasonLabel = startYear
     ? startYear + "/" + String(Number(startYear) + 1).slice(-2)
     : "";
-  const gamesPlayed = rows.reduce((sum, row) => sum + row.played, 0) / 2;
 
   return {
     plugin_ok: true,
     error_message: "",
+    emblem: input?.competition?.emblem || DEFAULT_EMBLEM,
     rows,
     featured,
-    leader,
-    quadrant_focus: quadrantFocus,
-    nearby_short: nearby(2),
-    nearby_long: nearby(5),
+    leader: rows[0] || null,
+    offsets,
     season_label: seasonLabel,
-    matchday: season.currentMatchday || null,
-    games_played: Number.isInteger(gamesPlayed) ? gamesPlayed : 0
+    matchday: season.currentMatchday || null
   };
 }

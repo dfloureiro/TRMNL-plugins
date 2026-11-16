@@ -1,79 +1,122 @@
+{% comment %}
+  TRMNL Frame (2560x1440): the Framework gives it UI scale 1 and no lg: size, so layouts
+  would render at OG pixel sizes on a canvas over three times wider. Tripling the device scale
+  lays it out like an 853x480 screen, so it gets the OG layouts at three times the size.
+  No other device has screen--frame, so they are unaffected.
+{% endcomment %}
+<style>
+  .screen--frame { --device-ui-scale: 3; --gap-scale: 3; }
+  /* Framework image sizes do not follow the UI scale, so size the header emblem from it. */
+  .screen--frame .brand-emblem { width: calc(36px * var(--ui-scale)); height: calc(36px * var(--ui-scale)); }
+</style>
+
+{% comment %} Language: English unless the form (or a top-level value) asks for Portuguese. {% endcomment %}
+{% assign lang = "" %}
+{% if language != blank %}
+  {% assign lang = language %}
+{% elsif trmnl.plugin_settings.custom_fields_values.language != blank %}
+  {% assign lang = trmnl.plugin_settings.custom_fields_values.language %}
+{% else %}
+  {% assign lang = "en" %}
+{% endif %}
+{% assign lang = lang | downcase | strip %}
+{% if lang contains "pt" or lang contains "portug" %}
+  {% assign lang = "pt" %}
+{% else %}
+  {% assign lang = "en" %}
+{% endif %}
+{% if lang == "pt" %}
+  {% assign t_matchday = "Jornada" %}
+  {% assign t_top_half = "Metade superior" %}
+  {% assign t_bottom_half = "Metade inferior" %}
+  {% assign t_unavailable = "A classificação não está disponível de momento." %}
+{% else %}
+  {% assign t_matchday = "Matchday" %}
+  {% assign t_top_half = "Top half" %}
+  {% assign t_bottom_half = "Bottom half" %}
+  {% assign t_unavailable = "Standings are unavailable right now." %}
+{% endif %}
+
 {% assign table_ok = false %}
 {% if plugin_ok and rows.size > 0 %}{% assign table_ok = true %}{% endif %}
-{% if error_message != blank %}{% assign table_error = error_message %}{% else %}{% assign table_error = "Standings are unavailable right now." %}{% endif %}
-{% assign hero_club = featured | default: leader %}
-{% assign has_favorite = false %}
-{% if featured != blank %}{% assign has_favorite = true %}{% endif %}
+{% if error_message != blank %}{% assign table_error = error_message %}{% else %}{% assign table_error = t_unavailable %}{% endif %}
+{% assign league_emblem = emblem | default: "https://crests.football-data.org/PPL.png" %}
+{% assign row_count = rows.size %}
+{% assign half_count = row_count | plus: 1 | divided_by: 2 %}
+{% capture table_meta %}{% if matchday %}{{ t_matchday }} {{ matchday }}{% endif %}{% if matchday and season_label != blank %} · {% endif %}{{ season_label }}{% endcapture %}
 
-{% template table_row %}
-  <div class="grid grid--cols-12 gap--xsmall flex--center-y border--h-black w--full{% if row.favorite %} border--l-black font--bold{% endif %}">
-    <span class="col--span-1 value--tnums font--bold {{ text_class }}">{{ row.position }}</span>
-    <span class="col--span-7 text--truncate {{ text_class }}">
-      <span class="grow text--truncate">{{ row.name | escape }}</span>
-    </span>
-    <span class="col--span-1 value--tnums text--right {{ text_class }}">{{ row.played }}</span>
-    <span class="col--span-1 value--tnums text--right {{ text_class }}">{{ row.gd_text }}</span>
-    <span class="col--span-2 value--tnums text--right font--bold {{ text_class }}">{{ row.points }}</span>
-  </div>
-{% endtemplate %}
-
-{% template table_heading %}
-  <div class="grid grid--cols-12 gap--xsmall flex--center-y border--h-black w--full font--bold">
-    <span class="col--span-1 {{ text_class }}">#</span>
-    <span class="col--span-7 {{ text_class }}">CLUB</span>
-    <span class="col--span-1 text--right {{ text_class }}">P</span>
-    <span class="col--span-1 text--right {{ text_class }}">GD</span>
-    <span class="col--span-2 text--right {{ text_class }}">PTS</span>
-  </div>
-{% endtemplate %}
-
-{% template zone_legend %}
-  <div class="label label--small w--full text--truncate">ZONES · CL 1–4 · EL 5 · ECL 6 · PO 16 · REL 17–18</div>
-{% endtemplate %}
-
-{% template club_hero %}
-  {% if focus != blank %}
-    <div class="flex flex--col flex--between gap--xsmall outline rounded p--1 lg:p--2 w--full h--full">
-      <div class="flex flex--row flex--between flex--center-y w--full">
-        <span class="label label--small lg:label--base">{% if favorite_view %}YOUR CLUB{% else %}LEAGUE LEADER{% endif %}</span>
-        <span class="label label--small lg:label--base">{% if focus.zone_label != blank %}{{ focus.zone_label }}{% else %}MID-TABLE{% endif %}</span>
-      </div>
-      <div class="flex flex--row flex--center-y gap--small lg:gap--medium w--full grow">
-        {% if focus.crest != blank %}
-          <img src="{{ focus.crest }}" alt="" class="image image--contain image-dither {% if variant == 'horizontal' or variant == 'quadrant' %}h--20 w--20 lg:h--32 lg:w--32{% elsif variant == 'vertical' %}h--[12cqh] w--[12cqh]{% else %}h--[24cqh] w--[24cqh]{% endif %}" />
+{% comment %}
+  One standings table. Pass rows, offset, limit, lang ("en" or "pt"), columns ("full", "compact" or "mini"),
+  club_class (a w--max-[Ncqw] width cap) and club_chars (character limit) so long names
+  shorten instead of squeezing the numbers,
+  table_class (Framework table size) and text_class (label size for the cells).
+  The favourite club's row is inverted so it reads without colour or grayscale.
+{% endcomment %}
+{% template standings_table %}
+  <table class="table {{ table_class }}" data-table-limit="false">
+    <thead>
+      <tr>
+        <th class="pl--1"><span class="title {{ text_class }}">#</span></th>
+        <th><span class="title {{ text_class }}">{% if lang == "pt" %}Clube{% else %}Club{% endif %}</span></th>
+        {% if columns != "mini" %}<th class="text--right"><span class="title {{ text_class }}">{% if lang == "pt" %}J{% else %}P{% endif %}</span></th>{% endif %}
+        {% if columns == "full" %}
+          <th class="text--right"><span class="title {{ text_class }}">{% if lang == "pt" %}V{% else %}W{% endif %}</span></th>
+          <th class="text--right"><span class="title {{ text_class }}">{% if lang == "pt" %}E{% else %}D{% endif %}</span></th>
+          <th class="text--right"><span class="title {{ text_class }}">{% if lang == "pt" %}D{% else %}L{% endif %}</span></th>
         {% endif %}
-        <div class="flex flex--col grow text--truncate">
-          <span class="label {% if variant == 'full' %}label--large lg:label--xxlarge{% else %}label--base lg:label--xlarge{% endif %} font--bold text--truncate">{{ focus.name | escape }}</span>
-          <span class="label label--small lg:label--base">POSITION #{{ focus.position }}</span>
-        </div>
-        <div class="flex flex--col text--right">
-          <span class="value {% if variant == 'full' %}value--xlarge lg:value--giga{% elsif variant == 'vertical' %}value--large lg:value--mega{% elsif variant == 'horizontal' %}value--base lg:value--xlarge{% else %}value--large lg:value--xlarge{% endif %} value--tnums font--bold" data-fit-value="true">{{ focus.points }}</span>
-          <span class="label label--small lg:label--base">POINTS</span>
-        </div>
-      </div>
-      <div class="{% if variant == 'horizontal' or variant == 'quadrant' %}hidden lg:flex{% else %}flex{% endif %} flex--row flex--between border--h-black pt--1 w--full label label--small lg:label--base value--tnums">
-        <span>{{ focus.played }} PLAYED</span>
-        <span>{{ focus.won }}W · {{ focus.drawn }}D · {{ focus.lost }}L</span>
-        <span>GD {{ focus.gd_text }}</span>
-      </div>
-    </div>
-  {% endif %}
+        {% if columns != "mini" %}<th class="text--right"><span class="title {{ text_class }}">{% if lang == "pt" %}DG{% else %}GD{% endif %}</span></th>{% endif %}
+        <th class="text--right pr--1"><span class="title {{ text_class }}">Pts</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows offset: offset limit: limit %}
+        {% if row.favorite %}{% assign cell = "text--white font--bold" %}{% else %}{% assign cell = "" %}{% endif %}
+        <tr{% if row.favorite %} class="bg--black"{% endif %}>
+          <td class="pl--1"><span class="label {{ text_class }} value--tnums {{ cell }}">{{ row.position }}.</span></td>
+          <td><span data-clamp="1" class="label block {{ text_class }} {{ club_class }} {% if row.favorite %}{{ cell }}{% else %}font--bold{% endif %}">{{ row.name | truncate: club_chars, "…" | escape }}</span></td>
+          {% if columns != "mini" %}<td class="text--right"><span class="label {{ text_class }} value--tnums {{ cell }}">{{ row.played }}</span></td>{% endif %}
+          {% if columns == "full" %}
+            <td class="text--right"><span class="label {{ text_class }} value--tnums {{ cell }}">{{ row.won }}</span></td>
+            <td class="text--right"><span class="label {{ text_class }} value--tnums {{ cell }}">{{ row.drawn }}</span></td>
+            <td class="text--right"><span class="label {{ text_class }} value--tnums {{ cell }}">{{ row.lost }}</span></td>
+          {% endif %}
+          {% if columns != "mini" %}<td class="text--right"><span class="label {{ text_class }} value--tnums {{ cell }}">{{ row.gd_text }}</span></td>{% endif %}
+          <td class="text--right pr--1"><span class="label {{ text_class }} value--tnums font--bold {{ cell }}">{{ row.points }}</span></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endtemplate %}
+
+{% comment %} Centred league wordmark with the competition emblem, as on the full screen. {% endcomment %}
+{% comment %}
+  Layout variants use four mutually exclusive wrappers:
+    OG landscape  "portrait:hidden lg:hidden"
+    OG portrait   "hidden portrait:block lg:portrait:hidden"
+    X landscape   "hidden lg:block lg:portrait:hidden"
+    X portrait    "hidden lg:portrait:block"
+  lg:portrait:* is more specific than lg:* and portrait:*, so it wins on TRMNL X portrait.
+{% endcomment %}
+
+{% template brand_header %}
+  <div class="flex flex--row flex--center gap--small w--full">
+    <img src="{{ emblem }}" alt="" class="brand-emblem image image--contain image-dither {{ image_class }}" />
+    <span class="title font--bold {{ title_class }}">Liga Portugal Betclic</span>
+  </div>
 {% endtemplate %}
 
 {% template error_panel %}
-  <div class="layout layout--col flex flex--center">
-    <span class="value value--large">Liga Betclic Portugal</span>
+  <div class="layout layout--col flex flex--center gap--small">
+    <img src="{{ emblem }}" alt="" class="image image--contain image-dither h--16 w--16 lg:h--24 lg:w--24" />
+    <span class="title text--center">Liga Portugal Betclic</span>
     <span class="label label--base text--center">{{ message | escape }}</span>
   </div>
 {% endtemplate %}
 
 {% template title_bar %}
   <div class="title_bar">
-    <svg class="image image--adaptive" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="6" aria-hidden="true">
-      <circle cx="50" cy="50" r="42" />
-      <path d="m50 28 13 9-5 15H42l-5-15 13-9Zm-8 24L28 63l6 15m24-26 14 11-6 15M42 79h16" />
-    </svg>
-    <span class="title">{% if compact %}Liga Portugal{% else %}Liga Betclic Portugal{% endif %}</span>
-    <span class="instance">{% if compact %}Data: football-data.org{% else %}Data provided by football-data.org{% endif %}</span>
+    <img src="{{ emblem }}" alt="" class="image image-dither" />
+    <span class="title">{% if compact %}Liga Portugal{% else %}Liga Portugal Betclic{% endif %}</span>
+    {% if meta != blank %}<span class="instance{% if compact %} portrait:hidden lg:portrait:block{% endif %}">{{ meta }}</span>{% endif %}
   </div>
 {% endtemplate %}

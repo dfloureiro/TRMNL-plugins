@@ -6,24 +6,33 @@ require "open3"
 require "rubygems"
 require "yaml"
 
-STATES = %w[league league-favorite error].freeze
+STATES = %w[league league-favorite league-favorite-low error].freeze
+# Favourite club entered in the plugin form for each state.
+FAVORITES = { "league-favorite" => "Benfica", "league-favorite-low" => "Nacional" }.freeze
 DEVICES = {
   "og" => [800, 480, 1, []],
+  "og-portrait" => [480, 800, 1, %w[screen--portrait]],
   "x-landscape" => [1872, 1404, 4, %w[screen--v2 screen--lg screen--density-2x screen--4bit]],
-  "x-portrait" => [1404, 1872, 4, %w[screen--v2 screen--lg screen--portrait screen--density-2x screen--4bit]]
+  "x-portrait" => [1404, 1872, 4, %w[screen--v2 screen--lg screen--portrait screen--density-2x screen--4bit]],
+  # trmnlp build recognises the Frame's size and applies its screen classes itself.
+  "frame" => [2560, 1440, 1, [], "color-6a"],
+  "frame-portrait" => [1440, 2560, 1, [], "color-6a"],
+  "frame-bw" => [2560, 1440, 1, [], "bw"]
 }.freeze
 
 state = ARGV[0] || "league"
 device = ARGV[1] || "og"
-unless STATES.include?(state) && DEVICES.key?(device)
-  warn "Usage: ./preview STATE [DEVICE]"
+language = ARGV[2] || "en"
+unless STATES.include?(state) && DEVICES.key?(device) && %w[en pt].include?(language)
+  warn "Usage: ./preview STATE [DEVICE] [LANGUAGE]"
+  warn "Languages: en, pt"
   warn "States: #{STATES.join(', ')}"
   warn "Devices: #{DEVICES.keys.join(', ')}"
   exit 1
 end
 
 root = __dir__
-output = File.join(root, ".preview", "#{state}-#{device}")
+output = File.join(root, ".preview", [state, device, (language unless language == "en")].compact.join("-"))
 FileUtils.rm_rf(output)
 FileUtils.mkdir_p(output)
 FileUtils.cp_r(File.join(root, "src"), output)
@@ -68,15 +77,21 @@ static_data = if state == "error"
   { "message" => "Preview: provider authentication failed" }
 else
   data = {
-    "competition" => { "name" => "Primeira Liga", "code" => "PPL" },
+    "competition" => { "name" => "Primeira Liga", "code" => "PPL", "emblem" => "https://crests.football-data.org/PPL.png" },
     "season" => { "startDate" => "2026-08-01", "currentMatchday" => 5 },
     "standings" => [{ "stage" => "REGULAR_SEASON", "type" => "TOTAL", "table" => table }]
   }
-  if state == "league-favorite"
-    data["trmnl"] = { "plugin_settings" => { "custom_fields_values" => { "favorite_team" => "Benfica" } } }
-  end
   data
 end
+
+# trmnlp, like TRMNL, replaces any trmnl key in the data with the form values,
+# so the favourite has to be set as a custom field in the copied .trmnlp.yml.
+# The local custom fields (which may hold a real token or favourite) are always
+# replaced, so every state renders the same everywhere and no secret is copied.
+project_path = File.join(output, ".trmnlp.yml")
+project = YAML.load_file(project_path)
+project["custom_fields"] = { "favorite_team" => FAVORITES.fetch(state, ""), "language" => language }
+File.write(project_path, project.to_yaml)
 
 settings_path = File.join(output, "src", "settings.yml")
 settings = YAML.load_file(settings_path)
@@ -84,7 +99,7 @@ settings["strategy"] = "static"
 settings["static_data"] = JSON.generate(static_data)
 File.write(settings_path, settings.to_yaml)
 
-width, height, depth, classes = DEVICES.fetch(device)
+width, height, depth, classes, palette = DEVICES.fetch(device)
 unless classes.empty?
   shared_path = File.join(output, "src", "shared.liquid")
   class_list = classes.map { |name| %Q{"#{name}"} }.join(",")
@@ -104,6 +119,7 @@ unless trmnlp
 end
 
 command = [trmnlp, "build", "--png", "--width=#{width}", "--height=#{height}", "--color-depth=#{depth}"]
+command << "--palette=#{palette}" if palette
 puts "Rendering #{state} for #{device}..."
 Dir.chdir(output) do
   stdout, stderr, status = Open3.capture3(*command)
