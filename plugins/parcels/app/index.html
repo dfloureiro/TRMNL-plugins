@@ -316,9 +316,9 @@
       });
   }
 
-  // TRMNL may answer a GET on the webhook URL with the data it holds. If it does, and that
-  // data is newer than this browser's copy (for example after Safari cleared storage, or
-  // edits from another device), use it. If it doesn't, nothing changes.
+  // TRMNL answers a GET on the webhook URL with the data it holds. If that data is newer than
+  // this browser's copy (for example after Safari cleared storage, or edits from another
+  // device), use it. If the request fails, nothing changes.
   // force: compare even with unsent local edits (used right after the URL is entered).
   function pull(force) {
     if (!state.webhook || (state.dirty && !force) || !navigator.onLine) return Promise.resolve();
