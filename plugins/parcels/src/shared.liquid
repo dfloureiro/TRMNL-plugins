@@ -5,34 +5,15 @@
   Every field of a parcel is optional except that the app requires an id or a label.
 {% endcomment %}
 
-{% comment %} TRMNL Frame: lay it out like an OG screen at three times the size (see the football plugin). {% endcomment %}
+{% comment %}
+  The only custom CSS: the Framework gives the TRMNL Frame (2560x1440) UI scale 1 and no lg: sizes,
+  so without this everything renders at OG pixel sizes on a canvas over three times wider.
+  Tripling the scale lays it out like an 853x480 screen. No other device has screen--frame.
+{% endcomment %}
 <style>
   .screen--frame { --device-ui-scale: 3; --gap-scale: 3; }
-
-  .parcels { display: grid; grid-template-columns: repeat(var(--parcel-cols, 1), minmax(0, 1fr)); align-content: start; column-gap: calc(24px * var(--ui-scale, 1)); width: 100%; flex: 1 1 auto; min-height: 0; overflow: hidden; }
-  .parcel { display: flex; align-items: center; gap: calc(12px * var(--ui-scale, 1)); padding: calc(8px * var(--ui-scale, 1)) 0; border-bottom: 1px solid #000; min-width: 0; }
-  .parcel__text { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; }
-  .parcel__text > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .parcel__code { flex: 0 0 auto; background: #000; color: #fff; border-radius: calc(6px * var(--ui-scale, 1)); padding: calc(2px * var(--ui-scale, 1)) calc(10px * var(--ui-scale, 1)); }
-  .parcel__code .value { color: #fff; letter-spacing: 0.05em; }
-  .parcels--two { --parcel-cols: 2; }
-  .screen--portrait .parcels--two { --parcel-cols: 1; }
-  .parcels-layout { align-items: stretch; justify-content: flex-start; }
-  .parcel--hidden { display: none; }
-  .parcels-setup { display: flex; flex-direction: column; align-items: center; text-align: center; gap: calc(10px * var(--ui-scale, 1)); }
-  .parcels-setup--row { flex-direction: row; text-align: left; gap: calc(16px * var(--ui-scale, 1)); }
-  .parcels-setup__text { display: flex; flex-direction: column; gap: calc(4px * var(--ui-scale, 1)); min-width: 0; }
-  .parcels-qr { flex: none; width: min(calc(140px * var(--ui-scale, 1)), 45cqh); aspect-ratio: 1; }
-  .parcels-setup--row .parcels-qr { width: min(calc(140px * var(--ui-scale, 1)), 75cqh); }
-  .parcels-qr svg { width: 100%; height: 100%; display: block; }
-  .parcels-setup__text { align-items: center; }
-  .parcels-setup--row .parcels-setup__text { align-items: flex-start; }
-  /* Narrow portrait tiles: back to a column. */
-  .screen--portrait .parcels-setup--row { flex-direction: column; text-align: center; }
-  .screen--portrait .parcels-setup--row .parcels-setup__text { align-items: center; }
-  .screen--portrait .parcels-setup--row .parcels-qr { width: min(calc(140px * var(--ui-scale, 1)), 40cqh); }
-  .parcels-setup .label { overflow-wrap: anywhere; }
-  .parcels-more { flex: 0 0 auto; text-align: right; width: 100%; }
+  /* Framework width classes don't follow the UI scale, so the setup QR code is scaled here too. */
+  .screen--frame .parcels-qr { zoom: 3; }
 </style>
 
 {% comment %} Language: English unless the form (or a top-level value) asks for Portuguese. {% endcomment %}
@@ -42,14 +23,12 @@
   {% assign t_title = "Encomendas" %}
   {% assign t_empty = "Nenhuma encomenda à espera." %}
   {% assign t_setup = "Adicione encomendas na aplicação do telemóvel." %}
-  {% assign t_more = "mais" %}
   {% assign t_start = "Abra a app no telemóvel para começar." %}
   {% assign t_updated = "Atualizado" %}
 {% else %}
   {% assign t_title = "Parcels" %}
   {% assign t_empty = "No parcels on the way." %}
   {% assign t_setup = "Add parcels from the app on your phone." %}
-  {% assign t_more = "more" %}
   {% assign t_start = "Open the app on your phone to get started." %}
   {% assign t_updated = "Updated" %}
 {% endif %}
@@ -66,39 +45,41 @@
 {% capture box_icon %}data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z'/%3E%3Cpath d='M3 7.5 12 12l9-4.5M12 12v9M7.5 5.25l9 4.5'/%3E%3C/svg%3E{% endcapture %}
 
 {% comment %}
-  The parcel list. cols: 2 gives two columns on landscape screens (one in portrait), title_class / text_class / code_class the sizes.
-  Rows that do not fit are hidden by the script below and counted in "+N more".
+  The parcel list, built only from Framework components: a .columns container whose overflow
+  engine spreads the items over up to max_cols columns (one in portrait), hides what doesn't fit
+  and adds an "and N more" line. title_class / text_class / code_class set the sizes.
 {% endcomment %}
 {% template parcel_list %}
-  <div class="parcels {% if cols == 2 %}parcels--two{% endif %}">
-    {% for p in parcels %}
-      {% assign heading = p.label | default: p.id %}
-      <div class="parcel">
-        <div class="parcel__text">
-          <span class="title {{ title_class }}">{{ heading | escape }}</span>
-          {% if p.label != blank and p.id != blank %}<span class="label {{ text_class }} value--tnums">{{ p.id | escape }}</span>{% endif %}
+  <div class="columns" data-overflow="true" data-overflow-max-cols="{{ max_cols }}" data-overflow-max-cols-portrait="1" data-overflow-counter="true">
+    <div class="column">
+      {% for p in parcels %}
+        {% assign heading = p.label | default: p.id %}
+        <div class="item">
+          <div class="content grow">
+            <span class="title {{ title_class }}">{{ heading | escape }}</span>
+            {% if p.label != blank and p.id != blank %}<span class="label {{ text_class }} value--tnums">{{ p.id | escape }}</span>{% endif %}
+          </div>
+          {% if p.code != blank %}
+            <span class="value {{ code_class }} value--tnums text--white bg--black rounded--small px--2 shrink-0 self--center">{{ p.code | escape }}</span>
+          {% endif %}
         </div>
-        {% if p.code != blank %}
-          <div class="parcel__code"><span class="value {{ code_class }} value--tnums">{{ p.code | escape }}</span></div>
-        {% endif %}
-      </div>
-    {% endfor %}
+      {% endfor %}
+    </div>
   </div>
-  <span class="parcels-more label" data-more="{{ more }}" hidden></span>
 {% endtemplate %}
 
 {% template empty_panel %}
   <div class="layout layout--col flex flex--center gap--small">
     {% if setup %}
-      <div class="parcels-setup{% if row %} parcels-setup--row{% endif %}">
-        <div class="parcels-qr">{{ app_url | qr_code }}</div>
-        <div class="parcels-setup__text">
+      <div class="flex {% if row %}flex--row portrait:flex--col{% else %}flex--col{% endif %} flex--center gap">
+        <div class="parcels-qr shrink-0 {{ qr_class }}">{{ app_url | qr_code }}</div>
+        <div class="flex flex--col gap--xsmall {% if row %}flex--left portrait:flex--center-x portrait:text--center{% else %}flex--center-x text--center{% endif %}">
           <span class="title">{{ message }}</span>
           <span class="label">{{ app_url | remove: "https://" }}</span>
         </div>
       </div>
     {% else %}
-      <img src="{{ icon }}" alt="" class="image image--contain h--16 w--16 lg:h--24 lg:w--24" />
+      <img src="{{ icon }}" alt="" class="image image--contain image-dither h--16 w--16 lg:h--24 lg:w--24" />
       <span class="title text--center">{{ message }}</span>
       <span class="label text--center">{{ hint }}</span>
     {% endif %}
@@ -107,35 +88,16 @@
 
 {% template title_bar %}
   <div class="title_bar">
-    <img src="{{ icon }}" alt="" class="image" />
+    <img src="{{ icon }}" alt="" class="image image-dither" />
     <span class="title">{{ title }}</span>
     {% if meta != blank %}<span class="instance">{{ meta }}</span>{% endif %}
   </div>
 {% endtemplate %}
 
-{% comment %}
-  Hide whole rows that would be cut off at the bottom of the list and say how many were left out.
-  Each layout keeps only one list visible per screen size, so lists with no height are skipped.
-{% endcomment %}
+{% if lang == "pt" %}
+{% comment %} The overflow engine reads its "and N more" text from window.I18n. {% endcomment %}
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".parcels").forEach(function (list) {
-      var box = list.getBoundingClientRect();
-      if (box.height === 0) return;
-      var hidden = 0;
-      list.querySelectorAll(".parcel").forEach(function (row) {
-        if (row.getBoundingClientRect().bottom > box.bottom + 1) { row.classList.add("parcel--hidden"); hidden++; }
-      });
-      var more = list.nextElementSibling;
-      if (hidden > 0 && more) {
-        // Making room for the "+N more" line can push one more row out.
-        more.hidden = false;
-        more.textContent = "+" + hidden + " " + more.dataset.more;
-        var rows = Array.prototype.filter.call(list.querySelectorAll(".parcel"), function (r) { return !r.classList.contains("parcel--hidden"); });
-        var bottom = list.getBoundingClientRect().bottom;
-        for (var i = rows.length - 1; i >= 0 && rows[i].getBoundingClientRect().bottom > bottom + 1; i--) { rows[i].classList.add("parcel--hidden"); hidden++; }
-        more.textContent = "+" + hidden + " " + more.dataset.more;
-      }
-    });
-  });
+  window.I18n = window.I18n || {};
+  window.I18n.andXMore = function (n) { return "e mais " + n; };
 </script>
+{% endif %}
