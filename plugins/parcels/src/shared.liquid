@@ -43,6 +43,7 @@
     <div class="column">
       {% for p in parcels %}
         {% assign heading = p.label | default: p.id %}
+        {% unless forloop.first %}<div class="divider divider--on-dark"></div>{% endunless %}
         <div class="item">
           <div class="content grow">
             <span class="title {{ title_class }}">{{ heading | escape }}</span>
