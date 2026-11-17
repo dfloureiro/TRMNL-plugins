@@ -6,10 +6,13 @@ static_data: ''
 polling_verb: get
 framework_version: 3.3.2
 serverless_language: ''
+refresh_interval_floor:
 polling_url: ''
-polling_headers: ''
-polling_body: ''
+polling_headers:
+polling_body:
+id: 543761
 oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
 custom_fields:
 - keyname: webhook_url
   field_type: copyable_webhook_url
