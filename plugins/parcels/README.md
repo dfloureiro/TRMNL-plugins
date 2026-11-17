@@ -23,6 +23,7 @@ The webhook URL works like a password: anyone who has it can replace what the pl
 - **+** adds a parcel. Each one needs a name or a tracking ID; the pickup code is optional.
 - Tap a code or tracking ID to copy it. **Track ↗** opens 17TRACK.
 - **Received ✓** removes a parcel (with Undo).
+- Drag a parcel by its ⠿ handle to reorder the list. The screen shows parcels in the same order, and the page scrolls when you hold near the top or bottom edge. New parcels are added at the top.
 - Changes are sent to TRMNL about 2.5 s after the last edit, so a quick run of edits counts as one update. The line under the title shows whether TRMNL has the latest list. If TRMNL rejects an update (for example after reaching its hourly webhook limit), the line shows the reason and a Retry button.
 - When the app opens, it asks TRMNL for the list it holds and uses it if it's newer than the phone's copy. That covers a browser that cleared its storage, or a second device. If TRMNL doesn't return the data, use **Settings → Backup** to keep a copy.
 

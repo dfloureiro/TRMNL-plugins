@@ -56,6 +56,12 @@
   .list { display: flex; flex-direction: column; gap: 10px; padding: 0; margin: 0; list-style: none; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
   .row { display: flex; align-items: center; gap: 12px; }
+  .handle { flex: none; border: 0; background: none; color: var(--muted); width: 32px; height: 44px; margin: -6px -4px -6px -8px; display: grid; place-items: center;
+            touch-action: none; cursor: grab; border-radius: 8px; }
+  .handle svg { width: 20px; height: 20px; }
+  .card.dragging { position: relative; z-index: 5; box-shadow: 0 10px 28px rgb(0 0 0 / 0.22); transition: none; }
+  .list.sorting { user-select: none; -webkit-user-select: none; }
+  .list.sorting .card:not(.dragging) { transition: transform 0.15s; }
   .row .text { flex: 1; min-width: 0; }
   .label { font-weight: 600; font-size: 17px; overflow-wrap: anywhere; }
   .tid { font: 14px/1.3 ui-monospace, "SF Mono", Menlo, monospace; color: var(--muted); border: 0; background: none; padding: 2px 0; text-align: left; overflow-wrap: anywhere; }
@@ -179,7 +185,7 @@
     en: {
       title: "Parcels", add: "Add parcel", edit: "Edit parcel", label: "What is it?", id: "Tracking ID",
       code: "Pickup code", optional: " (optional)", save: "Save", cancel: "Cancel", needOne: "Enter a name or a tracking ID.",
-      empty: "Nothing on the way. Tap + to add a parcel.", track: "Track", editBtn: "Edit", del: "Received",
+      empty: "Nothing on the way. Tap + to add a parcel.", track: "Track", editBtn: "Edit", del: "Received", move: "Drag to reorder",
       removed: "Removed", undo: "Undo", copied: "Copied",
       setup: "Connect your TRMNL: paste the plugin's webhook URL in Settings so your list shows on the screen.", setupBtn: "Open settings",
       settings: "Settings", url: "TRMNL webhook URL",
@@ -198,7 +204,7 @@
     pt: {
       title: "Encomendas", add: "Nova encomenda", edit: "Editar encomenda", label: "O que é?", id: "Código de seguimento",
       code: "Código de levantamento", optional: " (opcional)", save: "Guardar", cancel: "Cancelar", needOne: "Indique um nome ou um código de seguimento.",
-      empty: "Nada a caminho. Toque em + para adicionar.", track: "Seguir", editBtn: "Editar", del: "Recebida",
+      empty: "Nada a caminho. Toque em + para adicionar.", track: "Seguir", editBtn: "Editar", del: "Recebida", move: "Arraste para reordenar",
       removed: "Removida", undo: "Anular", copied: "Copiado",
       setup: "Ligue o seu TRMNL: cole o URL do webhook do plugin nas Definições para a lista aparecer no ecrã.", setupBtn: "Abrir definições",
       settings: "Definições", url: "URL do webhook do TRMNL",
@@ -356,13 +362,22 @@
   }
 
   function render() {
+    if (drag) { renderStatus(); return; } // never rebuild the list under a finger
     var list = $("list");
     list.textContent = "";
     state.parcels.forEach(function (p, i) {
       var li = document.createElement("li");
       li.className = "card";
+      li.dataset.i = i;
 
       var row = document.createElement("div"); row.className = "row";
+      if (state.parcels.length > 1) {
+        var h = document.createElement("button"); h.type = "button"; h.className = "handle";
+        h.setAttribute("aria-label", T.move); h.title = T.move;
+        h.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>';
+        h.addEventListener("pointerdown", startDrag);
+        row.appendChild(h);
+      }
       var text = document.createElement("div"); text.className = "text";
       var title = document.createElement("div"); title.className = "label";
       title.textContent = p.label || p.id;
@@ -399,6 +414,68 @@
     });
     $("empty").hidden = state.parcels.length > 0;
     renderStatus();
+  }
+
+  // ---------- Reorder ----------
+  // Drag a card by its handle. The card follows the finger; it swaps places with a neighbour
+  // once it passes the neighbour's middle. The new order is saved (and sent) on release.
+  var drag = null;
+  function startDrag(ev) {
+    if (drag || (ev.pointerType === "mouse" && ev.button !== 0)) return;
+    ev.preventDefault();
+    var li = ev.currentTarget.closest(".card");
+    drag = { li: li, handle: ev.currentTarget, id: ev.pointerId, startY: ev.clientY, startTop: li.offsetTop, scroll: window.scrollY, y: ev.clientY, raf: 0 };
+    try { drag.handle.setPointerCapture(ev.pointerId); } catch (e) {}
+    li.classList.add("dragging");
+    $("list").classList.add("sorting");
+    drag.handle.addEventListener("pointermove", moveDrag);
+    drag.handle.addEventListener("pointerup", endDrag);
+    drag.handle.addEventListener("pointercancel", endDrag);
+    autoScroll();
+  }
+  function place() {
+    var li = drag.li, list = $("list");
+    var top = drag.startTop + (drag.y - drag.startY) + (window.scrollY - drag.scroll);
+    var moved = true;
+    while (moved) {
+      moved = false;
+      var prev = li.previousElementSibling, next = li.nextElementSibling;
+      if (prev && top < prev.offsetTop + prev.offsetHeight / 2) { list.insertBefore(li, prev); moved = true; }
+      else if (next && top + li.offsetHeight > next.offsetTop + next.offsetHeight / 2) { list.insertBefore(next, li); moved = true; }
+    }
+    li.style.transform = "translateY(" + (top - li.offsetTop) + "px)";
+  }
+  function moveDrag(ev) {
+    if (!drag || ev.pointerId !== drag.id) return;
+    ev.preventDefault();
+    drag.y = ev.clientY;
+    place();
+  }
+  // Scroll the page while the finger is held near the top or bottom edge.
+  function autoScroll() {
+    if (!drag) return;
+    var edge = 70, h = window.innerHeight, dy = 0;
+    if (drag.y < edge) dy = -Math.ceil((edge - drag.y) / 6);
+    else if (drag.y > h - edge - 80) dy = Math.ceil((drag.y - (h - edge - 80)) / 6);
+    if (dy) { window.scrollBy(0, dy); place(); }
+    drag.raf = requestAnimationFrame(autoScroll);
+  }
+  function endDrag(ev) {
+    if (!drag || ev.pointerId !== drag.id) return;
+    var d = drag; drag = null;
+    cancelAnimationFrame(d.raf);
+    d.handle.removeEventListener("pointermove", moveDrag);
+    d.handle.removeEventListener("pointerup", endDrag);
+    d.handle.removeEventListener("pointercancel", endDrag);
+    d.li.classList.remove("dragging");
+    d.li.style.transform = "";
+    $("list").classList.remove("sorting");
+    var order = Array.prototype.map.call($("list").children, function (el) { return Number(el.dataset.i); });
+    var same = order.every(function (n, k) { return n === k; });
+    if (!same) {
+      state.parcels = order.map(function (n) { return state.parcels[n]; });
+      changed();
+    }
   }
 
   // ---------- Actions ----------
