@@ -57,9 +57,9 @@
   .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
   .row { display: flex; align-items: center; gap: 12px; }
   .handle { flex: none; border: 0; background: none; color: var(--muted); width: 32px; height: 44px; margin: -6px -4px -6px -8px; display: grid; place-items: center;
-            touch-action: none; cursor: grab; border-radius: 8px; }
+            touch-action: none; cursor: grab; border-radius: 8px; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
   .handle svg { width: 20px; height: 20px; }
-  .card.dragging { position: relative; z-index: 5; box-shadow: 0 10px 28px rgb(0 0 0 / 0.22); transition: none; }
+  .card.dragging { position: relative; z-index: 5; box-shadow: 0 10px 28px rgb(0 0 0 / 0.22); transition: none !important; }
   .list.sorting { user-select: none; -webkit-user-select: none; }
   .list.sorting .card:not(.dragging) { transition: transform 0.15s; }
   .row .text { flex: 1; min-width: 0; }
@@ -376,6 +376,8 @@
         h.setAttribute("aria-label", T.move); h.title = T.move;
         h.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>';
         h.addEventListener("pointerdown", startDrag);
+        // Older iOS can still scroll the page from the handle unless touchmove is cancelled.
+        h.addEventListener("touchmove", function (e) { if (drag) e.preventDefault(); }, { passive: false });
         row.appendChild(h);
       }
       var text = document.createElement("div"); text.className = "text";
@@ -417,33 +419,50 @@
   }
 
   // ---------- Reorder ----------
-  // Drag a card by its handle. The card follows the finger; it swaps places with a neighbour
-  // once it passes the neighbour's middle. The new order is saved (and sent) on release.
+  // Drag a card by its handle. Nothing is moved in the page while the finger is down (iOS stops
+  // sending touch events if the touched element is moved): the dragged card and the cards it
+  // passes are only shifted with transforms. The new order is applied on release.
   var drag = null;
   function startDrag(ev) {
     if (drag || (ev.pointerType === "mouse" && ev.button !== 0)) return;
     ev.preventDefault();
     var li = ev.currentTarget.closest(".card");
-    drag = { li: li, handle: ev.currentTarget, id: ev.pointerId, startY: ev.clientY, startTop: li.offsetTop, scroll: window.scrollY, y: ev.clientY, raf: 0 };
-    try { drag.handle.setPointerCapture(ev.pointerId); } catch (e) {}
+    var cards = Array.prototype.slice.call($("list").children);
+    var from = cards.indexOf(li);
+    var tops = cards.map(function (c) { return c.offsetTop; });
+    var heights = cards.map(function (c) { return c.offsetHeight; });
+    var gap = cards.length > 1 ? tops[1] - tops[0] - heights[0] : 10;
+    drag = { li: li, cards: cards, from: from, to: from, tops: tops, heights: heights, step: heights[from] + gap,
+             id: ev.pointerId, startY: ev.clientY + window.scrollY, y: ev.clientY, raf: 0 };
+    try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (e) {}
     li.classList.add("dragging");
     $("list").classList.add("sorting");
-    drag.handle.addEventListener("pointermove", moveDrag);
-    drag.handle.addEventListener("pointerup", endDrag);
-    drag.handle.addEventListener("pointercancel", endDrag);
-    autoScroll();
+    window.addEventListener("pointermove", moveDrag, { passive: false });
+    window.addEventListener("pointerup", endDrag);
+    window.addEventListener("pointercancel", endDrag);
+    drag.raf = requestAnimationFrame(autoScroll);
   }
   function place() {
-    var li = drag.li, list = $("list");
-    var top = drag.startTop + (drag.y - drag.startY) + (window.scrollY - drag.scroll);
-    var moved = true;
-    while (moved) {
-      moved = false;
-      var prev = li.previousElementSibling, next = li.nextElementSibling;
-      if (prev && top < prev.offsetTop + prev.offsetHeight / 2) { list.insertBefore(li, prev); moved = true; }
-      else if (next && top + li.offsetHeight > next.offsetTop + next.offsetHeight / 2) { list.insertBefore(next, li); moved = true; }
+    var d = drag;
+    var offset = d.y + window.scrollY - d.startY;
+    var top = d.tops[d.from] + offset;
+    var lo = d.tops[0], hi = d.tops[d.tops.length - 1] + d.heights[d.heights.length - 1] - d.heights[d.from];
+    top = Math.max(lo, Math.min(hi, top));
+    var centre = top + d.heights[d.from] / 2;
+    // Target index: how many of the other cards have their middle above the dragged card's middle.
+    var to = 0;
+    for (var k = 0; k < d.cards.length; k++) {
+      if (k !== d.from && d.tops[k] + d.heights[k] / 2 < centre) to++;
     }
-    li.style.transform = "translateY(" + (top - li.offsetTop) + "px)";
+    d.to = to;
+    for (var j = 0; j < d.cards.length; j++) {
+      if (j === d.from) continue;
+      var shift = 0;
+      if (d.from < to && j > d.from && j <= to) shift = -d.step;
+      if (d.from > to && j >= to && j < d.from) shift = d.step;
+      d.cards[j].style.transform = shift ? "translateY(" + shift + "px)" : "";
+    }
+    d.li.style.transform = "translateY(" + (top - d.tops[d.from]) + "px)";
   }
   function moveDrag(ev) {
     if (!drag || ev.pointerId !== drag.id) return;
@@ -454,26 +473,28 @@
   // Scroll the page while the finger is held near the top or bottom edge.
   function autoScroll() {
     if (!drag) return;
-    var edge = 70, h = window.innerHeight, dy = 0;
-    if (drag.y < edge) dy = -Math.ceil((edge - drag.y) / 6);
-    else if (drag.y > h - edge - 80) dy = Math.ceil((drag.y - (h - edge - 80)) / 6);
-    if (dy) { window.scrollBy(0, dy); place(); }
+    var edge = 80, h = window.innerHeight, dy = 0;
+    if (drag.y < edge) dy = -Math.ceil((edge - drag.y) / 8);
+    else if (drag.y > h - edge) dy = Math.ceil((drag.y - (h - edge)) / 8);
+    if (dy) {
+      var before = window.scrollY;
+      window.scrollBy(0, dy);
+      if (window.scrollY !== before) place();
+    }
     drag.raf = requestAnimationFrame(autoScroll);
   }
   function endDrag(ev) {
     if (!drag || ev.pointerId !== drag.id) return;
     var d = drag; drag = null;
     cancelAnimationFrame(d.raf);
-    d.handle.removeEventListener("pointermove", moveDrag);
-    d.handle.removeEventListener("pointerup", endDrag);
-    d.handle.removeEventListener("pointercancel", endDrag);
-    d.li.classList.remove("dragging");
-    d.li.style.transform = "";
+    window.removeEventListener("pointermove", moveDrag);
+    window.removeEventListener("pointerup", endDrag);
+    window.removeEventListener("pointercancel", endDrag);
     $("list").classList.remove("sorting");
-    var order = Array.prototype.map.call($("list").children, function (el) { return Number(el.dataset.i); });
-    var same = order.every(function (n, k) { return n === k; });
-    if (!same) {
-      state.parcels = order.map(function (n) { return state.parcels[n]; });
+    d.cards.forEach(function (c) { c.style.transform = ""; c.classList.remove("dragging"); });
+    if (d.to !== d.from) {
+      var moved = state.parcels.splice(d.from, 1)[0];
+      state.parcels.splice(d.to, 0, moved);
       changed();
     }
   }
