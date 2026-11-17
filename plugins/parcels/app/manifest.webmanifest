@@ -1,0 +1,13 @@
+{
+  "name": "Parcels for TRMNL",
+  "short_name": "Parcels",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f5f2",
+  "theme_color": "#151515",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

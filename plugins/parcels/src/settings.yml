@@ -1,0 +1,37 @@
+---
+strategy: webhook
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: 3.3.2
+serverless_language: ''
+polling_url: ''
+polling_headers: ''
+polling_body: ''
+oauth_enabled: 'false'
+custom_fields:
+- keyname: webhook_url
+  field_type: copyable_webhook_url
+  name: Webhook URL
+  description: Paste this into the Parcels app's Settings (⚙︎). Treat it like a password.
+  description-pt: Cole isto nas Definições (⚙︎) da aplicação Encomendas. Trate-o como uma palavra-passe.
+- keyname: language
+  field_type: select
+  name: Language
+  description: Screen language
+  default: en
+  options:
+  - English: en
+  - Português: pt
+  help_text: Pick your preferred language
+- keyname: about_plugin
+  name: About this plugin
+  field_type: author_bio
+  category: personal
+  description: Parcels you are waiting for, with their pickup codes. Manage the list from the companion web app on your phone; it sends the list to this plugin's webhook URL. By Diogo Loureiro.
+  github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/parcels
+  learn_more_url: https://dfloureiro.github.io/TRMNL-plugins/
+name: Parcels
+description: Parcels and pickup codes
+refresh_interval: 15

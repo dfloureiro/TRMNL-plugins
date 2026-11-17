@@ -1,0 +1,111 @@
+{% comment %}
+  Data arrives through the plugin's webhook, sent by the companion app (../app):
+    parcels: [{ "id": "LX123456789PT", "label": "Headphones", "code": "4821" }, …]
+    updated: "17 Nov, 10:21" (already formatted on the phone, in its time zone)
+  Every field of a parcel is optional except that the app requires an id or a label.
+{% endcomment %}
+
+{% comment %} TRMNL Frame: lay it out like an OG screen at three times the size (see the football plugin). {% endcomment %}
+<style>
+  .screen--frame { --device-ui-scale: 3; --gap-scale: 3; }
+
+  .parcels { display: grid; grid-template-columns: repeat(var(--parcel-cols, 1), minmax(0, 1fr)); align-content: start; column-gap: calc(24px * var(--ui-scale, 1)); width: 100%; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+  .parcel { display: flex; align-items: center; gap: calc(12px * var(--ui-scale, 1)); padding: calc(8px * var(--ui-scale, 1)) 0; border-bottom: 1px solid #000; min-width: 0; }
+  .parcel__text { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; }
+  .parcel__text > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .parcel__code { flex: 0 0 auto; background: #000; color: #fff; border-radius: calc(6px * var(--ui-scale, 1)); padding: calc(2px * var(--ui-scale, 1)) calc(10px * var(--ui-scale, 1)); }
+  .parcel__code .value { color: #fff; letter-spacing: 0.05em; }
+  .parcels--two { --parcel-cols: 2; }
+  .screen--portrait .parcels--two { --parcel-cols: 1; }
+  .parcels-layout { align-items: stretch; justify-content: flex-start; }
+  .parcel--hidden { display: none; }
+  .parcels-more { flex: 0 0 auto; text-align: right; width: 100%; }
+</style>
+
+{% comment %} Language: English unless the form (or a top-level value) asks for Portuguese. {% endcomment %}
+{% assign lang = language | default: trmnl.plugin_settings.custom_fields_values.language | default: "en" | downcase | strip %}
+{% if lang contains "pt" or lang contains "portug" %}{% assign lang = "pt" %}{% else %}{% assign lang = "en" %}{% endif %}
+{% if lang == "pt" %}
+  {% assign t_title = "Encomendas" %}
+  {% assign t_empty = "Nenhuma encomenda à espera." %}
+  {% assign t_setup = "Adicione encomendas na aplicação do telemóvel." %}
+  {% assign t_more = "mais" %}
+  {% assign t_updated = "Atualizado" %}
+{% else %}
+  {% assign t_title = "Parcels" %}
+  {% assign t_empty = "No parcels on the way." %}
+  {% assign t_setup = "Add parcels from the app on your phone." %}
+  {% assign t_more = "more" %}
+  {% assign t_updated = "Updated" %}
+{% endif %}
+
+{% assign parcel_count = parcels.size | default: 0 %}
+{% capture meta %}{% if parcel_count > 0 %}{{ parcel_count }}{% endif %}{% if parcel_count > 0 and updated != blank %} · {% endif %}{% if updated != blank %}{{ t_updated }} {{ updated }}{% endif %}{% endcapture %}
+
+{% comment %} A box drawn as an inline SVG, so the title bar needs no hosted image. {% endcomment %}
+{% capture box_icon %}data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z'/%3E%3Cpath d='M3 7.5 12 12l9-4.5M12 12v9M7.5 5.25l9 4.5'/%3E%3C/svg%3E{% endcapture %}
+
+{% comment %}
+  The parcel list. cols: 2 gives two columns on landscape screens (one in portrait), title_class / text_class / code_class the sizes.
+  Rows that do not fit are hidden by the script below and counted in "+N more".
+{% endcomment %}
+{% template parcel_list %}
+  <div class="parcels {% if cols == 2 %}parcels--two{% endif %}">
+    {% for p in parcels %}
+      {% assign heading = p.label | default: p.id %}
+      <div class="parcel">
+        <div class="parcel__text">
+          <span class="title {{ title_class }}">{{ heading | escape }}</span>
+          {% if p.label != blank and p.id != blank %}<span class="label {{ text_class }} value--tnums">{{ p.id | escape }}</span>{% endif %}
+        </div>
+        {% if p.code != blank %}
+          <div class="parcel__code"><span class="value {{ code_class }} value--tnums">{{ p.code | escape }}</span></div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  <span class="parcels-more label" data-more="{{ more }}" hidden></span>
+{% endtemplate %}
+
+{% template empty_panel %}
+  <div class="layout layout--col flex flex--center gap--small">
+    <img src="{{ icon }}" alt="" class="image image--contain h--16 w--16 lg:h--24 lg:w--24" />
+    <span class="title text--center">{{ message }}</span>
+    <span class="label text--center">{{ hint }}</span>
+  </div>
+{% endtemplate %}
+
+{% template title_bar %}
+  <div class="title_bar">
+    <img src="{{ icon }}" alt="" class="image" />
+    <span class="title">{{ title }}</span>
+    {% if meta != blank %}<span class="instance">{{ meta }}</span>{% endif %}
+  </div>
+{% endtemplate %}
+
+{% comment %}
+  Hide whole rows that would be cut off at the bottom of the list and say how many were left out.
+  Each layout keeps only one list visible per screen size, so lists with no height are skipped.
+{% endcomment %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".parcels").forEach(function (list) {
+      var box = list.getBoundingClientRect();
+      if (box.height === 0) return;
+      var hidden = 0;
+      list.querySelectorAll(".parcel").forEach(function (row) {
+        if (row.getBoundingClientRect().bottom > box.bottom + 1) { row.classList.add("parcel--hidden"); hidden++; }
+      });
+      var more = list.nextElementSibling;
+      if (hidden > 0 && more) {
+        // Making room for the "+N more" line can push one more row out.
+        more.hidden = false;
+        more.textContent = "+" + hidden + " " + more.dataset.more;
+        var rows = Array.prototype.filter.call(list.querySelectorAll(".parcel"), function (r) { return !r.classList.contains("parcel--hidden"); });
+        var bottom = list.getBoundingClientRect().bottom;
+        for (var i = rows.length - 1; i >= 0 && rows[i].getBoundingClientRect().bottom > bottom + 1; i--) { rows[i].classList.add("parcel--hidden"); hidden++; }
+        more.textContent = "+" + hidden + " " + more.dataset.more;
+      }
+    });
+  });
+</script>

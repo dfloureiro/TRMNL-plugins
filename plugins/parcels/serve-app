@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+"""Serve the Parcels app on your local network, for testing from a phone before publishing.
+
+    ./serve-app [PORT]        (default 8080)
+
+It serves app/ and a local stand-in for the TRMNL webhook at /hook:
+  POST /hook  is forwarded to `trmnlp serve` (http://127.0.0.1:4567/webhook) when it is
+              running, so the local preview shows what the screen would show. A copy is kept.
+  GET  /hook  returns the last list posted, the way the app expects TRMNL to.
+The app is served from the same address as /hook, so the browser needs no CORS for it.
+Nothing is sent anywhere else.
+"""
+import functools
+import json
+import os
+import socket
+import sys
+import urllib.error
+import urllib.request
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+
+sys.stdout.reconfigure(line_buffering=True)
+PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
+APP_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app")
+TRMNLP_WEBHOOK = os.environ.get("TRMNLP_WEBHOOK", "http://127.0.0.1:%s/webhook" % os.environ.get("TRMNLP_PORT", "4567"))
+last = {}
+
+
+class Handler(SimpleHTTPRequestHandler):
+    def log_message(self, fmt, *args):
+        if self.path.startswith("/hook"):
+            sys.stderr.write("%s %s\n" % (self.command, fmt % args))
+
+    def end_headers(self):
+        self.send_header("Cache-Control", "no-store")
+        super().end_headers()
+
+    def reply(self, status, obj):
+        body = json.dumps(obj).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self):
+        if self.path == "/hook":
+            return self.reply(200, {"merge_variables": last})
+        return super().do_GET()
+
+    def do_POST(self):
+        global last
+        if self.path != "/hook":
+            return self.reply(404, {"message": "not found"})
+        raw = self.rfile.read(int(self.headers.get("Content-Length", 0)))
+        try:
+            data = json.loads(raw)
+        except ValueError as e:
+            return self.reply(400, {"message": str(e)})
+        last = data.get("merge_variables", {})
+        print("  %d parcels, %d bytes" % (len(last.get("parcels", [])), len(raw)))
+        req = urllib.request.Request(TRMNLP_WEBHOOK, data=raw, headers={"Content-Type": "application/json"}, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=10) as res:
+                return self.reply(res.status, json.loads(res.read() or b"{}"))
+        except urllib.error.HTTPError as e:
+            return self.reply(e.code, json.loads(e.read() or b"{}"))
+        except (urllib.error.URLError, OSError):
+            print("  (trmnlp serve isn't running, so only this server has the list)")
+            return self.reply(200, {"merge_variables": last})
+
+
+def lan_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("192.0.2.1", 9))  # no packet is sent; this only picks the outgoing interface
+        return s.getsockname()[0]
+    except OSError:
+        return "127.0.0.1"
+    finally:
+        s.close()
+
+
+if __name__ == "__main__":
+    ip = lan_ip()
+    print("Open on your phone (same Wi-Fi):  http://%s:%d/" % (ip, PORT))
+    print("Webhook URL to paste in Settings: http://%s:%d/hook" % (ip, PORT))
+    print("Forwarding updates to:            %s" % TRMNLP_WEBHOOK)
+    ThreadingHTTPServer(("0.0.0.0", PORT), functools.partial(Handler, directory=APP_DIR)).serve_forever()

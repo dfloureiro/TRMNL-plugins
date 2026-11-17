@@ -1,0 +1,8 @@
+{% if parcel_count > 0 %}
+<div class="layout layout--col parcels-layout">
+  {% render "parcel_list", parcels: parcels, cols: 2, more: t_more, title_class: "title lg:title--large", text_class: "label lg:label--large", code_class: "value--xsmall lg:value--small" %}
+</div>
+{% else %}
+  {% render "empty_panel", icon: box_icon, message: t_empty, hint: t_setup %}
+{% endif %}
+{% render "title_bar", icon: box_icon, title: t_title, meta: meta %}
