@@ -75,7 +75,13 @@
   .empty { text-align: center; color: var(--muted); padding: 48px 16px; }
   .empty svg { width: 56px; height: 56px; opacity: 0.6; }
   .setup { background: var(--card); border: 1px dashed var(--muted); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
-  .setup p { margin: 0 0 10px; }
+  .setup h2 { margin: 0 0 10px; font-size: 18px; }
+  .setup ol { margin: 0 0 12px; padding-left: 22px; }
+  .setup li { margin-bottom: 4px; }
+  .setup .connect { display: flex; gap: 8px; }
+  .setup .connect input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); font-size: 16px; }
+  .setup .small { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
+  .setup .small.err { color: var(--danger); }
 
   .fab { position: fixed; right: max(16px, calc(50% - 264px)); bottom: calc(20px + env(safe-area-inset-bottom)); width: 60px; height: 60px; border-radius: 50%;
          border: 0; background: var(--accent); color: var(--on-accent); box-shadow: 0 6px 20px rgb(0 0 0 / 0.25); display: grid; place-items: center; }
@@ -118,10 +124,15 @@
     </button>
   </header>
   <div class="status" id="status" role="status" aria-live="polite"><span class="dot"></span><span id="statusText"></span></div>
-  <div id="setup" class="setup" hidden>
-    <p id="setupText"></p>
-    <button class="btn primary" id="setupBtn"></button>
-  </div>
+  <form id="setup" class="setup" hidden autocomplete="off">
+    <h2 id="setupTitle"></h2>
+    <ol><li id="setupStep1"></li><li id="setupStep2"></li><li id="setupStep3"></li></ol>
+    <div class="connect">
+      <input id="setupUrl" type="url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="https://trmnl.com/api/custom_plugins/…" aria-labelledby="setupStep3">
+      <button type="submit" class="btn primary" id="setupBtn"></button>
+    </div>
+    <p class="small" id="setupHint"></p>
+  </form>
   <ul class="list" id="list"></ul>
   <div class="empty" id="empty" hidden>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9M7.5 5.25l9 4.5"/></svg>
@@ -187,7 +198,11 @@
       code: "Pickup code", optional: " (optional)", save: "Save", cancel: "Cancel", needOne: "Enter a name or a tracking ID.",
       empty: "Nothing on the way. Tap + to add a parcel.", track: "Track", editBtn: "Edit", del: "Received", move: "Drag to reorder",
       removed: "Removed", undo: "Undo", copied: "Copied",
-      setup: "Connect your TRMNL: paste the plugin's webhook URL in Settings so your list shows on the screen.", setupBtn: "Open settings",
+      setupTitle: "Connect your TRMNL",
+      setupStep1: "In TRMNL, add the Parcels plugin and put it in your device's playlist.",
+      setupStep2: "Open the plugin's settings and copy its Webhook URL.",
+      setupStep3: "Paste it here:", setupBtn: "Connect",
+      setupHint: "The URL is saved only in this browser. Your parcels go only to your TRMNL. Already using Parcels on another device? Paste the same URL and your list loads here. You can also add parcels first and connect later.",
       settings: "Settings", url: "TRMNL webhook URL",
       urlHint: "In TRMNL, open the Parcels plugin settings and copy the Webhook URL. It is stored only on this device. Treat it like a password.",
       urlBad: "That doesn't look like a TRMNL webhook URL (https://trmnl.com/api/custom_plugins/…).",
@@ -206,7 +221,11 @@
       code: "Código de levantamento", optional: " (opcional)", save: "Guardar", cancel: "Cancelar", needOne: "Indique um nome ou um código de seguimento.",
       empty: "Nada a caminho. Toque em + para adicionar.", track: "Seguir", editBtn: "Editar", del: "Recebida", move: "Arraste para reordenar",
       removed: "Removida", undo: "Anular", copied: "Copiado",
-      setup: "Ligue o seu TRMNL: cole o URL do webhook do plugin nas Definições para a lista aparecer no ecrã.", setupBtn: "Abrir definições",
+      setupTitle: "Ligue o seu TRMNL",
+      setupStep1: "No TRMNL, adicione o plugin Parcels e ponha-o na playlist do seu dispositivo.",
+      setupStep2: "Abra as definições do plugin e copie o Webhook URL.",
+      setupStep3: "Cole-o aqui:", setupBtn: "Ligar",
+      setupHint: "O URL fica guardado só neste browser. As encomendas vão só para o seu TRMNL. Já usa o Parcels noutro dispositivo? Cole o mesmo URL e a lista aparece aqui. Também pode adicionar encomendas primeiro e ligar depois.",
       settings: "Definições", url: "URL do webhook do TRMNL",
       urlHint: "No TRMNL, abra as definições do plugin Encomendas e copie o Webhook URL. Fica guardado só neste dispositivo. Trate-o como uma palavra-passe.",
       urlBad: "Isto não parece um URL de webhook do TRMNL (https://trmnl.com/api/custom_plugins/…).",
@@ -251,7 +270,8 @@
       if (p.code) o.code = p.code;
       return o;
     });
-    return { merge_variables: { parcels: parcels, updated: fmtTime(state.updatedAt || Date.now()), updated_at: state.updatedAt } };
+    // v: payload format version. Version 1 is documented in the README; keep it backwards compatible.
+    return { merge_variables: { v: 1, parcels: parcels, updated: fmtTime(state.updatedAt || Date.now()), updated_at: state.updatedAt } };
   }
   function payloadBytes() { return new Blob([JSON.stringify(payload())]).size; }
 
@@ -545,10 +565,13 @@
     $("sUrlHint").classList.toggle("err", !!bad);
   }
   $("sUrl").addEventListener("input", urlHint);
-  function saveUrl() {
-    var v = $("sUrl").value.trim();
+  function urlAllowed(v) {
     // https only, except when the app itself runs over http (the local test server, see serve-app).
-    if (v && !/^https:\/\//i.test(v) && !(location.protocol === "http:" && /^http:\/\//i.test(v))) { urlHint(); return false; }
+    return !v || /^https:\/\//i.test(v) || (location.protocol === "http:" && /^http:\/\//i.test(v));
+  }
+  function saveUrl(v) {
+    v = (v === undefined ? $("sUrl").value : v).trim();
+    if (!urlAllowed(v)) { urlHint(); return false; }
     if (v !== state.webhook) {
       state.webhook = v; lastError = "";
       // Only a list that was actually edited here counts as unsent; an empty new browser must
@@ -564,6 +587,18 @@
     if (state.webhook) pull(true).then(function () { if (state.dirty) push(); });
   });
   $("sSend").onclick = function () { if (saveUrl()) { $("settingsDialog").close(); render(); push(); } };
+  $("setup").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var v = $("setupUrl").value.trim();
+    var hint = $("setupHint");
+    if (!v || !urlAllowed(v) || !(isWebhook(v) || location.protocol === "http:")) {
+      hint.textContent = T.urlBad; hint.classList.add("err"); return;
+    }
+    hint.textContent = T.setupHint; hint.classList.remove("err");
+    saveUrl(v);
+    render();
+    pull(true).then(function () { if (state.dirty) push(); });
+  });
   $("sClose").onclick = function () { $("settingsDialog").close(); };
 
   $("bExport").onclick = function () {
@@ -593,7 +628,11 @@
   $("addBtn").setAttribute("aria-label", T.add);
   $("settingsBtn").setAttribute("aria-label", T.settings);
   $("emptyText").textContent = T.empty;
-  $("setupText").textContent = T.setup;
+  $("setupTitle").textContent = T.setupTitle;
+  $("setupStep1").textContent = T.setupStep1;
+  $("setupStep2").textContent = T.setupStep2;
+  $("setupStep3").textContent = T.setupStep3;
+  $("setupHint").textContent = T.setupHint;
   $("setupBtn").textContent = T.setupBtn;
   $("fLabelL").textContent = T.label + T.optional;
   $("fIdL").textContent = T.id + T.optional;
@@ -613,7 +652,6 @@
 
   $("addBtn").onclick = function () { openEdit(-1); };
   $("settingsBtn").onclick = openSettings;
-  $("setupBtn").onclick = openSettings;
   // Tapping the dimmed background closes a sheet.
   [$("editDialog"), $("settingsDialog")].forEach(function (dlg) {
     dlg.addEventListener("click", function (ev) { if (ev.target === dlg) dlg.close(); });

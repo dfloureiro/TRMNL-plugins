@@ -6,7 +6,7 @@ require "open3"
 require "rubygems"
 require "yaml"
 
-STATES = %w[few many empty].freeze
+STATES = %w[few many empty fresh].freeze
 DEVICES = {
   "og" => [800, 480, 1, []],
   "og-portrait" => [480, 800, 1, %w[screen--portrait]],
@@ -53,8 +53,9 @@ SAMPLE = [
   { "id" => "LZ000111222PT", "label" => "Plant pot", "code" => "6602" },
   { "id" => "CX777888999PT", "label" => "Board game" }
 ].freeze
-parcels = { "few" => SAMPLE.first(4), "many" => SAMPLE, "empty" => [] }.fetch(state)
-static_data = { "parcels" => parcels, "updated" => "17 Nov, 10:21" }
+parcels = { "few" => SAMPLE.first(4), "many" => SAMPLE, "empty" => [], "fresh" => nil }.fetch(state)
+# "fresh" is a new install that has never received a webhook post.
+static_data = parcels ? { "v" => 1, "parcels" => parcels, "updated" => "17 Nov, 10:21" } : {}
 
 project_path = File.join(output, ".trmnlp.yml")
 project = YAML.load_file(project_path)

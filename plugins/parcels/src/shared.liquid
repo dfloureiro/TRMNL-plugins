@@ -19,6 +19,19 @@
   .screen--portrait .parcels--two { --parcel-cols: 1; }
   .parcels-layout { align-items: stretch; justify-content: flex-start; }
   .parcel--hidden { display: none; }
+  .parcels-setup { display: flex; flex-direction: column; align-items: center; text-align: center; gap: calc(10px * var(--ui-scale, 1)); }
+  .parcels-setup--row { flex-direction: row; text-align: left; gap: calc(16px * var(--ui-scale, 1)); }
+  .parcels-setup__text { display: flex; flex-direction: column; gap: calc(4px * var(--ui-scale, 1)); min-width: 0; }
+  .parcels-qr { flex: none; width: min(calc(140px * var(--ui-scale, 1)), 45cqh); aspect-ratio: 1; }
+  .parcels-setup--row .parcels-qr { width: min(calc(140px * var(--ui-scale, 1)), 75cqh); }
+  .parcels-qr svg { width: 100%; height: 100%; display: block; }
+  .parcels-setup__text { align-items: center; }
+  .parcels-setup--row .parcels-setup__text { align-items: flex-start; }
+  /* Narrow portrait tiles: back to a column. */
+  .screen--portrait .parcels-setup--row { flex-direction: column; text-align: center; }
+  .screen--portrait .parcels-setup--row .parcels-setup__text { align-items: center; }
+  .screen--portrait .parcels-setup--row .parcels-qr { width: min(calc(140px * var(--ui-scale, 1)), 40cqh); }
+  .parcels-setup .label { overflow-wrap: anywhere; }
   .parcels-more { flex: 0 0 auto; text-align: right; width: 100%; }
 </style>
 
@@ -30,16 +43,23 @@
   {% assign t_empty = "Nenhuma encomenda à espera." %}
   {% assign t_setup = "Adicione encomendas na aplicação do telemóvel." %}
   {% assign t_more = "mais" %}
+  {% assign t_start = "Abra a app no telemóvel para começar." %}
   {% assign t_updated = "Atualizado" %}
 {% else %}
   {% assign t_title = "Parcels" %}
   {% assign t_empty = "No parcels on the way." %}
   {% assign t_setup = "Add parcels from the app on your phone." %}
   {% assign t_more = "more" %}
+  {% assign t_start = "Open the app on your phone to get started." %}
   {% assign t_updated = "Updated" %}
 {% endif %}
 
 {% assign parcel_count = parcels.size | default: 0 %}
+{% comment %} Nothing has ever been posted to the webhook: show how to get the companion app. {% endcomment %}
+{% assign app_url = "https://dfloureiro.github.io/TRMNL-plugins/" %}
+{% assign never_synced = true %}
+{% if updated != blank or parcels %}{% assign never_synced = false %}{% endif %}
+{% if never_synced %}{% assign t_empty = t_start %}{% endif %}
 {% capture meta %}{% if parcel_count > 0 %}{{ parcel_count }}{% endif %}{% if parcel_count > 0 and updated != blank %} · {% endif %}{% if updated != blank %}{{ t_updated }} {{ updated }}{% endif %}{% endcapture %}
 
 {% comment %} A box drawn as an inline SVG, so the title bar needs no hosted image. {% endcomment %}
@@ -69,9 +89,19 @@
 
 {% template empty_panel %}
   <div class="layout layout--col flex flex--center gap--small">
-    <img src="{{ icon }}" alt="" class="image image--contain h--16 w--16 lg:h--24 lg:w--24" />
-    <span class="title text--center">{{ message }}</span>
-    <span class="label text--center">{{ hint }}</span>
+    {% if setup %}
+      <div class="parcels-setup{% if row %} parcels-setup--row{% endif %}">
+        <div class="parcels-qr">{{ app_url | qr_code }}</div>
+        <div class="parcels-setup__text">
+          <span class="title">{{ message }}</span>
+          <span class="label">{{ app_url | remove: "https://" }}</span>
+        </div>
+      </div>
+    {% else %}
+      <img src="{{ icon }}" alt="" class="image image--contain h--16 w--16 lg:h--24 lg:w--24" />
+      <span class="title text--center">{{ message }}</span>
+      <span class="label text--center">{{ hint }}</span>
+    {% endif %}
   </div>
 {% endtemplate %}
 

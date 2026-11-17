@@ -3,6 +3,6 @@
   {% render "parcel_list", parcels: parcels, cols: 2, more: t_more, title_class: "title--large lg:title--xlarge", text_class: "label--large lg:label--xlarge", code_class: "value--small lg:value" %}
 </div>
 {% else %}
-  {% render "empty_panel", icon: box_icon, message: t_empty, hint: t_setup %}
+  {% render "empty_panel", icon: box_icon, message: t_empty, hint: t_setup, setup: never_synced, app_url: app_url %}
 {% endif %}
 {% render "title_bar", icon: box_icon, title: t_title, meta: meta %}
