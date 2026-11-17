@@ -5,17 +5,6 @@
   Every field of a parcel is optional except that the app requires an id or a label.
 {% endcomment %}
 
-{% comment %}
-  The only custom CSS: the Framework gives the TRMNL Frame (2560x1440) UI scale 1 and no lg: sizes,
-  so without this everything renders at OG pixel sizes on a canvas over three times wider.
-  Tripling the scale lays it out like an 853x480 screen. No other device has screen--frame.
-{% endcomment %}
-<style>
-  .screen--frame { --device-ui-scale: 3; --gap-scale: 3; }
-  /* Framework width classes don't follow the UI scale, so the setup QR code is scaled here too. */
-  .screen--frame .parcels-qr { zoom: 3; }
-</style>
-
 {% comment %} Language: English unless the form (or a top-level value) asks for Portuguese. {% endcomment %}
 {% assign lang = language | default: trmnl.plugin_settings.custom_fields_values.language | default: "en" | downcase | strip %}
 {% if lang contains "pt" or lang contains "portug" %}{% assign lang = "pt" %}{% else %}{% assign lang = "en" %}{% endif %}
@@ -72,7 +61,7 @@
   <div class="layout layout--col flex flex--center gap--small">
     {% if setup %}
       <div class="flex {% if row %}flex--row portrait:flex--col{% else %}flex--col{% endif %} flex--center gap">
-        <div class="parcels-qr shrink-0 {{ qr_class }}">{{ app_url | qr_code }}</div>
+        <div class="shrink-0 {{ qr_class }}">{{ app_url | qr_code }}</div>
         <div class="flex flex--col gap--xsmall {% if row %}flex--left portrait:flex--center-x portrait:text--center{% else %}flex--center-x text--center{% endif %}">
           <span class="title">{{ message }}</span>
           <span class="label">{{ app_url | remove: "https://" }}</span>
