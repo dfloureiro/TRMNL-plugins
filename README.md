@@ -12,6 +12,7 @@ Each plugin lives in its own folder under [`plugins/`](plugins) and follows the 
 | [TomTom Commute](plugins/TomTom-Commute) | Live car travel time between two points, with traffic delay and up to two alternative routes, using the TomTom Routing API. Works in "leave by" mode (travel time from now) or "arrive by" mode (works out when to leave to arrive at a set time), with an optional return trip. Available in English and Portuguese. |
 | [Liga Portugal Betclic Standings](plugins/football-liga-betclic-standings) | Liga Portugal Betclic table from football-data.org, with an optional favourite club highlighted and centred in the smaller layouts. Available in English and Portuguese. |
 | [Parcels](plugins/parcels) | Parcels you are waiting for, with their pickup codes. Managed from a companion web app on your phone, which sends the list to the plugin's webhook. Available in English and Portuguese. |
+| [Shopping list](plugins/shopping-list) | Your shopping list as a checklist with quantities. Managed from a companion web app on your phone: tick items off as you shop, and add a whole paper list by copying its text from a photo. The app sends the list to the plugin's webhook. Available in English and Portuguese. |
 
 ## Repository structure
 

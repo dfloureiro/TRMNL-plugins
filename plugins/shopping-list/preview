@@ -1,0 +1,126 @@
+#!/usr/bin/env ruby
+
+require "fileutils"
+require "json"
+require "open3"
+require "rubygems"
+require "yaml"
+
+STATES = %w[few many empty fresh].freeze
+DEVICES = {
+  "og" => [800, 480, 1, []],
+  "og-portrait" => [480, 800, 1, %w[screen--portrait]],
+  "x-landscape" => [1872, 1404, 4, %w[screen--v2 screen--lg screen--density-2x screen--4bit]],
+  "x-portrait" => [1404, 1872, 4, %w[screen--v2 screen--lg screen--portrait screen--density-2x screen--4bit]],
+  # trmnlp build recognises the Frame's size and applies its screen classes itself.
+  "frame" => [2560, 1440, 1, [], "color-6a"],
+  "frame-portrait" => [1440, 2560, 1, [], "color-6a"],
+  "frame-bw" => [2560, 1440, 1, [], "bw"]
+}.freeze
+
+state = ARGV[0] || "few"
+device = ARGV[1] || "og"
+language = ARGV[2] || "en"
+unless STATES.include?(state) && DEVICES.key?(device) && %w[en pt].include?(language)
+  warn "Usage: ./preview STATE [DEVICE] [LANGUAGE]"
+  warn "Languages: en, pt"
+  warn "States: #{STATES.join(', ')}"
+  warn "Devices: #{DEVICES.keys.join(', ')}"
+  exit 1
+end
+
+root = __dir__
+output = File.join(root, ".preview", [state, device, (language unless language == "en")].compact.join("-"))
+FileUtils.rm_rf(output)
+FileUtils.mkdir_p(output)
+FileUtils.cp_r(File.join(root, "src"), output)
+FileUtils.cp(File.join(root, ".trmnlp.yml"), output)
+
+# Made-up items, shaped like the webhook payload the companion app sends.
+SAMPLE = [
+  { "name" => "Milk", "qty" => 2 },
+  { "name" => "Bread" },
+  { "name" => "Eggs", "qty" => 12 },
+  { "name" => "Bananas" },
+  { "name" => "Tomatoes", "qty" => 6 },
+  { "name" => "Olive oil" },
+  { "name" => "Washing-up liquid with a very long brand name" },
+  { "name" => "Coffee", "qty" => 2 },
+  { "name" => "Rice" },
+  { "name" => "Chicken thighs, 1 kg" },
+  { "name" => "Yoghurts", "qty" => 4 },
+  { "name" => "Onions", "qty" => 3 },
+  { "name" => "Toilet paper" },
+  { "name" => "Butter" },
+  { "name" => "Lemons", "qty" => 2 },
+  { "name" => "Pasta" },
+  { "name" => "Cheese" },
+  { "name" => "Apples", "qty" => 5 },
+  { "name" => "Spinach" },
+  { "name" => "Sparkling water", "qty" => 6 },
+  { "name" => "Garlic" },
+  { "name" => "Tuna", "qty" => 3 },
+  { "name" => "Cereal" },
+  { "name" => "Bin bags" },
+  { "name" => "Carrots" },
+  { "name" => "Ham" },
+  { "name" => "Orange juice" },
+  { "name" => "Potatoes" },
+  { "name" => "Ketchup" },
+  { "name" => "Salt" },
+  { "name" => "Biscuits", "qty" => 2 },
+  { "name" => "Peppers", "qty" => 3 }
+].freeze
+items = { "few" => SAMPLE.first(6), "many" => SAMPLE, "empty" => [], "fresh" => nil }.fetch(state)
+# "fresh" is a new install that has never received a webhook post.
+static_data = items ? { "v" => 1, "items" => items, "updated" => "18 Nov, 10:21" } : {}
+# DATA=file.json renders a real payload instead (the merge_variables a webhook post would carry).
+if ENV["DATA"]
+  raw = JSON.parse(File.read(ENV["DATA"]))
+  static_data = raw["merge_variables"] || raw
+end
+
+project_path = File.join(output, ".trmnlp.yml")
+project = YAML.load_file(project_path)
+project["custom_fields"] = { "language" => language }
+File.write(project_path, project.to_yaml)
+
+settings_path = File.join(output, "src", "settings.yml")
+settings = YAML.load_file(settings_path)
+settings["strategy"] = "static"
+settings["static_data"] = JSON.generate(static_data)
+File.write(settings_path, settings.to_yaml)
+
+width, height, depth, classes, palette = DEVICES.fetch(device)
+unless classes.empty?
+  shared_path = File.join(output, "src", "shared.liquid")
+  class_list = classes.map { |name| %Q{"#{name}"} }.join(",")
+  injector = %Q{<script>document.addEventListener("DOMContentLoaded",()=>document.querySelector(".screen").classList.add(#{class_list}))</script>\n}
+  File.write(shared_path, injector + File.read(shared_path))
+end
+
+trmnlp = ENV["TRMNLP"]
+unless trmnlp
+  candidates = ENV.fetch("PATH", "").split(File::PATH_SEPARATOR).map { |dir| File.join(dir, "trmnlp") }
+  candidates += [File.join(Gem.bindir, "trmnlp"), File.join(Gem.user_dir, "bin", "trmnlp")]
+  trmnlp = candidates.find { |path| File.file?(path) && File.executable?(path) }
+end
+unless trmnlp
+  warn "trmnlp is required to render previews. Install it with: gem install trmnl_preview"
+  exit 1
+end
+
+command = [trmnlp, "build", "--png", "--width=#{width}", "--height=#{height}", "--color-depth=#{depth}"]
+command << "--palette=#{palette}" if palette
+puts "Rendering #{state} for #{device}..."
+Dir.chdir(output) do
+  stdout, stderr, status = Open3.capture3(*command)
+  puts stdout
+  warn stderr unless stderr.empty?
+  exit(status.exitstatus || 1) unless status.success?
+end
+
+puts "Preview files:"
+%w[full half_horizontal half_vertical quadrant].each do |layout|
+  puts "  #{File.join(output, "_build", "#{layout}.png")}"
+end

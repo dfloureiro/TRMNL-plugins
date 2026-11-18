@@ -1,0 +1,98 @@
+{% comment %}
+  Data arrives through the plugin's webhook, sent by the companion app (../app):
+    items: [{ "name": "Milk", "qty": 2 }, { "name": "Bread" }, …]
+    updated: "18 Nov, 10:21" (already formatted on the phone, in its time zone)
+  qty is left out when it is 1.
+{% endcomment %}
+
+{% comment %} Language: English unless the form (or a top-level value) asks for Portuguese. {% endcomment %}
+{% assign lang = language | default: trmnl.plugin_settings.custom_fields_values.language | default: "en" | downcase | strip %}
+{% if lang contains "pt" or lang contains "portug" %}{% assign lang = "pt" %}{% else %}{% assign lang = "en" %}{% endif %}
+{% if lang == "pt" %}
+  {% assign t_title = "Lista de compras" %}
+  {% assign t_empty = "A lista está vazia." %}
+  {% assign t_setup = "Adicione artigos na aplicação do telemóvel." %}
+  {% assign t_start = "Abra a app no telemóvel para começar." %}
+  {% assign t_updated = "Atualizada" %}
+{% else %}
+  {% assign t_title = "Shopping list" %}
+  {% assign t_empty = "The list is empty." %}
+  {% assign t_setup = "Add items from the app on your phone." %}
+  {% assign t_start = "Open the app on your phone to get started." %}
+  {% assign t_updated = "Updated" %}
+{% endif %}
+
+{% assign item_count = items.size | default: 0 %}
+{% comment %} Nothing has ever been posted to the webhook: show how to get the companion app. {% endcomment %}
+{% assign app_url = "https://dfloureiro.github.io/TRMNL-plugins/shopping-list/" %}
+{% assign never_synced = true %}
+{% if updated != blank or items %}{% assign never_synced = false %}{% endif %}
+{% if never_synced %}{% assign t_empty = t_start %}{% endif %}
+{% capture meta %}{% if item_count > 0 %}{{ item_count }}{% endif %}{% if item_count > 0 and updated != blank %} · {% endif %}{% if updated != blank %}{{ t_updated }} {{ updated }}{% endif %}{% endcapture %}
+
+{% comment %} Inline SVGs, so the screen needs no hosted images: a shopping bag and an empty checkbox. {% endcomment %}
+{% capture bag_icon %}data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 8h15l-1.2 12.5h-12.6z'/%3E%3Cpath d='M8.5 11V7a3.5 3.5 0 0 1 7 0v4'/%3E%3C/svg%3E{% endcapture %}
+{% capture box_icon %}data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5'%3E%3Crect x='2.5' y='2.5' width='19' height='19' rx='4'/%3E%3C/svg%3E{% endcapture %}
+
+{% comment %}
+  The checklist, built only from Framework components: a .columns container whose overflow
+  engine spreads the items over up to max_cols columns (one in portrait), hides what doesn't fit
+  and adds an "and N more" line. title_class / qty_class / box_class set the sizes.
+{% endcomment %}
+{% template item_list %}
+  <div class="columns" data-overflow="true" data-overflow-max-cols="{{ max_cols }}" data-overflow-max-cols-portrait="1" data-overflow-counter="true">
+    <div class="column">
+      {% for it in items %}
+        {% assign qty = it.qty | plus: 0 %}
+        {% comment %}
+          The line between items is drawn by the item itself (border--h-3), not by a separate
+          .divider: the overflow engine plans columns from the items alone, so separate dividers
+          made a column taller than planned and it then dropped an item that fitted.
+        {% endcomment %}
+        <div class="item{% unless forloop.last %} border--h-3 pb--1{% endunless %}">
+          <div class="flex flex--row flex--left gap--small grow">
+            <img src="{{ box }}" alt="" class="image shrink-0 {{ box_class }}" />
+            <span class="title {{ title_class }} grow">{{ it.name | escape }}</span>
+            {% if qty > 1 %}
+              <span class="value {{ qty_class }} value--tnums text--white bg--black rounded--small px--2 shrink-0">{{ qty }}</span>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endtemplate %}
+
+{% template empty_panel %}
+  <div class="layout layout--col flex flex--center gap--small">
+    {% if setup %}
+      <div class="flex {% if row %}flex--row portrait:flex--col{% else %}flex--col{% endif %} flex--center gap">
+        <div class="shrink-0 {{ qr_class }}">{{ app_url | qr_code }}</div>
+        <div class="flex flex--col gap--xsmall {% if row %}flex--left portrait:flex--center-x portrait:text--center{% else %}flex--center-x text--center{% endif %}">
+          <span class="title">{{ message }}</span>
+          <span class="label">{{ app_url | remove: "https://" }}</span>
+        </div>
+      </div>
+    {% else %}
+      <img src="{{ icon }}" alt="" class="image image--contain image-dither h--16 w--16 lg:h--24 lg:w--24" />
+      <span class="title text--center">{{ message }}</span>
+      <span class="label text--center">{{ hint }}</span>
+    {% endif %}
+  </div>
+{% endtemplate %}
+
+{% template title_bar %}
+  <div class="title_bar">
+    <img src="{{ icon }}" alt="" class="image image-dither" />
+    <span class="title">{{ title }}</span>
+    {% if meta != blank %}<span class="instance">{{ meta }}</span>{% endif %}
+  </div>
+{% endtemplate %}
+
+{% if lang == "pt" %}
+{% comment %} The overflow engine reads its "and N more" text from window.I18n. {% endcomment %}
+<script>
+  window.I18n = window.I18n || {};
+  window.I18n.andXMore = function (n) { return "e mais " + n; };
+</script>
+{% endif %}

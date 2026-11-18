@@ -1,0 +1,40 @@
+---
+strategy: webhook
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: 3.3.2
+serverless_language: ''
+refresh_interval_floor:
+polling_url: ''
+polling_headers:
+polling_body:
+id: 545331
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+custom_fields:
+- keyname: webhook_url
+  field_type: copyable_webhook_url
+  name: Webhook URL
+  description: Paste this into the Shopping list app at <a href="https://dfloureiro.github.io/TRMNL-plugins/shopping-list/">dfloureiro.github.io/TRMNL-plugins/shopping-list</a> on your phone. Treat it like a password.
+  description-pt: Cole isto na app Lista de compras em <a href="https://dfloureiro.github.io/TRMNL-plugins/shopping-list/">dfloureiro.github.io/TRMNL-plugins/shopping-list</a> no telemóvel. Trate-o como uma palavra-passe.
+- keyname: language
+  field_type: select
+  name: Language
+  description: Screen language
+  default: en
+  options:
+  - English: en
+  - Português: pt
+  help_text: Pick your preferred language
+- keyname: about_plugin
+  name: About this plugin
+  field_type: author_bio
+  category: personal
+  description: Your shopping list, with quantities. Manage it from the free companion web app on your phone (<a href="https://dfloureiro.github.io/TRMNL-plugins/shopping-list/">dfloureiro.github.io/TRMNL-plugins/shopping-list</a>), which sends it to this plugin's webhook URL. Tick items off as you shop, or copy a paper list from a photo of it. Your list stays in your browser and your TRMNL account. English and Portuguese. By Diogo Loureiro. Questions or issues? Open a GitHub issue.
+  github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/shopping-list
+  learn_more_url: https://dfloureiro.github.io/TRMNL-plugins/shopping-list/
+name: Shopping list
+description: Shopping list with quantities
+refresh_interval: 15

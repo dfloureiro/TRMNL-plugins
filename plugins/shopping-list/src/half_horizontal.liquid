@@ -1,0 +1,8 @@
+{% if item_count > 0 %}
+<div class="layout layout--col layout--top layout--stretch-x">
+  {% render "item_list", items: items, max_cols: 3, box: box_icon, title_class: "title lg:title--large", qty_class: "value--xxsmall lg:value--xsmall", box_class: "w--5 h--5 lg:w--6 lg:h--6" %}
+</div>
+{% else %}
+  {% render "empty_panel", icon: bag_icon, message: t_empty, hint: t_setup, setup: never_synced, app_url: app_url, row: true, qr_class: "w--28 lg:w--40" %}
+{% endif %}
+{% render "title_bar", icon: bag_icon, title: t_title, meta: meta %}
