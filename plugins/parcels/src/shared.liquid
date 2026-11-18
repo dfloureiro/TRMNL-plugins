@@ -89,7 +89,10 @@
 {% endtemplate %}
 
 {% if lang == "pt" %}
-{% comment %} The overflow engine reads its "and N more" text from window.I18n. {% endcomment %}
+{% comment %}
+  The overflow engine reads its "and N more" text from window.I18n while it runs, so this is a
+  plain top-level assignment: inside a DOMContentLoaded handler it could run after the engine.
+{% endcomment %}
 <script>
   window.I18n = window.I18n || {};
   window.I18n.andXMore = function (n) { return "e mais " + n; };

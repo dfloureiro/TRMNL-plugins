@@ -13,6 +13,26 @@ Shows your shopping list on your TRMNL as a checklist, with quantities. You keep
 
 On iPhone, use Share → **Add to Home Screen**. Safari can clear the saved data of websites you haven't opened for a while, but apps added to the Home Screen are exempt. If it does get cleared, paste the webhook URL again and the list comes back from TRMNL.
 
+## On the screen
+
+Each item has an empty checkbox and its name. A quantity above 1 shows as a black badge on the right. The title bar shows how many items there are and when the list last changed. Items keep the order they have in the app.
+
+| Layout | Shows |
+| --- | --- |
+| Full | Up to 3 columns. In portrait, 1 column (2 on TRMNL X). |
+| Half horizontal | Up to 3 columns, in a smaller size (1 column in portrait). |
+| Half vertical | 1 column. |
+| Quadrant | Up to 2 columns, in the smallest size (1 column in portrait). |
+
+When the list doesn't fit, the last items are left out and an "and N more" line shows how many. An empty list shows "The list is empty". Before the app has sent anything, the screen shows a QR code that opens the app.
+
+## Settings
+
+| Field | What it does |
+| --- | --- |
+| Webhook URL | The address the app sends the list to. Copy it into the app on your phone. Treat it like a password. |
+| Language | The language of the screen: English or Portuguese. The app follows your phone's language instead. |
+
 ## Using the app
 
 The three buttons at the bottom add items:

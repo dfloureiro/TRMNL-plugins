@@ -13,6 +13,26 @@ Shows the parcels you're waiting for on your TRMNL, with their pickup codes in l
 
 On iPhone, use Share → **Add to Home Screen**. Safari can clear the saved data of websites you haven't opened for a while, but apps added to the Home Screen are exempt. If it does get cleared, paste the webhook URL again and the list comes back from TRMNL.
 
+## On the screen
+
+Each parcel shows its name in large type, with its tracking ID underneath when it has both. A parcel with only a tracking ID shows the ID as its name. The pickup code is on the right, in white on black. The title bar shows how many parcels there are and when the list last changed. Parcels keep the order they have in the app.
+
+| Layout | Shows |
+| --- | --- |
+| Full | Up to 2 columns (1 in portrait). |
+| Half horizontal | Up to 2 columns, in a smaller size (1 in portrait). |
+| Half vertical | 1 column. |
+| Quadrant | 1 column, in the smallest size. |
+
+When the list doesn't fit, the last parcels are left out and an "and N more" line shows how many. An empty list shows "No parcels on the way". Before the app has sent anything, the screen shows a QR code that opens the app.
+
+## Settings
+
+| Field | What it does |
+| --- | --- |
+| Webhook URL | The address the app sends the list to. Copy it into the app on your phone. Treat it like a password. |
+| Language | The language of the screen: English or Portuguese. The app follows your phone's language instead. |
+
 ## Using the app
 
 - **+** adds a parcel. Each one needs a name or a tracking ID; the pickup code is optional.

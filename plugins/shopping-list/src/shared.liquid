@@ -37,10 +37,11 @@
 {% comment %}
   The checklist, built only from Framework components: a .columns container whose overflow
   engine spreads the items over up to max_cols columns (one in portrait), hides what doesn't fit
-  and adds an "and N more" line. title_class / qty_class / box_class set the sizes.
+  and adds an "and N more" line. lg_portrait_cols (optional) allows more columns in portrait on
+  large screens (TRMNL X), where short item names leave room. title_class / qty_class / box_class set the sizes.
 {% endcomment %}
 {% template item_list %}
-  <div class="columns" data-overflow="true" data-overflow-max-cols="{{ max_cols }}" data-overflow-max-cols-portrait="1" data-overflow-counter="true">
+  <div class="columns" data-overflow="true" data-overflow-max-cols="{{ max_cols }}" data-overflow-max-cols-portrait="1"{% if lg_portrait_cols %} data-overflow-max-cols-lg-portrait="{{ lg_portrait_cols }}"{% endif %} data-overflow-counter="true">
     <div class="column">
       {% for it in items %}
         {% assign qty = it.qty | plus: 0 %}
@@ -90,7 +91,10 @@
 {% endtemplate %}
 
 {% if lang == "pt" %}
-{% comment %} The overflow engine reads its "and N more" text from window.I18n. {% endcomment %}
+{% comment %}
+  The overflow engine reads its "and N more" text from window.I18n while it runs, so this is a
+  plain top-level assignment: inside a DOMContentLoaded handler it could run after the engine.
+{% endcomment %}
 <script>
   window.I18n = window.I18n || {};
   window.I18n.andXMore = function (n) { return "e mais " + n; };

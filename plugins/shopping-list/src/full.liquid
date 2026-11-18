@@ -1,6 +1,6 @@
 {% if item_count > 0 %}
 <div class="layout layout--col layout--top layout--stretch-x">
-  {% render "item_list", items: items, max_cols: 3, box: box_icon, title_class: "title--large lg:title--xlarge", qty_class: "value--xsmall lg:value--small", box_class: "w--6 h--6 lg:w--8 lg:h--8" %}
+  {% render "item_list", items: items, max_cols: 3, lg_portrait_cols: 2, box: box_icon, title_class: "title--large lg:title--xlarge", qty_class: "value--xsmall lg:value--small", box_class: "w--6 h--6 lg:w--8 lg:h--8" %}
 </div>
 {% else %}
   {% render "empty_panel", icon: bag_icon, message: t_empty, hint: t_setup, setup: never_synced, app_url: app_url, qr_class: "w--32 lg:w--48" %}
