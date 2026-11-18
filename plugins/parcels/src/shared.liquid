@@ -43,8 +43,12 @@
     <div class="column">
       {% for p in parcels %}
         {% assign heading = p.label | default: p.id %}
-        {% unless forloop.first %}<div class="divider divider--on-dark"></div>{% endunless %}
-        <div class="item">
+        {% comment %}
+          The line between parcels is drawn by the item itself (border--h-3), not by a separate
+          .divider: the overflow engine plans columns from the items alone, so separate dividers
+          made a column taller than planned and it then dropped a parcel that fitted.
+        {% endcomment %}
+        <div class="item{% unless forloop.last %} border--h-3 pb--1{% endunless %}">
           <div class="content grow">
             <span class="title {{ title_class }}">{{ heading | escape }}</span>
             {% if p.label != blank and p.id != blank %}<span class="label {{ text_class }} value--tnums">{{ p.id | escape }}</span>{% endif %}
