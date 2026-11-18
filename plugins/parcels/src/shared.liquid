@@ -24,7 +24,7 @@
 
 {% assign parcel_count = parcels.size | default: 0 %}
 {% comment %} Nothing has ever been posted to the webhook: show how to get the companion app. {% endcomment %}
-{% assign app_url = "https://dfloureiro.github.io/TRMNL-plugins/" %}
+{% assign app_url = "https://dfloureiro.github.io/TRMNL-plugins/parcels/" %}
 {% assign never_synced = true %}
 {% if updated != blank or parcels %}{% assign never_synced = false %}{% endif %}
 {% if never_synced %}{% assign t_empty = t_start %}{% endif %}

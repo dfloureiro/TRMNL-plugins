@@ -2,7 +2,7 @@
 
 Shows the parcels you're waiting for on your TRMNL, with their pickup codes in large type. You keep the list in a small free web app on your phone, and the app sends it straight to your TRMNL. You don't need to open TRMNL to change it.
 
-**App:** <https://dfloureiro.github.io/TRMNL-plugins/> · English and Portuguese (it follows your phone's language; the screen language is set in the plugin's settings).
+**App:** <https://dfloureiro.github.io/TRMNL-plugins/parcels/> · English and Portuguese (it follows your phone's language; the screen language is set in the plugin's settings).
 
 ## Get started
 
@@ -52,7 +52,7 @@ The whole post must fit TRMNL's webhook size limit, about 2 KB (5 KB with TRMNL+
 
 ## Development
 
-The plugin lives in `src/` (webhook strategy, [trmnlp](https://github.com/usetrmnl/trmnlp) layout) and the app in `app/` (one HTML file). `.github/workflows/parcels-app.yml` publishes `app/` to GitHub Pages on every push that changes it. In the repo's Settings → Pages, Source must be set to **GitHub Actions**.
+The plugin lives in `src/` (webhook strategy, [trmnlp](https://github.com/usetrmnl/trmnlp) layout) and the app in `app/` (one HTML file). `.github/workflows/pages.yml` publishes `app/` to GitHub Pages at `/parcels/` on every push that changes it (each plugin with an `app/` folder gets its own path). In the repo's Settings → Pages, Source must be set to **GitHub Actions**.
 
 Push plugin changes with `trmnlp push` from this folder. The API key used for `trmnlp login` needs the profile capability.
 

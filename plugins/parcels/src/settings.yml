@@ -17,8 +17,8 @@ custom_fields:
 - keyname: webhook_url
   field_type: copyable_webhook_url
   name: Webhook URL
-  description: Paste this into the Parcels app at <a href="https://dfloureiro.github.io/TRMNL-plugins/">dfloureiro.github.io/TRMNL-plugins</a> on your phone. Treat it like a password.
-  description-pt: Cole isto na app Encomendas em <a href="https://dfloureiro.github.io/TRMNL-plugins/">dfloureiro.github.io/TRMNL-plugins</a> no telemóvel. Trate-o como uma palavra-passe.
+  description: Paste this into the Parcels app at <a href="https://dfloureiro.github.io/TRMNL-plugins/parcels/">dfloureiro.github.io/TRMNL-plugins/parcels</a> on your phone. Treat it like a password.
+  description-pt: Cole isto na app Encomendas em <a href="https://dfloureiro.github.io/TRMNL-plugins/parcels/">dfloureiro.github.io/TRMNL-plugins/parcels</a> no telemóvel. Trate-o como uma palavra-passe.
 - keyname: language
   field_type: select
   name: Language
@@ -32,9 +32,9 @@ custom_fields:
   name: About this plugin
   field_type: author_bio
   category: personal
-  description: Parcels you're waiting for, with their pickup codes in large type. Manage the list from the free companion web app on your phone (<a href="https://dfloureiro.github.io/TRMNL-plugins/">dfloureiro.github.io/TRMNL-plugins</a>), which sends it to this plugin's webhook URL. Your list stays in your browser and your TRMNL account; nothing goes through anyone else. English and Portuguese. By Diogo Loureiro. Questions or issues? Open a GitHub issue.
+  description: Parcels you're waiting for, with their pickup codes in large type. Manage the list from the free companion web app on your phone (<a href="https://dfloureiro.github.io/TRMNL-plugins/parcels/">dfloureiro.github.io/TRMNL-plugins/parcels</a>), which sends it to this plugin's webhook URL. Your list stays in your browser and your TRMNL account; nothing goes through anyone else. English and Portuguese. By Diogo Loureiro. Questions or issues? Open a GitHub issue.
   github_url: https://github.com/dfloureiro/TRMNL-plugins/tree/main/plugins/parcels
-  learn_more_url: https://dfloureiro.github.io/TRMNL-plugins/
+  learn_more_url: https://dfloureiro.github.io/TRMNL-plugins/parcels/
 name: Parcels
 description: Parcels and pickup codes
 refresh_interval: 15
