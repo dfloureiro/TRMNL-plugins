@@ -51,7 +51,7 @@
         {% endcomment %}
         <div class="item{% unless forloop.last %} border--h-3 pb--1{% endunless %}">
           <div class="flex flex--row flex--left gap--small grow">
-            <img src="{{ box }}" alt="" class="image shrink-0 {{ box_class }}" />
+            <img src="{{ box }}" alt="" class="image image-dither shrink-0 {{ box_class }}" />
             <span class="title {{ title_class }} grow">{{ it.name | escape }}</span>
             {% if qty > 1 %}
               <span class="value {{ qty_class }} value--tnums text--white bg--black rounded--small px--2 shrink-0">{{ qty }}</span>
